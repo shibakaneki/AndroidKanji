@@ -1,33 +1,35 @@
 package shiba.test.androidkanji;
 
-import java.sql.SQLException;
 import android.app.ListActivity;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.SimpleCursorAdapter;
 
 
 public class AndroidKanjiActivity extends ListActivity {
 	
-	private KanjiDBAdapter mDBHelper;
-
+	private KanjiDBManager mDBMgr;
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        mDBHelper = new KanjiDBAdapter(this);
-        try {
-			mDBHelper.open();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			System.out.println( e.getMessage() );
-		}
+        
+        mDBMgr = new KanjiDBManager(this);
+        try{
+        	mDBMgr.open();
+        } catch(SQLException e){
+        	mDBMgr.createNewDatabase();
+        	mDBMgr.open();
+        }
         fillData();
     }
     
     private void fillData(){
-    	Cursor c = mDBHelper.fetchAllKanji();
+    	Cursor c = mDBMgr.fetchAllKanji();
     	startManagingCursor(c);
     	
     	String[] from = new String[] {KanjiDBAdapter.KEY_ID};

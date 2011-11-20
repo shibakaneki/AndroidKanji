@@ -5,11 +5,12 @@ import java.sql.SQLException;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class KanjiDBAdapter{
 	
-	public static final String KEY_ID = "id";
+	public static final String KEY_ID = "_id";
 	public static final String KEY_GRADE = "grade";
 	public static final String KEY_STROKE_COUNT = "strokeCount";
 	public static final String KEY_FREQUENCY = "frequency";
@@ -19,12 +20,13 @@ public class KanjiDBAdapter{
 	private DatabaseHelper mDbHelper;
 	private SQLiteDatabase mDb;
 	
+	private static final String DATABASE_PATH = "/data/data/shiba.test.androidkanji/databases/";
 	private static final String DATABASE_NAME = "kanjidic2-en";
 	private static final int DATABASE_VERSION = 5;
 	private static final String TABLE_ENTRIES = "entries";
 	private final Context mCtx;
 	
-	private static class DatabaseHelper extends SQLiteOpenHelper{
+	public static class DatabaseHelper extends SQLiteOpenHelper{
 		DatabaseHelper(Context context){
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		}
@@ -44,6 +46,16 @@ public class KanjiDBAdapter{
 	
 	public KanjiDBAdapter(Context ctx){
 		mCtx = ctx;
+		
+		// For test purpose only:
+		System.out.println("Checking database presence...");
+		boolean b = checkDB();
+		if(b){
+			System.out.println("[SUCCESS]Database found!");
+		}
+		else{
+			System.out.println("[ERROR]Database not found");
+		}
 	}
 
 	public KanjiDBAdapter open() throws SQLException{
@@ -76,5 +88,29 @@ public class KanjiDBAdapter{
             mCursor.moveToFirst();
         }
         return mCursor;
+	}
+	
+	private boolean checkDB(){
+		boolean bExist = false;
+		
+		SQLiteDatabase tmpDB = null;
+
+		try{
+    		String myPath = DATABASE_PATH + DATABASE_NAME;
+    		tmpDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+ 
+    	}catch(SQLiteException e){
+    		System.out.println(e.toString());
+    	}
+ 
+    	if(tmpDB != null){
+ 
+    		tmpDB.close();
+ 
+    	}
+ 
+    	bExist = tmpDB != null ? true : false;
+    	
+		return bExist;
 	}
 }
