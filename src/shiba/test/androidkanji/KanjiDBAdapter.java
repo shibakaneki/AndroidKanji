@@ -21,7 +21,7 @@ public class KanjiDBAdapter{
 	private SQLiteDatabase mDb;
 	
 	private static final String DATABASE_PATH = "/data/data/shiba.test.androidkanji/databases/";
-	private static final String DATABASE_NAME = "kanjidic2-en";
+	private static final String DATABASE_NAME = "kanjidic2-en.db";
 	private static final int DATABASE_VERSION = 5;
 	private static final String TABLE_ENTRIES = "entries";
 	private final Context mCtx;
