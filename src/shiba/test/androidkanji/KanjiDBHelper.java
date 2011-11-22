@@ -13,17 +13,17 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class KanjiDBHelper extends SQLiteOpenHelper {
-	private static final String KEY_ID = "_id";
-	private static final String KEY_GRADE = "grade";
-	private static final String KEY_STROKE_COUNT = "strokeCount";
-	private static final String KEY_FREQUENCY = "frequency";
-	private static final String KEY_JLPT = "jlpt";
-	private static final String KEY_PATH = "path";
-	private static final String TABLE_ENTRIES = "entries";
+	public static final String KEY_ID = "_id";
+	public static final String KEY_GRADE = "grade";
+	public static final String KEY_STROKE_COUNT = "strokeCount";
+	public static final String KEY_FREQUENCY = "frequency";
+	public static final String KEY_JLPT = "jlpt";
+	public static final String KEY_PATH = "path";
+	public static final String TABLE_ENTRIES = "entries";
 	
 	private static final String DB_PATH = "/data/data/shiba.test.androidkanji/databases/";
 	private static final String DB_NAME = "kanjidic2-en.db";
-	private static final int DB_VERSION = 1;
+	private static final int DB_VERSION = 5;
 	private final Context mCtx;
 	private SQLiteDatabase mDb;
 	
@@ -65,7 +65,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 			String dbPath = DB_PATH + DB_NAME;
 			checkDB = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READONLY);
 		}catch(SQLiteException e){
-			System.out.println("Database oes not exist.");
+			System.out.println("Database does not exist.");
 		}
 		return checkDB != null ? true : false;
 	}
@@ -100,7 +100,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	
 	public Cursor fetchAllKanji(){
 		return mDb.query(	TABLE_ENTRIES, 
-							new String[]{KEY_ID, KEY_GRADE, KEY_STROKE_COUNT, KEY_FREQUENCY, KEY_JLPT, KEY_PATH}, 
+							new String[]{KEY_ID, KEY_GRADE, KEY_STROKE_COUNT, KEY_FREQUENCY, KEY_JLPT}, 
 							null, 
 							null, 
 							null, 
@@ -112,7 +112,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 		Cursor mCursor =
 
             mDb.query(true, TABLE_ENTRIES, new String[] {KEY_ID,
-                    KEY_GRADE, KEY_STROKE_COUNT, KEY_FREQUENCY, KEY_JLPT, KEY_PATH}, KEY_ID + "=" + rowId, null,
+                    KEY_GRADE, KEY_STROKE_COUNT, KEY_FREQUENCY, KEY_JLPT}, KEY_ID + "=" + rowId, null,
                     null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();

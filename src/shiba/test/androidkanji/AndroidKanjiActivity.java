@@ -30,22 +30,26 @@ public class AndroidKanjiActivity extends ListActivity {
         }
         
         try{
+        	mKDBHelper.close();
         	mKDBHelper.openDatabase();
         }catch(java.sql.SQLException e){
         	throw new Error(e.getMessage());
         }
         
         fillData();
+        mKDBHelper.close();
     }
     
     private void fillData(){
+    	
     	Cursor c = mKDBHelper.fetchAllKanji();
     	startManagingCursor(c);
     	
-    	String[] from = new String[] {KanjiDBAdapter.KEY_ID};
+    	String[] from = new String[] {KanjiDBHelper.KEY_ID};
     	int[] to = new int[] {R.id.text1};
     	
     	SimpleCursorAdapter notes = new SimpleCursorAdapter(this, R.layout.kanji_row, c, from, to);
     	setListAdapter(notes);
+    	
     }
 }
