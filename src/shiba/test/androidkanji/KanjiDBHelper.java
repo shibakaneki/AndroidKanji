@@ -65,7 +65,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 			String dbPath = DB_PATH + DB_NAME;
 			checkDB = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READONLY);
 		}catch(SQLiteException e){
-			System.out.println("Database oes not exist.");
+			System.out.println("Database does not exist.");
 		}
 		return checkDB != null ? true : false;
 	}
