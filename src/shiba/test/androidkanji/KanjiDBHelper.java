@@ -56,6 +56,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 			}catch(IOException e){
 				throw new Error("Error copying database");
 			}
+			this.close();
 		}
 	}
 	
