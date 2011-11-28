@@ -4,16 +4,14 @@ import java.io.IOException;
 
 import android.app.ListActivity;
 import android.database.Cursor;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
-import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.SimpleCursorAdapter;
-
 
 public class AndroidKanjiActivity extends ListActivity {
 	
 	private KanjiDBHelper mKDBHelper;
+	private KanjiDicHelper mKDicHelper;
 	
     /** Called when the activity is first created. */
     @Override
@@ -21,7 +19,10 @@ public class AndroidKanjiActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+        // First, create the helpers
         mKDBHelper = new KanjiDBHelper(this);
+        mKDicHelper = new KanjiDicHelper(this);
+        
         try{
         	// If the database is not created, create it
         	mKDBHelper.createDatabase();
@@ -30,14 +31,19 @@ public class AndroidKanjiActivity extends ListActivity {
         }
         
         try{
-        	mKDBHelper.close();
         	mKDBHelper.openDatabase();
         }catch(java.sql.SQLException e){
         	throw new Error(e.getMessage());
         }
         
+        //populateKanjiList();
         fillData();
         mKDBHelper.close();
+    }
+    
+    private void populateKanjiList()
+    {
+    	setListAdapter(new ArrayAdapter<String>(this, R.layout.kanji_row, mKDicHelper.getAllKanji()));
     }
     
     private void fillData(){
