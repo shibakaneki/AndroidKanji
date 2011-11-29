@@ -36,14 +36,18 @@ public class AndroidKanjiActivity extends ListActivity {
         	throw new Error(e.getMessage());
         }
         
-        //populateKanjiList();
-        fillData();
+        populateKanjiList();
+        //fillData();
         mKDBHelper.close();
     }
     
     private void populateKanjiList()
     {
-    	setListAdapter(new ArrayAdapter<String>(this, R.layout.kanji_row, mKDicHelper.getAllKanji()));
+    	mKDicHelper.getAllKanji();
+    	
+    	// TODO: populate the kanji ListView
+    	
+    	//setListAdapter(new ArrayAdapter<String>(this, R.layout.kanji_row, mKDicHelper.getAllKanji()));
     }
     
     private void fillData(){
