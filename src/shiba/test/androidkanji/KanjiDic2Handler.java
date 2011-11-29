@@ -39,10 +39,9 @@ public class KanjiDic2Handler extends DefaultHandler {
 	public void endElement(String namespaceURI, String localName, String qName) throws SAXException{
 		if(localName.equals(LITERAL_ELEMENT)){
 			_inLiteral = false;
+			// Now that we got all the information of the current character, add it to the list
+			_characters.add(_character.literal);
 		}
-		
-		// Now that we got all the information of the current character, add it to the list
-		_characters.add(_character.literal);
 	}
 	
 	@Override

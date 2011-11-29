@@ -1,6 +1,7 @@
 package shiba.test.androidkanji;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -46,7 +47,10 @@ public class AndroidKanjiActivity extends Activity {
     
     private void populateKanjiList()
     {
-    	_kanjiListView.setAdapter(new ArrayAdapter<String>(this, R.layout.kanji_row, mKDicHelper.getAllKanji()));
+    	// TODO: Find a way to in have a better xml parser in order to do that quickly.
+    	ArrayList<String> kanjis = mKDicHelper.getAllKanji();
+    	String str [] = (String []) kanjis.toArray (new String [kanjis.size ()]);
+    	_kanjiListView.setAdapter(new ArrayAdapter<String>(this, R.layout.kanji_row, str));
     }
     
     private void fillData(){
