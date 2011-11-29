@@ -2,22 +2,25 @@ package shiba.test.androidkanji;
 
 import java.io.IOException;
 
-import android.app.ListActivity;
+import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
-public class AndroidKanjiActivity extends ListActivity {
+public class AndroidKanjiActivity extends Activity {
 	
 	private KanjiDBHelper mKDBHelper;
 	private KanjiDicHelper mKDicHelper;
+	private ListView _kanjiListView;
 	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        _kanjiListView = (ListView)findViewById(R.id.kanjiList);
         
         // First, create the helpers
         mKDBHelper = new KanjiDBHelper(this);
@@ -43,11 +46,7 @@ public class AndroidKanjiActivity extends ListActivity {
     
     private void populateKanjiList()
     {
-    	mKDicHelper.getAllKanji();
-    	
-    	// TODO: populate the kanji ListView
-    	
-    	//setListAdapter(new ArrayAdapter<String>(this, R.layout.kanji_row, mKDicHelper.getAllKanji()));
+    	_kanjiListView.setAdapter(new ArrayAdapter<String>(this, R.layout.kanji_row, mKDicHelper.getAllKanji()));
     }
     
     private void fillData(){
@@ -59,7 +58,7 @@ public class AndroidKanjiActivity extends ListActivity {
     	int[] to = new int[] {R.id.text1};
     	
     	SimpleCursorAdapter notes = new SimpleCursorAdapter(this, R.layout.kanji_row, c, from, to);
-    	setListAdapter(notes);
+    	_kanjiListView.setAdapter(notes);
     	
     }
 }

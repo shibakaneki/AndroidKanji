@@ -10,7 +10,7 @@ public class KanjiDic2Handler extends DefaultHandler {
 
 	private final String LITERAL_ELEMENT = "literal";
 	
-	private ArrayList<Character> _characters = new ArrayList<Character>();
+	private ArrayList<String> _characters = new ArrayList<String>();
 	private Character _character;
 	private boolean _inLiteral = false;
 	
@@ -42,7 +42,7 @@ public class KanjiDic2Handler extends DefaultHandler {
 		}
 		
 		// Now that we got all the information of the current character, add it to the list
-		_characters.add(_character);
+		_characters.add(_character.literal);
 	}
 	
 	@Override
@@ -54,7 +54,7 @@ public class KanjiDic2Handler extends DefaultHandler {
 		}
 	}
 	
-	public ArrayList<Character> getAllCharacters(){
+	public ArrayList<String> getAllCharacters(){
 		return _characters;
 	}
 	

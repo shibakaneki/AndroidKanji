@@ -27,8 +27,8 @@ public class KanjiDicHelper{
 	 * Get the list of kanji located in the dictionary
 	 * @return a list of kanji
 	 */
-	public ArrayList<Character> getAllKanji(){
-		ArrayList<Character> kanjis = null;
+	public ArrayList<String> getAllKanji(){
+		ArrayList<String> kanjis = null;
 		SAXParserFactory spf = SAXParserFactory.newInstance();
 		
 		try{

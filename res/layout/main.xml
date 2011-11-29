@@ -5,7 +5,7 @@
     android:orientation="horizontal" >
 
     <ListView
-        android:id="@android:id/list"
+        android:id="@+id/kanjiList"
         android:layout_width="200dp"
         android:layout_height="fill_parent" />
 
