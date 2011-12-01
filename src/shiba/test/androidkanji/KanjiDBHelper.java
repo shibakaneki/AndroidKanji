@@ -100,13 +100,16 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	}
 	
 	public Cursor fetchAllKanji(){
-		return mDb.query(	TABLE_ENTRIES, 
-							new String[]{KEY_ID, KEY_GRADE, KEY_STROKE_COUNT, KEY_FREQUENCY, KEY_JLPT}, 
-							null, 
-							null, 
-							null, 
-							null, 
-							null);
+		Cursor c = mDb.query(	TABLE_ENTRIES, 
+				new String[]{KEY_ID}, 
+				null, 
+				null, 
+				null, 
+				null, 
+				null);
+		
+		c.moveToFirst();
+		return c;
 	}
 	
 	public Cursor fetchKanji(long rowId){
