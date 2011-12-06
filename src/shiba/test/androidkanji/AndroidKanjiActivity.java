@@ -1,6 +1,7 @@
 package shiba.test.androidkanji;
 
 import java.io.IOException;
+
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;

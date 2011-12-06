@@ -1,5 +1,6 @@
 package shiba.test.androidkanji;
 
+import android.R.integer;
 import android.content.Context;
 import android.database.Cursor;
 import android.view.LayoutInflater;
@@ -56,7 +57,10 @@ public class KanjiAdapter extends BaseAdapter {
 		TextView kanjiTV = (TextView)layoutItem.findViewById(R.id.text1);
 		
 		// TODO: convert the text value in UTF8 character
-		kanjiTV.setText(_kanjiCursor.getString(index));			
+		String value = _kanjiCursor.getString(index);
+		int iVal = Integer.parseInt(value);
+		
+		kanjiTV.setText(TextTools.codeToKanji(iVal));			
 		
 		return layoutItem;
 	}
