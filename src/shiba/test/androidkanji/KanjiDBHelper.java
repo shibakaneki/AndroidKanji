@@ -48,8 +48,9 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 		boolean dbExist = checkDatabase();
 		
 		if(dbExist){
-			// Do nothing
+			// Nothing to do
 		}else{
+			// Note: what does the next line do? We don't use its return value.
 			this.getReadableDatabase();
 			try{
 				copyDatabase();
@@ -61,14 +62,20 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	}
 	
 	private boolean checkDatabase(){
+		String dbPath = DB_PATH + DB_NAME;
 		SQLiteDatabase checkDB = null;
 		try{
-			String dbPath = DB_PATH + DB_NAME;
+			// We try to open the DB
 			checkDB = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READONLY);
 		}catch(SQLiteException e){
+			// Falling here means that the DB doesn't exist
 			System.out.println("Database does not exist.");
+			return false;
 		}
-		return checkDB != null ? true : false;
+		
+		// Falling here means that the DB exists, as we will not use it, we close it.
+		checkDB.close();
+		return true;
 	}
 	
 	private void copyDatabase() throws IOException{
