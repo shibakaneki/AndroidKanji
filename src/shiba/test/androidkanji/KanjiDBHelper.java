@@ -45,6 +45,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	}
 	
 	public void createDatabase() throws IOException{
+		// NOTE: AsyncTask should be used for this method because it's time consuming.
 		boolean dbExist = checkDatabase();
 		
 		if(dbExist){

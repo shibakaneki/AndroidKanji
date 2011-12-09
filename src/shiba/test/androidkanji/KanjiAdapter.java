@@ -56,7 +56,7 @@ public class KanjiAdapter extends BaseAdapter {
 		int index = _kanjiCursor.getColumnIndex(KanjiDBHelper.KEY_ID);
 		TextView kanjiTV = (TextView)layoutItem.findViewById(R.id.text1);
 		
-		// TODO: convert the text value in UTF8 character
+		// Convert the text value in UTF8 character
 		String value = _kanjiCursor.getString(index);
 		int iVal = Integer.parseInt(value);
 		
