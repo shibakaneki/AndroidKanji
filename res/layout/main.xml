@@ -8,7 +8,14 @@
         android:id="@+id/kanjiList"
         android:layout_width="200dp"
         android:layout_height="fill_parent" />
-
+    
+    <TextView
+    	android:id="@+id/emptyKanjiView"
+        android:layout_width="200dp"
+        android:layout_height="fill_parent"
+        android:text="@string/no_kanji"
+        android:visibility="gone"/>
+    
     <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="match_parent"

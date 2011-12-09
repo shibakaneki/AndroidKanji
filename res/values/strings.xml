@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, AndroidKanjiActivity!</string>
     <string name="app_name">AndroidKanji</string>
+    <string name="no_kanji">Loading Kanji...</string>
+    <string name="create_db_start">Creating Kanji Database...</string>
+    <string name="create_db_stop">Kanji Database created!</string>
 
 </resources>

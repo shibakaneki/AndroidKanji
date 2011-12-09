@@ -34,8 +34,9 @@ public class AndroidKanjiActivity extends Activity {
         	throw new Error(e.getMessage());
         }
         
-        fillData();
+        //fillData();
         _KDBHelper.close();
+        
     }
     
     private void fillData(){
