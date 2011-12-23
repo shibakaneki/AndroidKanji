@@ -111,15 +111,8 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	}
 	
 	public Cursor fetchAllKanji(){
-		//	TODO : Get only the JLPT related kanji
-		Cursor c = mDb.query(	TABLE_ENTRIES, 
-				new String[]{KEY_ID}, 
-				null, 
-				null, 
-				null, 
-				null, 
-				null);
-		
+		String query = "SELECT " + KEY_ID +" FROM " + TABLE_ENTRIES + " WHERE " + KEY_JLPT + " IS NOT NULL";
+		Cursor c = mDb.rawQuery(query, null);
 		c.moveToFirst();
 		return c;
 	}
