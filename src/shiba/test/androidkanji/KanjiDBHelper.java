@@ -6,14 +6,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
 
-import android.R;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.AsyncTask;
-import android.widget.Toast;
 
 public class KanjiDBHelper extends SQLiteOpenHelper {
 	public static final String KEY_ID = "_id";
@@ -30,50 +27,6 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	private final Context mCtx;
 	private SQLiteDatabase mDb;
 	
-	// -- AsyncTasks -------------------------------------------------------------------------
-	private class CreateKanjiDBTask extends AsyncTask<KanjiDBHelper, Void, Void>{
-
-		@Override
-		protected void onPreExecute(){
-			// TODO: Get the message from the string list
-			Toast.makeText(mCtx,"Creating Kanji DB...", 2);
-		}
-		
-		@Override
-		protected Void doInBackground(KanjiDBHelper... dbHelper) {
-			if(dbHelper.length > 0){
-				dbHelper[0].getReadableDatabase();
-				try{
-					copyDatabase();
-				}catch(IOException e){
-					throw new Error("Error copying database");
-				}
-				dbHelper[0].close();
-			}
-			return null;
-		}
-		
-		@Override
-		protected void onPostExecute(Void result){
-			// TODO: Get the message from the string list
-			Toast.makeText(mCtx, "Kanji DB created!", 2);
-			
-			// TODO: Notify the end of the DB creation so the Activity will be able to populate the DB (use Intent?)
-		}
-		
-	}
-	
-	private class QueryDBTask extends AsyncTask<String, Void, Cursor>{
-
-		@Override
-		protected Cursor doInBackground(String... params) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		
-	}
-	
-	// ---------------------------------------------------------------------------------------
 	
 	public KanjiDBHelper(Context ctx){
 		super(ctx, DB_NAME, null, DB_VERSION);
@@ -93,14 +46,13 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	}
 	
 	public void createDatabase() throws IOException{
-		// NOTE: AsyncTask should be used for this method because it's time consuming.
+		// NOTE: 	This method should be called ONLY into an AsyncTask because it may
+		//			be time-consuming
 		boolean dbExist = checkDatabase();
 		
 		if(dbExist){
 			// Nothing to do
 		}else{
-			//new CreateKanjiDBTask().execute(this);
-			
 			// Note: what does the next line do? We don't use its return value.
 			this.getReadableDatabase();
 			try{
@@ -159,6 +111,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	}
 	
 	public Cursor fetchAllKanji(){
+		//	TODO : Get only the JLPT related kanji
 		Cursor c = mDb.query(	TABLE_ENTRIES, 
 				new String[]{KEY_ID}, 
 				null, 
@@ -182,4 +135,5 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
         }
         return mCursor;
 	}
+	
 }

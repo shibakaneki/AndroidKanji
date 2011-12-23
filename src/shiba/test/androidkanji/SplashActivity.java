@@ -49,7 +49,7 @@ public class SplashActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
         
-        // TODO : 	- Create my own Splashscreen (with low/middle/high resolutions)
+        // TODO : 	- Create my own Splashscreen (Design with low/middle/high resolutions)
         //			- Add an animated loading gif
         _KDBHelper = new KanjiDBHelper(this);
         new CreateKanjiDBTask().execute(_KDBHelper);

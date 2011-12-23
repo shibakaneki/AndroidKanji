@@ -1,6 +1,6 @@
 package shiba.test.androidkanji;
 
-import java.io.IOException;
+import java.sql.SQLException;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -18,30 +18,21 @@ public class AndroidKanjiActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         _kanjiListView = (ListView)findViewById(R.id.kanjiList);
-        _KDBHelper = new KanjiDBHelper(this);
         _kanjiListView.setEmptyView(findViewById(R.id.emptyKanjiView));
-
-        try{
-        	// If the database is not created, create it
-        	_KDBHelper.createDatabase();
-        }catch(IOException e){
-        	throw new Error("Unable to create database!");
-        }
+        _KDBHelper = new KanjiDBHelper(this);
         
-        try{
-        	_KDBHelper.openDatabase();
-        }catch(java.sql.SQLException e){
-        	throw new Error(e.getMessage());
-        }
-        
-        fillData();
-        _KDBHelper.close();
-        
+        fillData();       
     }
     
     private void fillData(){
-    	Cursor c = _KDBHelper.fetchAllKanji();
-    	KanjiAdapter adapter = new KanjiAdapter(this, c);
-    	_kanjiListView.setAdapter(adapter);
+    	try{
+    		_KDBHelper.openDatabase();
+        	Cursor c = _KDBHelper.fetchAllKanji();
+        	KanjiAdapter adapter = new KanjiAdapter(this, c);
+        	_kanjiListView.setAdapter(adapter);
+        	_KDBHelper.close();
+    	}catch(SQLException e){
+    		throw new Error(e.getMessage());
+    	}
     }
 }
