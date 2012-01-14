@@ -20,6 +20,13 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	public static final String KEY_JLPT = "jlpt";
 	public static final String KEY_PATH = "path";
 	public static final String TABLE_ENTRIES = "entries";
+	public static final int KANJI_FILTER_ALL = 0;
+	public static final int KANJI_FILTER_N1 = 1;
+	public static final int KANJI_FILTER_N2 = 2;
+	public static final int KANJI_FILTER_N3 = 3;
+	public static final int KANJI_FILTER_N4 = 4;
+	public static final int KANJI_FILTER_N5 = 5;
+	public static final int KANJI_FILTER_FAVORITES = 6;
 	
 	private static final String DB_PATH = "/data/data/shiba.test.androidkanji/databases/";
 	private static final String DB_NAME = "kanjidic2-en.db";
@@ -48,11 +55,9 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	public void createDatabase() throws IOException{
 		// NOTE: 	This method should be called ONLY into an AsyncTask because it may
 		//			be time-consuming
-		boolean dbExist = checkDatabase();
+		boolean kanjiDbExist = checkDatabase(DB_PATH + DB_NAME);
 		
-		if(dbExist){
-			// Nothing to do
-		}else{
+		if(!kanjiDbExist){
 			// Note: what does the next line do? We don't use its return value.
 			this.getReadableDatabase();
 			try{
@@ -60,17 +65,16 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 			}catch(IOException e){
 				throw new Error("Error copying database");
 			}
-			this.close();
-			
-		}
+			this.close();	
+		}		
 	}
 	
-	private boolean checkDatabase(){
-		String dbPath = DB_PATH + DB_NAME;
+	private boolean checkDatabase(String dbName){
+		
 		SQLiteDatabase checkDB = null;
 		try{
 			// We try to open the DB
-			checkDB = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READONLY);
+			checkDB = SQLiteDatabase.openDatabase(dbName, null, SQLiteDatabase.OPEN_READONLY);
 		}catch(SQLiteException e){
 			// Falling here means that the DB doesn't exist
 			System.out.println("Database does not exist.");
@@ -110,8 +114,29 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 		super.close();
 	}
 	
-	public Cursor fetchAllKanji(){
+	public String fetchAllKanji(){
 		String query = "SELECT " + KEY_ID +" FROM " + TABLE_ENTRIES + " WHERE " + KEY_JLPT + " IS NOT NULL";
+		return query;
+	}
+	
+	public String fetchFavoritesKanji(){
+		String query = "";
+		return query;
+	}
+	
+	public Cursor fetchKanji(int group){
+		String query;
+		switch(group){
+			case KANJI_FILTER_ALL:
+				query = fetchAllKanji();
+				break;
+			case KANJI_FILTER_FAVORITES:	
+				query = fetchFavoritesKanji();
+				break;
+			default:
+				query = "SELECT " + KEY_ID + " FROM " + TABLE_ENTRIES + " WHERE " + KEY_JLPT + " IS " + group;
+				break;
+		}
 		Cursor c = mDb.rawQuery(query, null);
 		c.moveToFirst();
 		return c;

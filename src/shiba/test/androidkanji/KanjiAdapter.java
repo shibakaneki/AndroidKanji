@@ -68,7 +68,7 @@ public class KanjiAdapter extends BaseAdapter {
 		// Now we will add the favorite star
 		//	TODO : For each kanji, check if it is part of the favorites or not, then display the empty star or the full one
 		//			depending on the favorite entry.
-		Drawable fav = _context.getResources().getDrawable(R.drawable.favfull);
+		Drawable fav = _context.getResources().getDrawable(R.drawable.favempty);
 		favStar.setImageDrawable(fav);
 		
 		return layoutItem;

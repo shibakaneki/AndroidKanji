@@ -3,27 +3,83 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="horizontal" >
-
-    <ListView
-        android:id="@+id/kanjiList"
-        android:layout_width="120dp"
-        android:layout_height="fill_parent" />
     
-    <TextView
-    	android:id="@+id/emptyKanjiView"
-        android:layout_width="120dp"
+    <!-- The Left part -->
+    <LinearLayout 
+        android:layout_width="300dp"
         android:layout_height="fill_parent"
-        android:text="@string/no_kanji"
-        android:visibility="gone"/>
+        android:orientation="vertical">
+        
+        <!-- The filter zone -->
+        <LinearLayout 
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+        	android:orientation="vertical"
+        	android:background="#555555">       	
+            <Spinner
+           	    android:id="@+id/filterCategory"
+           	    android:layout_width="fill_parent"
+           	    android:layout_height="wrap_content"
+           	    android:entries="@array/filters"
+           	    android:prompt="@string/filter_select"
+           	    android:padding="10dp"/>
+            <!-- android:background="@drawable/roundedspinner"
+             
+            		NOTE: 	look here: http://developer.android.com/resources/tutorials/views/hello-spinner.html
+            				to get an example on how to use an Adapter to cutomize the dropdown list of the spinner
+            -->
+                        
+            <!-- We add here an empty layout in order to prevent having the keyboard shown at startup -->
+           	<LinearLayout
+   				android:focusable="true" android:focusableInTouchMode="true"
+   				android:layout_width="0px" android:layout_height="0px"/>
+           	
+           	<LinearLayout 
+           	    android:orientation="horizontal"
+           	    android:layout_width="fill_parent"
+           	    android:layout_height="wrap_content"
+           	    android:background="#555555"
+           	    android:layout_margin="5dp">
+           		<EditText
+           		    android:id="@+id/searchField"
+           		    android:layout_width="wrap_content"
+           		    android:layout_height="fill_parent"
+           		    android:layout_weight="0.92"
+           		    android:background="@drawable/roundededit"
+           		    android:maxLines="1"
+           		    android:padding="10dp"
+           		    android:paddingRight="15dp"
+           		    android:textColor="#000000"
+           		    android:textSize="14dp"/>
+           		<ImageView
+           		    android:id="@+id/searchButton"
+           		    android:layout_width="wrap_content"
+           		    android:layout_height="fill_parent"
+           		    android:paddingLeft="4dp"
+           		    android:src="@drawable/favfull" />
+           	</LinearLayout>            	
+        </LinearLayout>
+        
+        <!-- The kanji list -->
+        <ListView android:id="@+id/kanjiList"
+        	android:layout_width="fill_parent"
+        	android:layout_height="fill_parent" />
     
+    	<TextView android:id="@+id/emptyKanjiView"
+        	android:layout_width="fill_parent"
+        	android:layout_height="fill_parent"
+        	android:text="@string/no_kanji"
+        	android:visibility="gone"/>
+        
+    </LinearLayout>
+    
+    <!-- The right part -->
     <LinearLayout
-        android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
-        <View
-            android:id="@+id/view1"
+        <View android:id="@+id/view1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="#EEEEEE" />

@@ -9,6 +9,7 @@ import android.os.Bundle;
 
 public class SplashActivity extends Activity {
 	public static KanjiDBHelper _KDBHelper;
+	// TODO : Create a FavoriteDBHelper class 
 	
 	private class CreateKanjiDBTask extends AsyncTask<KanjiDBHelper, Void, Void>{
 
@@ -51,6 +52,7 @@ public class SplashActivity extends Activity {
         
         // TODO : 	- Create my own Splashscreen (Design with low/middle/high resolutions)
         //			- Add an animated loading gif
+        //			- Check the presence of the favorites database and create it if it doesn't exist
         _KDBHelper = new KanjiDBHelper(this);
         new CreateKanjiDBTask().execute(_KDBHelper);
 	}

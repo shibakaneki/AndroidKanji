@@ -2,8 +2,18 @@
 <resources>
 
     <string name="app_name">AndroidKanji</string>
-    <string name="no_kanji">Loading Kanji...</string>
+    <string name="no_kanji">No kanji found for this category</string>
     <string name="create_db_start">Creating Kanji Database...</string>
     <string name="create_db_stop">Kanji Database created!</string>
+    <string-array name="filters">
+        <item >All</item>
+        <item >Favorites</item>
+        <item >JLPT N1</item>
+        <item >JLPT N2</item>
+        <item >JLPT N3</item>
+        <item >JLPT N4</item>
+        <item >JLPT N5</item>
+    </string-array>
+    <string name="filter_select">Select your kanji set</string>
 
 </resources>
