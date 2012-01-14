@@ -1,14 +1,14 @@
 TODO List
 ---------
 o Update the JLPT levels
-o Define the design of the application (splash screen, controls, colors, ...)
+o Define the design of the application (splash screen, controls, colors, icons, ...)
 o Create a favorite database
 o Implement the add/remove to the favorite database
 o Show the animated SVG
 o Add a kanji description view
 o Add the drawing area
 o Check how to put the kanji database on the SD card memory
-
+o Code the text filter
 
 Bugs
 ----
