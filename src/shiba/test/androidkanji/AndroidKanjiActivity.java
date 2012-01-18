@@ -10,7 +10,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 public class AndroidKanjiActivity extends Activity {
 	
@@ -27,8 +26,6 @@ public class AndroidKanjiActivity extends Activity {
         _kanjiListView.setEmptyView(findViewById(R.id.emptyKanjiView));
         _filterSpinner = (Spinner)findViewById(R.id.filterCategory);
         _KDBHelper = new KanjiDBHelper(this);
-        
-        System.out.println("Initializing.......");
         
         // Add default datas
         fillData();

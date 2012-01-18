@@ -1,11 +1,13 @@
 package shiba.test.androidkanji;
 
+import java.io.File;
 import java.io.IOException;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 
 public class SplashActivity extends Activity {
 	public static KanjiDBHelper _KDBHelper;
@@ -53,7 +55,22 @@ public class SplashActivity extends Activity {
         // TODO : 	- Create my own Splashscreen (Design with low/middle/high resolutions)
         //			- Add an animated loading gif
         //			- Check the presence of the favorites database and create it if it doesn't exist
+        
+        // Create the data directory in the sdcard
+        setupSDCardDirectory();
+        
         _KDBHelper = new KanjiDBHelper(this);
         new CreateKanjiDBTask().execute(_KDBHelper);
+	}
+	
+	private void setupSDCardDirectory(){
+    	String path = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + getString(R.string.app_name);
+    	
+    	File directory = new File(path);
+	    // Create the folder if it doesn't exist:
+	    if (!directory.exists()) 
+	    {
+	        directory.mkdirs();
+	    }
 	}
 }

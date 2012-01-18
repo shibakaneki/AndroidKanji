@@ -1,8 +1,11 @@
 package shiba.test.androidkanji;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.sql.SQLException;
 
@@ -11,8 +14,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
 
 public class KanjiDBHelper extends SQLiteOpenHelper {
+	// TODO : rework the APP_NAME stuff in order to have the application name in only one location
+	public static final String APP_NAME = "AndroidKanji";
+	
 	public static final String KEY_ID = "_id";
 	public static final String KEY_GRADE = "grade";
 	public static final String KEY_STROKE_COUNT = "strokeCount";
@@ -28,11 +35,16 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	public static final int KANJI_FILTER_N5 = 5;
 	public static final int KANJI_FILTER_FAVORITES = 6;
 	
-	private static final String DB_PATH = "/data/data/shiba.test.androidkanji/databases/";
+	//private static final String DB_PATH = "/data/data/shiba.test.androidkanji/databases/";
+	private static final String DB_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator +APP_NAME +File.separator;
 	private static final String DB_NAME = "kanjidic2-en.db";
 	private static final int DB_VERSION = 5;
+	private static final int MAX_JLPT_LEVEL = 5;
 	private final Context mCtx;
 	private SQLiteDatabase mDb;
+	private static final String FAVDB_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + APP_NAME + File.separator;
+	private static final String FAVDB_NAME = "kanjifav.db";
+	private SQLiteDatabase mFavDb;
 	
 	
 	public KanjiDBHelper(Context ctx){
@@ -66,7 +78,37 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 				throw new Error("Error copying database");
 			}
 			this.close();	
-		}		
+		}
+	}
+	
+	public void updateJLPTLists(){
+		
+		SQLiteDatabase db = SQLiteDatabase.openDatabase(DB_PATH + DB_NAME, null, SQLiteDatabase.OPEN_READWRITE);
+		for(int i=1; i<=MAX_JLPT_LEVEL; i++){
+			try {
+				
+				InputStream inputStream = mCtx.getAssets().open("n" +i +"_list.txt");
+				
+				InputStreamReader inputreader = new InputStreamReader(inputStream);
+	            BufferedReader buffreader = new BufferedReader(inputreader);
+	            String kanji;
+                while (( kanji = buffreader.readLine()) != null) {
+                	updateJLPTLevelForEntry(db, i, TextTools.kanjiToCode(kanji));
+                }
+                       
+				inputStream.close();
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		db.close();
+	}
+	
+	private void updateJLPTLevelForEntry(SQLiteDatabase db, int level, int entry){
+		String query = "UPDATE " + TABLE_ENTRIES + " SET " + KEY_JLPT + "=" +level +" WHERE " +KEY_ID +"=" +entry;
+		System.out.println(query);
+		db.rawQuery(query, null);
 	}
 	
 	private boolean checkDatabase(String dbName){
@@ -154,4 +196,9 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
         return mCursor;
 	}
 	
+	public void createFavoriteDB(){
+		File dbFile = new File(FAVDB_PATH + FAVDB_NAME);
+		mFavDb = SQLiteDatabase.openOrCreateDatabase(dbFile, null);
+		mFavDb.close();
+	}
 }
