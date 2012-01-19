@@ -34,18 +34,18 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	public static final int KANJI_FILTER_N4 = 4;
 	public static final int KANJI_FILTER_N5 = 5;
 	public static final int KANJI_FILTER_FAVORITES = 6;
+	public static final String DB_NAME = "kanjidic2-en.db";
+	public static final String FAVDB_NAME = "kanjifav.db";
 	
+	private final int FIRST_KANJI_CODE = 19968;
+	private final int LAST_KANJI_CODE = 40907;
 	private static final String DB_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator +APP_NAME +File.separator;
-	private static final String DB_NAME = "kanjidic2-en.db";
 	private static final int DB_VERSION = 5;
 	private static final int MAX_JLPT_LEVEL = 5;
 	private final Context mCtx;
-	private SQLiteDatabase mDb;
-	private static final String FAVDB_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + APP_NAME + File.separator;
-	private static final String FAVDB_NAME = "kanjifav.db";
+	private SQLiteDatabase mDb;	
 	private SQLiteDatabase mFavDb;
-	private final int FIRST_KANJI_CODE = 19968;
-	private final int LAST_KANJI_CODE = 40907;
+	
 	
 	public KanjiDBHelper(Context ctx){
 		super(ctx, DB_NAME, null, DB_VERSION);
@@ -64,16 +64,16 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 		
 	}
 	
-	public void createDatabase() throws IOException{
+	public void createDatabase(String dbName) throws IOException{
 		// NOTE: 	This method should be called ONLY into an AsyncTask because it may
 		//			be time-consuming
-		boolean kanjiDbExist = checkDatabase(DB_PATH + DB_NAME);
+		boolean kanjiDbExist = checkDatabase(DB_PATH + dbName);
 		
 		if(!kanjiDbExist){
 			// Note: what does the next line do? We don't use its return value.
 			this.getReadableDatabase();
 			try{
-				copyDatabase();
+				copyDatabase(dbName);
 			}catch(IOException e){
 				throw new Error("Error copying database");
 			}
@@ -128,9 +128,9 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 		return true;
 	}
 	
-	private void copyDatabase() throws IOException{
-		InputStream input = mCtx.getAssets().open(DB_NAME);
-		String outFileName = DB_PATH + DB_NAME;
+	private void copyDatabase(String dbName) throws IOException{
+		InputStream input = mCtx.getAssets().open(dbName);
+		String outFileName = DB_PATH + dbName;
 		OutputStream output = new FileOutputStream(outFileName);
 		
 		byte[] buffer = new byte[1024];
@@ -194,11 +194,5 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
             mCursor.moveToFirst();
         }
         return mCursor;
-	}
-	
-	public void createFavoriteDB(){
-		File dbFile = new File(FAVDB_PATH + FAVDB_NAME);
-		mFavDb = SQLiteDatabase.openOrCreateDatabase(dbFile, null);
-		mFavDb.close();
 	}
 }

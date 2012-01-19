@@ -21,7 +21,8 @@ public class SplashActivity extends Activity {
 			if(dbHelper.length > 0){
 		        try{
 		        	// If the database is not created, create it
-		        	dbHelper[0].createDatabase();
+		        	dbHelper[0].createDatabase(KanjiDBHelper.DB_NAME);
+		        	dbHelper[0].createDatabase(KanjiDBHelper.FAVDB_NAME);
 		        }catch(IOException e){
 		        	throw new Error("Unable to create database!");
 		        }
