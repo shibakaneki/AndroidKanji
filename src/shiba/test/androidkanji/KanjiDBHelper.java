@@ -145,13 +145,16 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	}
 	
 	public void openDatabase() throws SQLException{
-		String dbPath = DB_PATH + DB_NAME;
-		mDb = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READONLY);
+		mDb = SQLiteDatabase.openDatabase(DB_PATH + DB_NAME, null, SQLiteDatabase.OPEN_READONLY);
+		mFavDb = SQLiteDatabase.openDatabase(DB_PATH + FAVDB_NAME, null, SQLiteDatabase.OPEN_READWRITE);
 	}
 	
 	public synchronized void close(){
 		if(mDb != null){
 			mDb.close();
+		}
+		if(mFavDb != null){
+			mFavDb.close();
 		}
 		super.close();
 	}
