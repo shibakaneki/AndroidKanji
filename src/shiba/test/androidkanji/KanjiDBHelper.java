@@ -35,7 +35,6 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	public static final int KANJI_FILTER_N5 = 5;
 	public static final int KANJI_FILTER_FAVORITES = 6;
 	
-	//private static final String DB_PATH = "/data/data/shiba.test.androidkanji/databases/";
 	private static final String DB_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator +APP_NAME +File.separator;
 	private static final String DB_NAME = "kanjidic2-en.db";
 	private static final int DB_VERSION = 5;
@@ -45,7 +44,8 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	private static final String FAVDB_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + APP_NAME + File.separator;
 	private static final String FAVDB_NAME = "kanjifav.db";
 	private SQLiteDatabase mFavDb;
-	
+	private final int FIRST_KANJI_CODE = 19968;
+	private final int LAST_KANJI_CODE = 40907;
 	
 	public KanjiDBHelper(Context ctx){
 		super(ctx, DB_NAME, null, DB_VERSION);
@@ -157,7 +157,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	}
 	
 	public String fetchAllKanji(){
-		String query = "SELECT " + KEY_ID +" FROM " + TABLE_ENTRIES + " WHERE " + KEY_JLPT + " IS NOT NULL";
+		String query = "SELECT " + KEY_ID +" FROM " + TABLE_ENTRIES + " WHERE " + KEY_ID + ">=" +FIRST_KANJI_CODE +" AND " +KEY_ID +"<=" +LAST_KANJI_CODE;
 		return query;
 	}
 	
@@ -176,7 +176,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 				query = fetchFavoritesKanji();
 				break;
 			default:
-				query = "SELECT " + KEY_ID + " FROM " + TABLE_ENTRIES + " WHERE " + KEY_JLPT + " IS " + group;
+				query = "SELECT " + KEY_ID + " FROM " + TABLE_ENTRIES + " WHERE " + KEY_JLPT + " IS " + group +" ORDER BY " +KEY_STROKE_COUNT +" ASC";
 				break;
 		}
 		Cursor c = mDb.rawQuery(query, null);
