@@ -1,14 +1,15 @@
 package shiba.test.androidkanji;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.sql.SQLException;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -27,6 +28,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	public static final String KEY_JLPT = "jlpt";
 	public static final String KEY_PATH = "path";
 	public static final String TABLE_ENTRIES = "entries";
+	public static final String TABLE_FAVORITES = "favorites";
 	public static final int KANJI_FILTER_ALL = 0;
 	public static final int KANJI_FILTER_N1 = 1;
 	public static final int KANJI_FILTER_N2 = 2;
@@ -34,17 +36,19 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	public static final int KANJI_FILTER_N4 = 4;
 	public static final int KANJI_FILTER_N5 = 5;
 	public static final int KANJI_FILTER_FAVORITES = 6;
-	public static final String DB_NAME = "kanjidic2-en.db";
-	public static final String FAVDB_NAME = "kanjifav.db";
 	
+	private static String DB_NAME = "kanjidic2-en.db";
+	private final String DBVERSION_FILE = "dbversion.txt";
+	private static String FAVORITES_BACKUP_FILE = "favbkp.txt";
 	private final int FIRST_KANJI_CODE = 19968;
 	private final int LAST_KANJI_CODE = 40907;
 	private static final String DB_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator +APP_NAME +File.separator;
 	private static final int DB_VERSION = 5;
-	private static final int MAX_JLPT_LEVEL = 5;
+	private final String TABLE_INFOS = "info";
+	private final String KEY_VERSION = "version";
+	
 	private final Context mCtx;
-	private SQLiteDatabase mDb;	
-	private SQLiteDatabase mFavDb;
+	private SQLiteDatabase mDb;
 	
 	
 	public KanjiDBHelper(Context ctx){
@@ -64,73 +68,150 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 		
 	}
 	
-	public void createDatabase(String dbName) throws IOException{
-		// NOTE: 	This method should be called ONLY into an AsyncTask because it may
-		//			be time-consuming
-		boolean kanjiDbExist = checkDatabase(DB_PATH + dbName);
-		
-		if(!kanjiDbExist){
-			// Note: what does the next line do? We don't use its return value.
-			this.getReadableDatabase();
-			try{
-				copyDatabase(dbName);
-			}catch(IOException e){
-				throw new Error("Error copying database");
-			}
-			this.close();	
-		}
+	public void initDB() throws IOException{
+        try{
+        	// If the database is not created, create it
+        	boolean dbExists = checkDatabase();
+        	boolean createDB = false;
+        	boolean updatedDB = false;
+        	if(dbExists){
+        		// The DB already exists. Should we update it?
+        		int installedVersion = dbVersion();
+        		
+        		System.out.println("installed db version: " +installedVersion);
+        		System.out.println("package db version: " +packageDBVersion());
+        		
+        		if(installedVersion < packageDBVersion()){
+        			// 	The DB located in the package has changed. We must update the installed DB
+        			backupFavorites();
+        			deleteDB();
+        			createDB = true;
+        			updatedDB = true;
+        		}
+        		
+        	}else{
+        		createDB = true;
+        	}
+        	
+        	if(createDB){
+        		createDatabase();
+        	}
+        	if(updatedDB){
+        		restoreBackupedFavorites();
+        	}
+        	
+        }catch(IOException e){
+        	throw new Error("Unable to create database!");
+        }
 	}
 	
-	public void updateJLPTLists(){
+	private void backupFavorites() throws IOException{
+		SQLiteDatabase db = SQLiteDatabase.openDatabase(DB_PATH + DB_NAME, null, SQLiteDatabase.OPEN_READONLY);
 		
-		SQLiteDatabase db = SQLiteDatabase.openDatabase(DB_PATH + DB_NAME, null, SQLiteDatabase.OPEN_READWRITE);
-		for(int i=1; i<=MAX_JLPT_LEVEL; i++){
-			try {
-				
-				InputStream inputStream = mCtx.getAssets().open("n" +i +"_list.txt");
-				
-				InputStreamReader inputreader = new InputStreamReader(inputStream);
-	            BufferedReader buffreader = new BufferedReader(inputreader);
-	            String kanji;
-                while (( kanji = buffreader.readLine()) != null) {
-                	updateJLPTLevelForEntry(db, i, TextTools.kanjiToCode(kanji));
-                }
-                       
-				inputStream.close();
-				
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		String query = "SELECT " +KEY_ID +" FROM " +TABLE_FAVORITES;
+		Cursor c = db.rawQuery(query, null);
+		int index = c.getColumnIndex(KEY_ID);
+		
+		// Create the backup file
+		String outFileName = DB_PATH + FAVORITES_BACKUP_FILE;
+		OutputStream output = new FileOutputStream(outFileName);
+		
+		byte[] buffer = new byte[1024];
+		
+		for(int i=0; i< c.getCount(); i++){
+			c.moveToPosition(i);
+			// Add a line with the current favorite in the backup file
+			String value = String.valueOf(c.getInt(index)) +"\r\n";
+			buffer = value.getBytes();
+			output.write(buffer);
 		}
+		
+		output.flush();
+		output.close();
+		
 		db.close();
 	}
 	
-	private void updateJLPTLevelForEntry(SQLiteDatabase db, int level, int entry){
-		String query = "UPDATE " + TABLE_ENTRIES + " SET " + KEY_JLPT + "=" +level +" WHERE " +KEY_ID +"=" +entry;
-		System.out.println(query);
-		db.rawQuery(query, null);
+	private void deleteDB(){
+		File dbFile = new File(DB_PATH + DB_NAME);
+		dbFile.delete();
+		
 	}
 	
-	private boolean checkDatabase(String dbName){
+	private void restoreBackupedFavorites() throws IOException{
+		SQLiteDatabase db = SQLiteDatabase.openDatabase(DB_PATH + DB_NAME, null, SQLiteDatabase.OPEN_READWRITE);
+		
+		File myFile = new File(DB_PATH + FAVORITES_BACKUP_FILE);
+		FileInputStream fIn = new FileInputStream(myFile);
+		BufferedReader myReader = new BufferedReader(new InputStreamReader(fIn));
+		String strLine = "";
+		while ((strLine = myReader.readLine()) != null) {
+			db.rawQuery("INSERT INTO " +TABLE_FAVORITES +" (" +KEY_ID +") VALUES(" +Integer.parseInt(strLine) +")", null);
+		}
+		myReader.close();
+		db.close();
+		File favoriteBkp = new File(DB_PATH + FAVORITES_BACKUP_FILE);
+		favoriteBkp.delete();
+	}
+	
+	public int dbVersion(){
+		int version = 0;
+		SQLiteDatabase installedDB = SQLiteDatabase.openDatabase(DB_PATH + DB_NAME, null, SQLiteDatabase.OPEN_READONLY);
+		
+		String query = "SELECT " +KEY_VERSION +" FROM " +TABLE_INFOS;
+		Cursor c = installedDB.rawQuery(query, null);
+		c.moveToFirst();
+		version = c.getInt(0);
+		
+		installedDB.close();
+		return version;
+	}
+	
+	private int packageDBVersion() throws IOException{
+		int version = 0;
+		
+		InputStream input = mCtx.getAssets().open(DBVERSION_FILE);
+		DataInputStream in = new DataInputStream(input);
+		BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	  
+		String strLine;
+		while ((strLine = br.readLine()) != null){
+			version = Integer.parseInt(strLine);
+		}
+		in.close();
+		input.close();
+		
+		return version;
+	}
+	
+	public void createDatabase() throws IOException{
+		this.getReadableDatabase();
+		try{
+			copyDatabase();
+		}catch(IOException e){
+			throw new Error("Error copying database");
+		}
+		this.close();
+	}
+	
+	private boolean checkDatabase(){
 		
 		SQLiteDatabase checkDB = null;
 		try{
 			// We try to open the DB
-			checkDB = SQLiteDatabase.openDatabase(dbName, null, SQLiteDatabase.OPEN_READONLY);
+			checkDB = SQLiteDatabase.openDatabase(DB_PATH + DB_NAME, null, SQLiteDatabase.OPEN_READONLY);
 		}catch(SQLiteException e){
 			// Falling here means that the DB doesn't exist
-			System.out.println("Database does not exist.");
 			return false;
 		}
-		
 		// Falling here means that the DB exists, as we will not use it, we close it.
 		checkDB.close();
 		return true;
 	}
 	
-	private void copyDatabase(String dbName) throws IOException{
-		InputStream input = mCtx.getAssets().open(dbName);
-		String outFileName = DB_PATH + dbName;
+	private void copyDatabase() throws IOException{
+		InputStream input = mCtx.getAssets().open(DB_NAME);
+		String outFileName = DB_PATH + DB_NAME;
 		OutputStream output = new FileOutputStream(outFileName);
 		
 		byte[] buffer = new byte[1024];
@@ -146,15 +227,11 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	
 	public void openDatabase() throws SQLException{
 		mDb = SQLiteDatabase.openDatabase(DB_PATH + DB_NAME, null, SQLiteDatabase.OPEN_READONLY);
-		mFavDb = SQLiteDatabase.openDatabase(DB_PATH + FAVDB_NAME, null, SQLiteDatabase.OPEN_READWRITE);
 	}
 	
 	public synchronized void close(){
 		if(mDb != null){
 			mDb.close();
-		}
-		if(mFavDb != null){
-			mFavDb.close();
 		}
 		super.close();
 	}
@@ -197,5 +274,16 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
             mCursor.moveToFirst();
         }
         return mCursor;
+	}
+	
+	boolean isInFavorites(int codePoint){
+		String query = "SELECT " +KEY_ID +" FROM " + TABLE_FAVORITES +" WHERE " +KEY_ID +" IS " +codePoint;
+		Cursor c = mDb.rawQuery(query, null);
+		
+		if(0 == c.getCount()){
+			return false;
+		}else{
+			return true;
+		}
 	}
 }

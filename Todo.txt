@@ -1,13 +1,20 @@
 TODO List
 ---------
-o Create a favorite database
 o Implement the add/remove to the favorite database
+o Once the favorite table created, modify the ListView to have 2 columns (glyph|favorite) and make the favorite match the right star png
 o Code the text filter
 
 o Define the design of the application (splash screen, controls, colors, icons, ...)
 o Show the animated SVG
 o Add a kanji description view
 o Add the drawing area
+
+Backup Strategy
+---------------
+o When a new version of this app will be available, add an update method to backup the favorites
+	o The idea is to check the DB version (in assest) and compare it to the db version (in sdcard). if sdcard version < asset version --> backup the favorites table,
+		replace the sdcard table by the asset table and finally populate the favorite table with the backuped values. This check must be done at every launch if the
+		kanji db is present on the sdcard folder.
 
 Bugs
 ----

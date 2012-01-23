@@ -2,6 +2,7 @@ package shiba.test.androidkanji;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,13 +17,13 @@ public class KanjiAdapter extends BaseAdapter {
 	private Cursor _kanjiCursor;
 	private Context _context;
 	private LayoutInflater _inflater;
+	private KanjiDBHelper _dbHelper;
 	
 	public KanjiAdapter(Context c, Cursor kanjis){
 		_context = c;
 		_kanjiCursor = kanjis;
 		_inflater = LayoutInflater.from(_context);
-		
-		System.out.println("_kanjiCursor count: " + _kanjiCursor.getCount());
+		_dbHelper = new KanjiDBHelper(_context);
 	}
 
 	@Override
@@ -66,9 +67,25 @@ public class KanjiAdapter extends BaseAdapter {
 		kanjiTV.setText(TextTools.codeToKanji(iVal));			
 		
 		// Now we will add the favorite star
-		//	TODO : For each kanji, check if it is part of the favorites or not, then display the empty star or the full one
-		//			depending on the favorite entry.
-		Drawable fav = _context.getResources().getDrawable(R.drawable.favempty);
+		boolean isFavorite = false;
+		
+		try{
+			_dbHelper.openDatabase();
+			
+			isFavorite = _dbHelper.isInFavorites(iVal);
+			
+			_dbHelper.close();
+		}catch(java.sql.SQLException e){
+			e.printStackTrace();
+		}
+		
+		Drawable fav;
+		if(isFavorite){
+			fav = _context.getResources().getDrawable(R.drawable.favfull);
+		}else{
+			fav = _context.getResources().getDrawable(R.drawable.favempty);
+		}
+		
 		favStar.setImageDrawable(fav);
 		
 		return layoutItem;
