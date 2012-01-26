@@ -29,6 +29,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	public static final String KEY_PATH = "path";
 	public static final String TABLE_ENTRIES = "entries";
 	public static final String TABLE_FAVORITES = "favorites";
+	public static final String KEY_STATE = "state";
 	public static final int KANJI_FILTER_ALL = 0;
 	public static final int KANJI_FILTER_N1 = 1;
 	public static final int KANJI_FILTER_N2 = 2;
@@ -108,7 +109,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	private void backupFavorites() throws IOException{
 		SQLiteDatabase db = SQLiteDatabase.openDatabase(DB_PATH + DB_NAME, null, SQLiteDatabase.OPEN_READONLY);
 		
-		String query = "SELECT " +KEY_ID +" FROM " +TABLE_FAVORITES;
+		String query = "SELECT " +KEY_ID +" FROM " +TABLE_FAVORITES +" WHERE " +KEY_STATE +"=1";
 		Cursor c = db.rawQuery(query, null);
 		int index = c.getColumnIndex(KEY_ID);
 		
@@ -146,7 +147,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 		BufferedReader myReader = new BufferedReader(new InputStreamReader(fIn));
 		String strLine = "";
 		while ((strLine = myReader.readLine()) != null) {
-			db.rawQuery("INSERT INTO " +TABLE_FAVORITES +" (" +KEY_ID +") VALUES(" +Integer.parseInt(strLine) +")", null);
+			db.rawQuery("UPDATE " +TABLE_FAVORITES +" SET " +KEY_STATE +"=1 WHERE " +KEY_ID +"=" +Integer.parseInt(strLine), null);
 		}
 		myReader.close();
 		db.close();
@@ -237,12 +238,12 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	}
 	
 	public String fetchAllKanji(){
-		String query = "SELECT " + KEY_ID +" FROM " + TABLE_ENTRIES + " WHERE " + KEY_ID + ">=" +FIRST_KANJI_CODE +" AND " +KEY_ID +"<=" +LAST_KANJI_CODE;
+		String query = "SELECT e." + KEY_ID +", f." +KEY_STATE +" FROM " + TABLE_ENTRIES +" e, " +TABLE_FAVORITES +" f WHERE e." +KEY_ID +"=f." +KEY_ID +" ORDER BY e." +KEY_STROKE_COUNT;
 		return query;
 	}
 	
 	public String fetchFavoritesKanji(){
-		String query = "";
+		String query = "SELECT e." + KEY_ID +", f." +KEY_STATE +" FROM " + TABLE_ENTRIES +" e, " +TABLE_FAVORITES +" f WHERE e." +KEY_ID +"=f." +KEY_ID +" AND f." +KEY_STATE +"=1 ORDER BY e." +KEY_STROKE_COUNT;
 		return query;
 	}
 	
@@ -256,7 +257,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 				query = fetchFavoritesKanji();
 				break;
 			default:
-				query = "SELECT " + KEY_ID + " FROM " + TABLE_ENTRIES + " WHERE " + KEY_JLPT + " IS " + group +" ORDER BY " +KEY_STROKE_COUNT +" ASC";
+				query = "SELECT e." + KEY_ID +", f." +KEY_STATE +" FROM " + TABLE_ENTRIES +" e, " +TABLE_FAVORITES +" f WHERE e." +KEY_ID +"=f." +KEY_ID +" AND e." +KEY_JLPT +"=" +group +" ORDER BY e." +KEY_STROKE_COUNT;
 				break;
 		}
 		Cursor c = mDb.rawQuery(query, null);

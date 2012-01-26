@@ -56,6 +56,7 @@ public class KanjiAdapter extends BaseAdapter {
 		
 		// Get the value at the given position
 		int index = _kanjiCursor.getColumnIndex(KanjiDBHelper.KEY_ID);
+
 		TextView kanjiTV = (TextView)layoutItem.findViewById(R.id.text1);
 		ImageView favStar = (ImageView)layoutItem.findViewById(R.id.favoriteStar);
 		
@@ -67,20 +68,11 @@ public class KanjiAdapter extends BaseAdapter {
 		kanjiTV.setText(TextTools.codeToKanji(iVal));			
 		
 		// Now we will add the favorite star
-		boolean isFavorite = false;
-		
-		try{
-			_dbHelper.openDatabase();
-			
-			isFavorite = _dbHelper.isInFavorites(iVal);
-			
-			_dbHelper.close();
-		}catch(java.sql.SQLException e){
-			e.printStackTrace();
-		}
+		int favIndex = _kanjiCursor.getColumnIndex(KanjiDBHelper.KEY_STATE);		
+		int iFavVal = _kanjiCursor.getInt(favIndex);
 		
 		Drawable fav;
-		if(isFavorite){
+		if(1 == iFavVal){
 			fav = _context.getResources().getDrawable(R.drawable.favfull);
 		}else{
 			fav = _context.getResources().getDrawable(R.drawable.favempty);
