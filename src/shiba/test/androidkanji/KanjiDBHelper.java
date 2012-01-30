@@ -19,7 +19,7 @@ import android.os.Environment;
 
 public class KanjiDBHelper extends SQLiteOpenHelper {
 	// TODO : rework the APP_NAME stuff in order to have the application name in only one location
-	public static final String APP_NAME = "AndroidKanji";
+	public static final String APP_NAME =  "Kanji Notepad";
 	
 	public static final String KEY_ID = "_id";
 	public static final String KEY_GRADE = "grade";
@@ -78,9 +78,6 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
         	if(dbExists){
         		// The DB already exists. Should we update it?
         		int installedVersion = dbVersion();
-        		
-        		System.out.println("installed db version: " +installedVersion);
-        		System.out.println("package db version: " +packageDBVersion());
         		
         		if(installedVersion < packageDBVersion()){
         			// 	The DB located in the package has changed. We must update the installed DB
