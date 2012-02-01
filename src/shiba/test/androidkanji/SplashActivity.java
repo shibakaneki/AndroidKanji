@@ -36,7 +36,13 @@ public class SplashActivity extends Activity {
 		@Override
 		protected void onPostExecute(Void result){
 			// The DB has been (or was already) created. Now we show the main View!
-			Intent intent = new Intent(SplashActivity.this, AndroidKanjiActivity.class);
+			// TODO : Check the resolution of the device and load the right Activity
+			//Intent intent = new Intent(SplashActivity.this, AndroidKanjiActivity.class);
+			Intent intent;
+			
+			// For the moment, only the tablet is supported
+			intent = new Intent(SplashActivity.this, KNotepadTabletActivity.class);
+			
 			startActivity(intent);
 		}
 		

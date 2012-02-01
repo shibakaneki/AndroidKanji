@@ -1,6 +1,5 @@
 TODO List
 ---------
-o Verify the list of the favorite kanjis. by example, I know that - is missing
 o Implement the add/remove to the favorite database
 o Code the text filter
 
@@ -8,6 +7,8 @@ o Define the design of the application (splash screen, controls, colors, icons, 
 o Show the animated SVG
 o Add a kanji description view
 o Add the drawing area
+o Buy an Android smartphone
+o Support handset and other screen sizes
 
 Tests before production launch
 ------------------------------

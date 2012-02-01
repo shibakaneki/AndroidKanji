@@ -2,45 +2,49 @@ package shiba.test.androidkanji;
 
 import java.sql.SQLException;
 
-import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
-import android.os.Bundle;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Toast;
+import android.widget.AdapterView.OnItemSelectedListener;
 
-public class AndroidKanjiActivity extends Activity {
-	
+public class KanjiListView extends LinearLayout {
 	private KanjiDBHelper _KDBHelper;
-	private ListView _kanjiListView;
 	private Spinner _filterSpinner;
-	private OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
-        public void onItemClick(AdapterView parent, View v, int position, long id)
-        {
-            // Display a messagebox.
-            Toast.makeText(getApplicationContext(),"v.id: " +v.getId() +" position: " +position ,Toast.LENGTH_SHORT).show();
-        }
-    };
+	private EditText _filterText;
+	private ImageView _searchButton;
+	private ListView _kanjiListView;
+	private Context _ctx;
 	
-    /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        _kanjiListView = (ListView)findViewById(R.id.kanjiList);
+	public KanjiListView(Context c){
+		super(c);
+		_ctx = c;
+		init();
+	}
+	
+	public KanjiListView(Context c, AttributeSet attrs){
+		super(c, attrs);
+		_ctx = c;
+		LayoutInflater inflater = LayoutInflater.from(c);
+		inflater.inflate(R.layout.kanji_list, this);
+		init();
+	}
+	
+	private void init(){
+		_kanjiListView = (ListView)findViewById(R.id.kanjiList);
         _kanjiListView.setEmptyView(findViewById(R.id.emptyKanjiView));
-        _kanjiListView.setOnItemClickListener(mMessageClickedHandler);
         _filterSpinner = (Spinner)findViewById(R.id.filterCategory);
-        _KDBHelper = new KanjiDBHelper(this);
-        
-        // Add default datas
+        _KDBHelper = new KanjiDBHelper(_ctx);
         fillData();
         
-        // Connect to the events
+        // TODO : rework that to make it clean
         _filterSpinner.setOnItemSelectedListener(new OnItemSelectedListener(){
 
 			@Override
@@ -63,10 +67,9 @@ public class AndroidKanjiActivity extends Activity {
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {}
 		});
-        
-    }
-    
-    private void fillData(){
+	}
+	
+	private void fillData(){
     	getKanjis(KanjiDBHelper.KANJI_FILTER_ALL);
     }
     
@@ -74,11 +77,12 @@ public class AndroidKanjiActivity extends Activity {
     	try{
     		_KDBHelper.openDatabase();
         	Cursor c = _KDBHelper.fetchKanji(category);
-        	KanjiAdapter adapter = new KanjiAdapter(this, c);
+        	KanjiAdapter adapter = new KanjiAdapter(_ctx, c);
         	_kanjiListView.setAdapter(adapter);
         	_KDBHelper.close();
     	}catch(SQLException e){
     		throw new Error(e.getMessage());
     	}
     }
+
 }

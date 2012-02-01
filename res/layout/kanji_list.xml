@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >        
+        <!-- The filter zone -->
+        <LinearLayout 
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+        	android:orientation="vertical"
+        	android:background="#555555">       	
+            <Spinner
+           	    android:id="@+id/filterCategory"
+           	    android:layout_width="fill_parent"
+           	    android:layout_height="wrap_content"
+           	    android:entries="@array/filters"
+           	    android:prompt="@string/filter_select"
+           	    android:padding="10dp"/>
+                        
+            <!-- We add here an empty layout in order to prevent having the keyboard shown at startup -->
+           	<LinearLayout
+   				android:focusable="true" android:focusableInTouchMode="true"
+   				android:layout_width="0px" android:layout_height="0px"/>
+           	
+           	<LinearLayout 
+           	    android:orientation="horizontal"
+           	    android:layout_width="fill_parent"
+           	    android:layout_height="wrap_content"
+           	    android:background="#555555"
+           	    android:layout_margin="5dp">
+           		<EditText
+           		    android:id="@+id/searchField"
+           		    android:layout_width="wrap_content"
+           		    android:layout_height="fill_parent"
+           		    android:layout_weight="0.92"
+           		    android:background="@drawable/roundededit"
+           		    android:maxLines="1"
+           		    android:padding="10dp"
+           		    android:paddingRight="15dp"
+           		    android:textColor="#000000"
+           		    android:textSize="14dp"/>
+           		<ImageView
+           		    android:id="@+id/searchButton"
+           		    android:layout_width="wrap_content"
+           		    android:layout_height="fill_parent"
+           		    android:paddingLeft="4dp"
+           		    android:src="@drawable/favfull" />
+           	</LinearLayout>            	
+        </LinearLayout>
+        
+        <!-- The kanji list -->
+        <ListView android:id="@+id/kanjiList"
+        	android:layout_width="fill_parent"
+        	android:layout_height="fill_parent" />
+    
+    	<TextView android:id="@+id/emptyKanjiView"
+        	android:layout_width="fill_parent"
+        	android:layout_height="fill_parent"
+        	android:text="@string/no_kanji"
+        	android:visibility="gone"/>
+</LinearLayout>
