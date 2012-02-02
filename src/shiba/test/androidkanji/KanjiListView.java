@@ -58,7 +58,11 @@ public class KanjiListView extends LinearLayout {
             Toast.makeText(mCtx,"CodePoint: " +kanji.codePoint() +" favorite: " +kanji.favorite(),Toast.LENGTH_SHORT).show();
             
             // TODO : Now that I can retrieve the kanji datas, I must be able to determine if the user clicked on the character or on the favorite star.
-            
+            /*if(findViewById(v.getId()) instanceof ImageView){
+        		Toast.makeText(mCtx, "Favorite clicked!", Toast.LENGTH_SHORT).show();
+        	}else{
+        		Toast.makeText(mCtx, "Character clicked!", Toast.LENGTH_SHORT).show();
+        	}*/
         }
     };
 	
