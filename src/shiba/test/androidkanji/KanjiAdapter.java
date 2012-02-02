@@ -46,43 +46,29 @@ public class KanjiAdapter extends BaseAdapter{
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		LinearLayout layoutItem;
-		
+		KanjiRowView layoutItem;
+
 		if(null == convertView){
-			layoutItem = (LinearLayout)_inflater.inflate(R.layout.kanji_row, parent, false);
+			layoutItem = (KanjiRowView) _inflater.inflate(R.layout.kanji_charfav, parent, false);
 		}else{
-			layoutItem = (LinearLayout)convertView;
+			layoutItem = (KanjiRowView)convertView;
 		}
-		
+	
 		// Move the cursor to the right row (specified by position)
 		_kanjiCursor.moveToPosition(position);
 		
 		// Get the value at the given position
 		int index = _kanjiCursor.getColumnIndex(KanjiDBHelper.KEY_ID);
-
-		TextView kanjiTV = (TextView)layoutItem.findViewById(R.id.text1);
-		ImageView favStar = (ImageView)layoutItem.findViewById(R.id.favoriteStar);
-		
-		// Convert the text value in UTF8 character
 		String value = _kanjiCursor.getString(index);
 		int iVal = Integer.parseInt(value);
-		
-		// Set the kanji value
-		kanjiTV.setText(TextTools.codeToKanji(iVal));			
-		
+		layoutItem.setCodePoint(iVal);
+				
 		// Now we will add the favorite star
 		int favIndex = _kanjiCursor.getColumnIndex(KanjiDBHelper.KEY_STATE);		
 		int iFavVal = _kanjiCursor.getInt(favIndex);
-		
-		Drawable fav;
-		if(1 == iFavVal){
-			fav = _context.getResources().getDrawable(R.drawable.favfull);
-		}else{
-			fav = _context.getResources().getDrawable(R.drawable.favempty);
-		}
-		
-		favStar.setImageDrawable(fav);
-		
+
+		layoutItem.setFavorite((iFavVal > 0)?true:false);
+				
 		return layoutItem;
 	}
 }

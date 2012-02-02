@@ -1,6 +1,7 @@
 package shiba.test.androidkanji;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -13,60 +14,78 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 public class KanjiListView extends LinearLayout {
-	private KanjiDBHelper _KDBHelper;
-	private Spinner _filterSpinner;
-	private EditText _filterText;
-	private ImageView _searchButton;
-	private ListView _kanjiListView;
-	private Context _ctx;
+	// -- Members ------------------------------------------------------------------
+	private KanjiDBHelper mKDBHelper;
+	private Spinner mFilterSpinner;
+	private EditText mFilterText;
+	private ImageView mSearchButton;
+	private ListView mKanjiListView;
+	private Context mCtx;
+	
+	// -- Action Listeners ---------------------------------------------------------
+	private OnItemSelectedListener mFilterSelected = new OnItemSelectedListener() {
+
+		@Override
+		public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+			int category = KanjiDBHelper.KANJI_FILTER_ALL;
+			if(0 < pos){
+				if(1 == pos){
+					// Favorites
+					category = KanjiDBHelper.KANJI_FILTER_FAVORITES;
+				}else{
+					category = pos - 1;
+				}
+			}else{
+				// All kanji
+				category = KanjiDBHelper.KANJI_FILTER_ALL;
+			}
+			getKanjis(category);
+		}
+
+		@Override
+		public void onNothingSelected(AdapterView<?> arg0) {}
+	};
+	
+	private OnItemClickListener mKanjiListClicked = new OnItemClickListener() {
+        public void onItemClick(AdapterView parent, View v, int position, long id)
+        {
+        	KanjiRowView kanji = (KanjiRowView)v;
+            Toast.makeText(mCtx,"CodePoint: " +kanji.codePoint() +" favorite: " +kanji.favorite(),Toast.LENGTH_SHORT).show();
+            
+            // TODO : Now that I can retrieve the kanji datas, I must be able to determine if the user clicked on the character or on the favorite star.
+            
+        }
+    };
+	
 	
 	public KanjiListView(Context c){
 		super(c);
-		_ctx = c;
+		mCtx = c;
 		init();
 	}
 	
 	public KanjiListView(Context c, AttributeSet attrs){
 		super(c, attrs);
-		_ctx = c;
+		mCtx = c;
 		LayoutInflater inflater = LayoutInflater.from(c);
 		inflater.inflate(R.layout.kanji_list, this);
 		init();
 	}
 	
 	private void init(){
-		_kanjiListView = (ListView)findViewById(R.id.kanjiList);
-        _kanjiListView.setEmptyView(findViewById(R.id.emptyKanjiView));
-        _filterSpinner = (Spinner)findViewById(R.id.filterCategory);
-        _KDBHelper = new KanjiDBHelper(_ctx);
+		mKanjiListView = (ListView)findViewById(R.id.kanjiList);
+        mKanjiListView.setEmptyView(findViewById(R.id.emptyKanjiView));
+        mKanjiListView.setOnItemClickListener(mKanjiListClicked);
+        mFilterSpinner = (Spinner)findViewById(R.id.filterCategory);
+        mKDBHelper = new KanjiDBHelper(mCtx);
         fillData();
-        
-        // TODO : rework that to make it clean
-        _filterSpinner.setOnItemSelectedListener(new OnItemSelectedListener(){
 
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int pos, long id){
-				int category = KanjiDBHelper.KANJI_FILTER_ALL;
-				if(0 < pos){
-					if(1 == pos){
-						// Favorites
-						category = KanjiDBHelper.KANJI_FILTER_FAVORITES;
-					}else{
-						category = pos - 1;
-					}
-				}else{
-					// All kanji
-					category = KanjiDBHelper.KANJI_FILTER_ALL;
-				}
-				getKanjis(category);
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {}
-		});
+        mFilterSpinner.setOnItemSelectedListener(mFilterSelected);
 	}
 	
 	private void fillData(){
@@ -75,11 +94,11 @@ public class KanjiListView extends LinearLayout {
     
     public void getKanjis(int category){
     	try{
-    		_KDBHelper.openDatabase();
-        	Cursor c = _KDBHelper.fetchKanji(category);
-        	KanjiAdapter adapter = new KanjiAdapter(_ctx, c);
-        	_kanjiListView.setAdapter(adapter);
-        	_KDBHelper.close();
+    		mKDBHelper.openDatabase();
+        	Cursor c = mKDBHelper.fetchKanji(category);
+        	KanjiAdapter adapter = new KanjiAdapter(mCtx, c);
+        	mKanjiListView.setAdapter(adapter);
+        	mKDBHelper.close();
     	}catch(SQLException e){
     		throw new Error(e.getMessage());
     	}
