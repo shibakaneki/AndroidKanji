@@ -1,3 +1,6 @@
+// ---------------------------------------------------
+// TODO: DESTROY THIS FILE, IT IS NOT USED ANYMORE!!
+// ---------------------------------------------------
 package shiba.test.androidkanji;
 
 import java.sql.SQLException;

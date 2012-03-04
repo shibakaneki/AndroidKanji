@@ -96,7 +96,7 @@ public class KanjiListView extends LinearLayout {
         			int favIndex = c.getColumnIndex(KanjiDBHelper.KEY_STATE);		
         			int iFavVal = c.getInt(favIndex);
         			
-        			KanjiInfo ki = new KanjiInfo(TextTools.codeToKanji(iVal), (0 <= iFavVal));
+        			KanjiInfo ki = new KanjiInfo(TextTools.codeToKanji(iVal), (0 < iFavVal));
         			results.add(ki);	
         			c.moveToNext();
         		}

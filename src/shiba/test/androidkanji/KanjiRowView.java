@@ -14,6 +14,7 @@ public class KanjiRowView extends LinearLayout {
 	private TextView mCharacter;
 	private ImageView mFavIcon;
 	private Context mCtx;
+	private int mIndex;
 	
 	public KanjiRowView(Context c){
 		super(c);
@@ -68,5 +69,13 @@ public class KanjiRowView extends LinearLayout {
 	
 	public ImageView favIcon(){
 		return mFavIcon;
+	}
+	
+	public void setIndex(int i){
+		mIndex = i;
+	}
+	
+	public int index(){
+		return mIndex;
 	}
 }

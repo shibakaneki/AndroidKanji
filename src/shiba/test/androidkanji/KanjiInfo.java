@@ -16,4 +16,8 @@ public class KanjiInfo {
 	public boolean favorite(){
 		return mFavorite;
 	}
+	
+	public void toggleFavorite(){
+		mFavorite = !mFavorite;
+	}
 }
