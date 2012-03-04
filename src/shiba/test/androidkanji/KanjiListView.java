@@ -51,22 +51,6 @@ public class KanjiListView extends LinearLayout {
 		public void onNothingSelected(AdapterView<?> arg0) {}
 	};
 	
-	private OnItemClickListener mKanjiListClicked = new OnItemClickListener() {
-        public void onItemClick(AdapterView parent, View v, int position, long id)
-        {
-        	KanjiRowView kanji = (KanjiRowView)v;
-            Toast.makeText(mCtx,"CodePoint: " +kanji.codePoint() +" favorite: " +kanji.favorite(),Toast.LENGTH_SHORT).show();
-            
-            // TODO : Now that I can retrieve the kanji datas, I must be able to determine if the user clicked on the character or on the favorite star.
-            /*if(findViewById(v.getId()) instanceof ImageView){
-        		Toast.makeText(mCtx, "Favorite clicked!", Toast.LENGTH_SHORT).show();
-        	}else{
-        		Toast.makeText(mCtx, "Character clicked!", Toast.LENGTH_SHORT).show();
-        	}*/
-        }
-    };
-	
-	
 	public KanjiListView(Context c){
 		super(c);
 		mCtx = c;
@@ -84,7 +68,6 @@ public class KanjiListView extends LinearLayout {
 	private void init(){
 		mKanjiListView = (ListView)findViewById(R.id.kanjiList);
         mKanjiListView.setEmptyView(findViewById(R.id.emptyKanjiView));
-        mKanjiListView.setOnItemClickListener(mKanjiListClicked);
         mFilterSpinner = (Spinner)findViewById(R.id.filterCategory);
         mKDBHelper = new KanjiDBHelper(mCtx);
         fillData();
@@ -100,9 +83,29 @@ public class KanjiListView extends LinearLayout {
     	try{
     		mKDBHelper.openDatabase();
         	Cursor c = mKDBHelper.fetchKanji(category);
-        	KanjiAdapter adapter = new KanjiAdapter(mCtx, c);
-        	mKanjiListView.setAdapter(adapter);
         	mKDBHelper.close();
+        	if(0 != c.getCount()){
+        		ArrayList<KanjiInfo> results = new ArrayList<KanjiInfo>();
+        		c.moveToFirst();
+        		for(int i=0; i<c.getCount(); i++){
+        			// Get the value at the given position
+        			int index = c.getColumnIndex(KanjiDBHelper.KEY_ID);
+        			String value = c.getString(index);
+        			int iVal = Integer.parseInt(value);        					
+        			// Now we will add the favorite star
+        			int favIndex = c.getColumnIndex(KanjiDBHelper.KEY_STATE);		
+        			int iFavVal = c.getInt(favIndex);
+        			
+        			KanjiInfo ki = new KanjiInfo(TextTools.codeToKanji(iVal), (0 <= iFavVal));
+        			results.add(ki);	
+        			c.moveToNext();
+        		}
+        		
+        		
+        		KanjiListAdapter adapter = new KanjiListAdapter(mCtx, R.layout.kanji_charfav, results);
+        		mKanjiListView.setAdapter(adapter);
+        	}
+ 
     	}catch(SQLException e){
     		throw new Error(e.getMessage());
     	}

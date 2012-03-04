@@ -7,24 +7,15 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 public class AndroidKanjiActivity extends Activity {
 	
 	private KanjiDBHelper _KDBHelper;
 	private ListView _kanjiListView;
 	private Spinner _filterSpinner;
-	private OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
-        public void onItemClick(AdapterView parent, View v, int position, long id)
-        {
-            // Display a messagebox.
-            Toast.makeText(getApplicationContext(),"v.id: " +v.getId() +" position: " +position ,Toast.LENGTH_SHORT).show();
-        }
-    };
 	
     /** Called when the activity is first created. */
     @Override
@@ -33,7 +24,6 @@ public class AndroidKanjiActivity extends Activity {
         setContentView(R.layout.main);
         _kanjiListView = (ListView)findViewById(R.id.kanjiList);
         _kanjiListView.setEmptyView(findViewById(R.id.emptyKanjiView));
-        _kanjiListView.setOnItemClickListener(mMessageClickedHandler);
         _filterSpinner = (Spinner)findViewById(R.id.filterCategory);
         _KDBHelper = new KanjiDBHelper(this);
         
@@ -77,6 +67,7 @@ public class AndroidKanjiActivity extends Activity {
         	KanjiAdapter adapter = new KanjiAdapter(this, c);
         	_kanjiListView.setAdapter(adapter);
         	_KDBHelper.close();
+        	
     	}catch(SQLException e){
     		throw new Error(e.getMessage());
     	}

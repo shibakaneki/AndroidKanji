@@ -1,19 +1,14 @@
 package shiba.test.androidkanji;
 
+import java.sql.SQLException;
+
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class KanjiAdapter extends BaseAdapter{
 
@@ -21,6 +16,36 @@ public class KanjiAdapter extends BaseAdapter{
 	private Context _context;
 	private LayoutInflater _inflater;
 	private KanjiDBHelper _dbHelper;
+	
+	private OnClickListener onCharacterClicked = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			// TODO: getParent().getParent() is the proof of a bad design, rework that one day..
+			KanjiRowView kanjiRow = (KanjiRowView)v.getParent().getParent();
+			// TODO: update the other views with the infos related to the clicked character
+		} 
+    };
+    
+    private OnClickListener onFavoriteClicked = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			// TODO: getParent().getParent() is the proof of a bad design, rework that one day..
+			KanjiRowView kanjiRow = (KanjiRowView)v.getParent().getParent();
+			kanjiRow.setFavorite(!kanjiRow.favorite());
+			
+			try {
+				_dbHelper.openDatabase();
+				_dbHelper.toggleFavorite(kanjiRow.codePoint());
+				_kanjiCursor = _dbHelper.refresh();
+				_dbHelper.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} 
+    };
 	
 	public KanjiAdapter(Context c, Cursor kanjis){
 		_context = c;
@@ -68,6 +93,8 @@ public class KanjiAdapter extends BaseAdapter{
 		int iFavVal = _kanjiCursor.getInt(favIndex);
 
 		layoutItem.setFavorite((iFavVal > 0)?true:false);
+		layoutItem.character().setOnClickListener(onCharacterClicked);
+		layoutItem.favIcon().setOnClickListener(onFavoriteClicked);
 				
 		return layoutItem;
 	}

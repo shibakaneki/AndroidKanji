@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.sql.SQLException;
+
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -50,7 +52,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	
 	private final Context mCtx;
 	private SQLiteDatabase mDb;
-	
+	private int currentGroup;
 	
 	public KanjiDBHelper(Context ctx){
 		super(ctx, DB_NAME, null, DB_VERSION);
@@ -224,7 +226,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	}
 	
 	public void openDatabase() throws SQLException{
-		mDb = SQLiteDatabase.openDatabase(DB_PATH + DB_NAME, null, SQLiteDatabase.OPEN_READONLY);
+		mDb = SQLiteDatabase.openDatabase(DB_PATH + DB_NAME, null, SQLiteDatabase.OPEN_READWRITE);
 	}
 	
 	public synchronized void close(){
@@ -246,6 +248,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	
 	public Cursor fetchKanji(int group){
 		String query;
+		currentGroup = group;
 		switch(group){
 			case KANJI_FILTER_ALL:
 				query = fetchAllKanji();
@@ -274,14 +277,35 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
         return mCursor;
 	}
 	
-	boolean isInFavorites(int codePoint){
-		String query = "SELECT " +KEY_ID +" FROM " + TABLE_FAVORITES +" WHERE " +KEY_ID +" IS " +codePoint;
+	public Cursor refresh(){
+		return fetchKanji(currentGroup);
+	}
+	
+	private boolean isInFavorites(int codePoint){
+		String query = "SELECT * FROM " +TABLE_FAVORITES +" WHERE " +KEY_ID +"=" +codePoint;
 		Cursor c = mDb.rawQuery(query, null);
+		c.moveToFirst();
 		
-		if(0 == c.getCount()){
+		int index = c.getColumnIndex(KEY_STATE);
+		int value = c.getInt(index);
+		
+		int cp = c.getColumnIndex(KEY_ID);
+		String str = c.getString(cp);
+		
+		System.out.println("int: " +value +" String: " +str);
+		
+		
+		if(0 == value){
 			return false;
 		}else{
 			return true;
 		}
+	}
+	
+	public void toggleFavorite(int codePoint){
+		int state = isInFavorites(codePoint)?0:1;
+		ContentValues vals = new ContentValues();
+		vals.put(KEY_STATE, state);
+		mDb.update(TABLE_FAVORITES, vals, KEY_ID +"=" +codePoint, null);
 	}
 }

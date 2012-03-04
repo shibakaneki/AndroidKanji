@@ -46,7 +46,8 @@ public class KanjiRowView extends LinearLayout {
 	
 	public void setCodePoint(int code){
 		mCodePoint = code;
-		mCharacter.setText(TextTools.codeToKanji(code));
+		String character = TextTools.codeToKanji(code);
+		mCharacter.setText(character);
 	}
 	
 	public void setFavorite(boolean fav){
@@ -59,5 +60,13 @@ public class KanjiRowView extends LinearLayout {
 		}
 		
 		mFavIcon.setImageDrawable(d);
+	}
+	
+	public TextView character(){
+		return mCharacter;
+	}
+	
+	public ImageView favIcon(){
+		return mFavIcon;
 	}
 }
