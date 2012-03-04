@@ -101,7 +101,6 @@ public class KanjiListView extends LinearLayout {
         			c.moveToNext();
         		}
         		
-        		
         		KanjiListAdapter adapter = new KanjiListAdapter(mCtx, R.layout.kanji_charfav, results);
         		mKanjiListView.setAdapter(adapter);
         	}

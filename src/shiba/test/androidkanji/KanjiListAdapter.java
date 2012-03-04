@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 public class KanjiListAdapter extends ArrayAdapter<KanjiInfo>{
 	private ArrayList<KanjiInfo> items;
@@ -22,6 +23,7 @@ public class KanjiListAdapter extends ArrayAdapter<KanjiInfo>{
 			// TODO: getParent().getParent() is the proof of a bad design, rework that one day..
 			KanjiRowView kanjiRow = (KanjiRowView)v.getParent().getParent();
 			// TODO : Get the kanji infos and update the other fragments
+			Toast.makeText(getContext(), "Get info for " +items.get(kanjiRow.index()).kanji(), Toast.LENGTH_SHORT).show();
 		} 
     };
     

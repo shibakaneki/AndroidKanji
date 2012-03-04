@@ -1,13 +1,10 @@
 TODO List
 ---------
-o Implement the add/remove to the favorite database
 o Code the text filter
-
 o Define the design of the application (splash screen, controls, colors, icons, ...)
 o Show the animated SVG
 o Add a kanji description view
 o Add the drawing area
-o Buy an Android smartphone
 o Support handset and other screen sizes
 
 Tests before production launch
@@ -16,4 +13,5 @@ o Add some favorites and verify that they remain after an application update
 
 Bugs
 ----
-o The user is able to go on the splash screen Activity by pressing the 'back' button. He shouldn't be able to do it.
+o The user is able to go on the splash screen Activity by pressing the 'back' button. He shouldn't be able to do it. (Check how to use finish())
+o I noticed a bad refresh of the favorite list when the user remove all the favorites from the list.
