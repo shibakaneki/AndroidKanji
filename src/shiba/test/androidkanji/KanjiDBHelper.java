@@ -277,6 +277,22 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
         return mCursor;
 	}
 	
+	public Cursor fetchKanjiFromExpression(String exp){
+		String query = "";
+		for(int i=0; i<exp.length(); i++){
+			if(0 == i){
+				query = "SELECT e." + KEY_ID +", f." +KEY_STATE +" FROM " + TABLE_ENTRIES +" e, " +TABLE_FAVORITES +" f WHERE e." +KEY_ID +"=f." +KEY_ID +" AND ( e." +KEY_ID +"=" +TextTools.kanjiToCode("" +exp.charAt(i));
+			}else{
+				query += " OR e." +KEY_ID +"=" +TextTools.kanjiToCode("" +exp.charAt(i));
+			}
+		}
+		query += ")";
+		System.out.println(query);
+		Cursor c = mDb.rawQuery(query, null);
+		c.moveToFirst();
+		return c;
+	}
+	
 	public Cursor refresh(){
 		return fetchKanji(currentGroup);
 	}
@@ -288,12 +304,6 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 		
 		int index = c.getColumnIndex(KEY_STATE);
 		int value = c.getInt(index);
-		
-		int cp = c.getColumnIndex(KEY_ID);
-		String str = c.getString(cp);
-		
-		System.out.println("int: " +value +" String: " +str);
-		
 		
 		if(0 == value){
 			return false;

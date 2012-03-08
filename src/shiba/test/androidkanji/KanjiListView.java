@@ -51,6 +51,25 @@ public class KanjiListView extends LinearLayout {
 		public void onNothingSelected(AdapterView<?> arg0) {}
 	};
 	
+	private OnClickListener mCustomFilterSearch = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			String expression = mFilterText.getText().toString();
+
+			try{
+	    		mKDBHelper.openDatabase();
+	        	Cursor c = mKDBHelper.fetchKanjiFromExpression(expression);
+	        	mKDBHelper.close();
+	        	
+	    		refreshList(c);
+	 
+	    	}catch(SQLException e){
+	    		throw new Error(e.getMessage());
+	    	}
+		}
+	};
+	
 	public KanjiListView(Context c){
 		super(c);
 		mCtx = c;
@@ -69,8 +88,11 @@ public class KanjiListView extends LinearLayout {
 		mKanjiListView = (ListView)findViewById(R.id.kanjiList);
         mKanjiListView.setEmptyView(findViewById(R.id.emptyKanjiView));
         mFilterSpinner = (Spinner)findViewById(R.id.filterCategory);
+        mFilterText = (EditText)findViewById(R.id.searchField);
+        mSearchButton = (ImageView)findViewById(R.id.searchButton);
         mKDBHelper = new KanjiDBHelper(mCtx);
         mFilterSpinner.setOnItemSelectedListener(mFilterSelected);
+        mSearchButton.setOnClickListener(mCustomFilterSearch);
 	}
     
     public void getKanjis(int category){
@@ -79,28 +101,32 @@ public class KanjiListView extends LinearLayout {
         	Cursor c = mKDBHelper.fetchKanji(category);
         	mKDBHelper.close();
         	
-    		ArrayList<KanjiInfo> results = new ArrayList<KanjiInfo>();
-    		c.moveToFirst();
-    		for(int i=0; i<c.getCount(); i++){
-    			// Get the value at the given position
-    			int index = c.getColumnIndex(KanjiDBHelper.KEY_ID);
-    			String value = c.getString(index);
-    			int iVal = Integer.parseInt(value);        					
-    			// Now we will add the favorite star
-    			int favIndex = c.getColumnIndex(KanjiDBHelper.KEY_STATE);		
-    			int iFavVal = c.getInt(favIndex);
-    			
-    			KanjiInfo ki = new KanjiInfo(TextTools.codeToKanji(iVal), (0 < iFavVal));
-    			results.add(ki);	
-    			c.moveToNext();
-    		}
-    		
-    		KanjiListAdapter adapter = new KanjiListAdapter(mCtx, R.layout.kanji_row, results);
-    		mKanjiListView.setAdapter(adapter);
+    		refreshList(c);
  
     	}catch(SQLException e){
     		throw new Error(e.getMessage());
     	}
+    }
+    
+    private void refreshList(Cursor c){
+    	ArrayList<KanjiInfo> results = new ArrayList<KanjiInfo>();
+		c.moveToFirst();
+		for(int i=0; i<c.getCount(); i++){
+			// Get the value at the given position
+			int index = c.getColumnIndex(KanjiDBHelper.KEY_ID);
+			String value = c.getString(index);
+			int iVal = Integer.parseInt(value);        					
+			// Now we will add the favorite star
+			int favIndex = c.getColumnIndex(KanjiDBHelper.KEY_STATE);		
+			int iFavVal = c.getInt(favIndex);
+			
+			KanjiInfo ki = new KanjiInfo(TextTools.codeToKanji(iVal), (0 < iFavVal));
+			results.add(ki);	
+			c.moveToNext();
+		}
+		
+		KanjiListAdapter adapter = new KanjiListAdapter(mCtx, R.layout.kanji_row, results);
+		mKanjiListView.setAdapter(adapter);
     }
 
 }
