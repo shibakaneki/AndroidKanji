@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="fill_parent"
-    android:orientation="horizontal" >
+    android:orientation="horizontal"
+    android:weightSum="1.0" >
 
     <shiba.test.androidkanji.KanjiListView
         android:id="@+id/kanjiListView1"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent" >
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="0.80" >
     </shiba.test.androidkanji.KanjiListView>
+
     <LinearLayout android:orientation="vertical"
         android:layout_height="fill_parent"
-        android:layout_width="fill_parent">
+        android:layout_width="fill_parent"
+        android:layout_weight="0.20">
         <LinearLayout android:orientation="horizontal"
             android:layout_height="300dp"
             android:layout_width="fill_parent">

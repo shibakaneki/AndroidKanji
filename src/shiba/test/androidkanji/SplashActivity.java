@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.Window;
 
 public class SplashActivity extends Activity {
 	public static KanjiDBHelper _KDBHelper;
@@ -42,7 +43,7 @@ public class SplashActivity extends Activity {
 			
 			// For the moment, only the tablet is supported
 			intent = new Intent(SplashActivity.this, KNotepadTabletActivity.class);
-			
+			finish();
 			startActivity(intent);
 		}
 		
@@ -52,9 +53,6 @@ public class SplashActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
-        
-        // TODO : 	- Create my own Splashscreen (Design with low/middle/high resolutions)
-        //			- Add an animated loading gif
         
         // Create the data directory in the sdcard
         setupSDCardDirectory();

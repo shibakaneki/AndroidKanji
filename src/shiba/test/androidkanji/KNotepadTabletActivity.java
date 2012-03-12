@@ -9,7 +9,7 @@ public class KNotepadTabletActivity extends Activity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_tablet);
+        setContentView(R.layout.main);
         init();
     }
 	
