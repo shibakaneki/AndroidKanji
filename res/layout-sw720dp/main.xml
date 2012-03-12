@@ -15,27 +15,31 @@
     <LinearLayout android:orientation="vertical"
         android:layout_height="fill_parent"
         android:layout_width="fill_parent"
-        android:layout_weight="0.20">
+        android:layout_weight="0.20"
+        android:weightSum="1.0">
         <LinearLayout android:orientation="horizontal"
-            android:layout_height="300dp"
-            android:layout_width="fill_parent">
+            android:layout_height="fill_parent"
+            android:layout_width="fill_parent"
+            android:layout_weight="0.50"
+            android:weightSum="1.0">
 
-            <CalendarView
-                android:id="@+id/calendarView1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        
-            <Chronometer
-                android:id="@+id/chronometer1"
-                android:layout_width="600dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:text="Chronometer" 
-                android:background="#333333"/>
+            <shiba.test.androidkanji.KanjiAnimation
+            android:id="@+id/drawingView1"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.50"/>
+            
+            <shiba.test.androidkanji.KanjiInfoView
+            android:id="@+id/drawingView1"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.50"/>
             
         </LinearLayout>
-        
-        
+        <shiba.test.androidkanji.DrawingView
+            android:id="@+id/drawingView1"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.50"/>
     </LinearLayout>
-
 </LinearLayout>
