@@ -3,6 +3,7 @@ package shiba.test.androidkanji;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
@@ -57,6 +58,8 @@ public class DrawingView extends View{
 		// Guides
 		int iGuideStep = (int)(getWidth() / mGuideNumber);
 		for(int i=0; i<mGuideNumber; i++){
+			mPainter.setStrokeWidth(3f);
+			mPainter.setPathEffect(null);
 			int guideWidth = iGuideStep - 2*mGuideBorder;
 			int guideHeight = guideWidth;
 			Rect guide = new Rect(	i*iGuideStep + mGuideBorder, 
@@ -64,10 +67,20 @@ public class DrawingView extends View{
 									((i+1)*iGuideStep) - mGuideBorder, 
 									getHeight() - (getHeight() - guideHeight) / 2);
 			c.drawRect(guide, mPainter);
+			c.drawLine(i*iGuideStep + mGuideBorder +guideWidth/2, (getHeight() - guideHeight) / 2, i*iGuideStep + mGuideBorder +guideWidth/2, getHeight() - (getHeight() - guideHeight) / 2, mPainter);
+			c.drawLine(i*iGuideStep + mGuideBorder, getHeight()/2, ((i+1)*iGuideStep) - mGuideBorder, getHeight()/2, mPainter);
+			mPainter.setStrokeWidth(1f);
+			mPainter.setPathEffect(new DashPathEffect(new float[]{3, 3}, 0));
+			c.drawLine(i*iGuideStep + mGuideBorder, ((getHeight() - guideHeight) / 2) + guideHeight/4, ((i+1)*iGuideStep) - mGuideBorder, ((getHeight() - guideHeight) / 2) + guideHeight/4, mPainter);
+			c.drawLine(i*iGuideStep + mGuideBorder, ((getHeight() - guideHeight) / 2) + 3*guideHeight/4, ((i+1)*iGuideStep) - mGuideBorder, ((getHeight() - guideHeight) / 2) + 3*guideHeight/4, mPainter);
+			c.drawLine(i*iGuideStep + mGuideBorder + guideWidth/4, (getHeight() - guideHeight) / 2, i*iGuideStep + mGuideBorder + guideWidth/4, getHeight() - (getHeight() - guideHeight) / 2, mPainter);
+			c.drawLine(i*iGuideStep + mGuideBorder + 3*guideWidth/4, (getHeight() - guideHeight) / 2, i*iGuideStep + mGuideBorder + 3*guideWidth/4, getHeight() - (getHeight() - guideHeight) / 2, mPainter);
 		}
 		
 		// If needed, draw the dynamic parts
 		mPainter.setColor(mPenColor);
+		mPainter.setPathEffect(null);
+		mPainter.setStrokeWidth(mPenWidth);
 		if(mDrawing){
 			c.drawLine(mOldX, mOldY, mCrntX, mCrntY, mPainter);
 		}
