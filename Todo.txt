@@ -1,10 +1,16 @@
 TODO List
 ---------
-o Support handset and other screen sizes
-o Define the design of the application (splash screen, controls, colors, icons, ...)
+o Implement the drawing area
+	- Add the lines in the guides
+	- Persist the user strokes
+	- Add a button usable to clear the user strokes
+	- Check the quality + performances
+	- Adapt this view to the handset format
 o Show the animated SVG
-o Add a kanji description view
-o Add the drawing area
+o Implement the kanji description view
+o Define the design of the application (splash screen, controls, colors, icons, ...)
+o Support the portait & landscape modes for tablets & handsets (tbd)
+o Define a way to switch between views on handsets
 
 Tests before production launch
 ------------------------------
