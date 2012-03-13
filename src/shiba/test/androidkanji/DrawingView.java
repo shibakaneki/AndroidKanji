@@ -1,11 +1,12 @@
 package shiba.test.androidkanji;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -15,7 +16,6 @@ public class DrawingView extends View{
 
 	private Context mCtx;
 	private Paint mPainter;
-	private Path mCrntPath;
 	private int mPenColor;
 	private float mPenWidth;
 	private boolean mDrawing = false;
@@ -23,6 +23,7 @@ public class DrawingView extends View{
 	private float mOldY;
 	private float mCrntX;
 	private float mCrntY;
+	private ArrayList<Line> mLines = new ArrayList<Line>();
 	private int mGuideBorder = 10;
 	private int mGuideNumber = 4;
 	
@@ -39,8 +40,8 @@ public class DrawingView extends View{
 	}
 	
 	private void initPainter(){
-		mPenColor = Color.RED;
-		mPenWidth = 3f;
+		mPenColor = Color.BLUE;
+		mPenWidth = 7f;
 		mPainter = new Paint();
 		mPainter.setDither(true);
 		mPainter.setColor(mPenColor);
@@ -77,12 +78,19 @@ public class DrawingView extends View{
 			c.drawLine(i*iGuideStep + mGuideBorder + 3*guideWidth/4, (getHeight() - guideHeight) / 2, i*iGuideStep + mGuideBorder + 3*guideWidth/4, getHeight() - (getHeight() - guideHeight) / 2, mPainter);
 		}
 		
-		// If needed, draw the dynamic parts
 		mPainter.setColor(mPenColor);
 		mPainter.setPathEffect(null);
 		mPainter.setStrokeWidth(mPenWidth);
+		
+		// If needed, add new user lines
 		if(mDrawing){
-			c.drawLine(mOldX, mOldY, mCrntX, mCrntY, mPainter);
+			mLines.add(new Line(mOldX, mOldY, mCrntX, mCrntY));
+		}
+		
+		// Draw the lines done by the user
+		for(int i=0; i<mLines.size(); i++){
+			Line l = mLines.get(i);
+			c.drawLine(l.xOrigin, l.yOrigin, l.xDest, l.yDest, mPainter);
 		}
 	}
 	

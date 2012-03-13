@@ -1,8 +1,7 @@
 TODO List
 ---------
 o Implement the drawing area
-	- Add the lines in the guides
-	- Persist the user strokes
+	- Create a class that will be a drawable guide and use it instead of drawing everywhere
 	- Add a button usable to clear the user strokes
 	- Check the quality + performances
 	- Adapt this view to the handset format
