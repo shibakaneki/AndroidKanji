@@ -28,8 +28,11 @@ public class KanjiCanvas extends View{
 	private float mCrntX;
 	private float mCrntY;
 	private ArrayList<Line> mLines = new ArrayList<Line>();
-	private int mGuideBorder = 10;
+	private final int GUIDE_BORDER = 10;
+	private int mWidthBorder;
+	private int mHeightBorder;
 	private KCMode mMode = KCMode.DRAWING;
+	private boolean mShowGrid = true;
 	
 	public KanjiCanvas(Context c){
 		super(c);
@@ -59,9 +62,12 @@ public class KanjiCanvas extends View{
 		mMode = mode;
 	}
 	
+	public void setGridVisible(boolean visible){
+		mShowGrid = visible;
+	}
+	
 	@Override
 	protected void onDraw(Canvas c){
-		System.out.println("(" +getWidth() +";" +getHeight() +")");
 		// Draw the persistent parts
 		mPainter.setColor(Color.BLACK);
 		mPainter.setAntiAlias(false);
@@ -71,16 +77,19 @@ public class KanjiCanvas extends View{
 		mPainter.setPathEffect(null);
 		int guideWidth = guideWidth();
 		int guideHeight = guideWidth;
-		Rect guide = new Rect(	mGuideBorder, mGuideBorder, mGuideBorder + guideWidth, mGuideBorder + guideHeight);
+		Rect guide = new Rect(mWidthBorder, mHeightBorder, mWidthBorder + guideWidth, mHeightBorder + guideHeight);
 		c.drawRect(guide, mPainter);
-		c.drawLine(mGuideBorder +guideWidth/2, mGuideBorder, mGuideBorder +guideWidth/2, mGuideBorder + guideHeight, mPainter);
-		c.drawLine(mGuideBorder, mGuideBorder + guideHeight/2, mGuideBorder + guideWidth, mGuideBorder + guideHeight/2, mPainter);
-		mPainter.setStrokeWidth(1f);
-		mPainter.setPathEffect(new DashPathEffect(new float[]{3, 3}, 0));
-		c.drawLine(mGuideBorder, mGuideBorder + guideHeight/4, mGuideBorder + guideWidth, mGuideBorder + guideHeight/4, mPainter);
-		c.drawLine(mGuideBorder, mGuideBorder + 3*guideHeight/4, mGuideBorder + guideWidth, mGuideBorder + 3*guideHeight/4, mPainter);
-		c.drawLine(mGuideBorder + guideWidth/4, mGuideBorder, mGuideBorder + guideWidth/4, mGuideBorder + guideHeight, mPainter);
-		c.drawLine(mGuideBorder + 3*guideWidth/4, mGuideBorder, mGuideBorder + 3*guideWidth/4, mGuideBorder + guideHeight, mPainter);
+		
+		if(mShowGrid){
+			c.drawLine(mWidthBorder +guideWidth/2, mHeightBorder, mWidthBorder +guideWidth/2, mHeightBorder + guideHeight, mPainter);
+			c.drawLine(mWidthBorder, mHeightBorder + guideHeight/2, mWidthBorder + guideWidth, mHeightBorder + guideHeight/2, mPainter);
+			mPainter.setStrokeWidth(1f);
+			mPainter.setPathEffect(new DashPathEffect(new float[]{3, 3}, 0));
+			c.drawLine(mWidthBorder, mHeightBorder + guideHeight/4, mWidthBorder + guideWidth, mHeightBorder + guideHeight/4, mPainter);
+			c.drawLine(mWidthBorder, mHeightBorder + 3*guideHeight/4, mWidthBorder + guideWidth, mHeightBorder + 3*guideHeight/4, mPainter);
+			c.drawLine(mWidthBorder + guideWidth/4, mHeightBorder, mWidthBorder + guideWidth/4, mHeightBorder + guideHeight, mPainter);
+			c.drawLine(mWidthBorder + 3*guideWidth/4, mHeightBorder, mWidthBorder + 3*guideWidth/4, mHeightBorder + guideHeight, mPainter);
+		}	
 		
 		mPainter.setColor(mPenColor);
 		mPainter.setPathEffect(null);
@@ -143,7 +152,7 @@ public class KanjiCanvas extends View{
 	
 	private boolean isInGuide(float x, float y){
 		int guideHeight = guideWidth();
-		if(x >= mGuideBorder && x <= mGuideBorder + guideWidth() && y >= mGuideBorder && y <= mGuideBorder + guideHeight){
+		if(x >= mWidthBorder && x <= mWidthBorder + guideWidth() && y >= mHeightBorder && y <= mHeightBorder + guideHeight){
 			return true;
 		}
 		return false;
@@ -154,9 +163,13 @@ public class KanjiCanvas extends View{
 		int h = getHeight();
 		
 		if(w < h){
-			return w - 2*mGuideBorder;
+			mWidthBorder = GUIDE_BORDER;
+			mHeightBorder = (h-w)/2;
+			return w - 2*mWidthBorder;
 		}else{
-			return h - 2*mGuideBorder;
+			mHeightBorder = GUIDE_BORDER;
+			mWidthBorder = (w-h)/2;
+			return h - 2*mHeightBorder;
 		}
 	}
 }
