@@ -55,6 +55,7 @@ public class DrawingView extends View{
 	protected void onDraw(Canvas c){
 		// Draw the persistent parts
 		mPainter.setColor(Color.BLACK);
+		mPainter.setAntiAlias(false);
 		
 		// Guides
 		int iGuideStep = (int)(getWidth() / mGuideNumber);
@@ -81,6 +82,7 @@ public class DrawingView extends View{
 		mPainter.setColor(mPenColor);
 		mPainter.setPathEffect(null);
 		mPainter.setStrokeWidth(mPenWidth);
+		mPainter.setAntiAlias(true);
 		
 		// If needed, add new user lines
 		if(mDrawing){

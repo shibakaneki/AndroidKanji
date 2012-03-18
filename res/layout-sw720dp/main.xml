@@ -22,12 +22,13 @@
             android:layout_width="fill_parent"
             android:layout_weight="0.50"
             android:weightSum="1.0">
-
+            
             <shiba.test.androidkanji.KanjiAnimation
             android:id="@+id/drawingView1"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="0.50"/>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.50"
+            android:background="#FFFFFF"/>
             
             <shiba.test.androidkanji.KanjiInfoView
             android:id="@+id/drawingView1"
@@ -36,11 +37,46 @@
             android:layout_weight="0.50"/>
             
         </LinearLayout>
+        
+        <LinearLayout android:orientation="horizontal"
+            android:layout_height="fill_parent"
+            android:layout_width="fill_parent"
+            android:layout_weight="0.5"
+            android:weightSum="1.0">
+            
+	        <shiba.test.androidkanji.KanjiCanvas android:id="@+id/drawingCanvas1"
+	            android:layout_width="fill_parent"
+	            android:layout_height="fill_parent"
+	            android:background="#FFFFFF"
+	            android:layout_weight="0.25"/>
+            
+	        <shiba.test.androidkanji.KanjiCanvas android:id="@+id/drawingCanvas2"
+	            android:layout_width="fill_parent"
+	            android:layout_height="fill_parent"
+	            android:background="#FFFFFF"
+	            android:layout_weight="0.25"/>
+	        
+	        <shiba.test.androidkanji.KanjiCanvas android:id="@+id/drawingCanvas3"
+	            android:layout_width="fill_parent"
+	            android:layout_height="fill_parent"
+	            android:background="#FFFFFF"
+	            android:layout_weight="0.25"/>
+	        
+	        <shiba.test.androidkanji.KanjiCanvas android:id="@+id/drawingCanvas4"
+	            android:layout_width="fill_parent"
+	            android:layout_height="fill_parent"
+	            android:background="#FFFFFF"
+	            android:layout_weight="0.25"/>
+	        
+        </LinearLayout>
+            
+        <!--
         <shiba.test.androidkanji.DrawingView
             android:id="@+id/drawingView1"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="0.50"
             android:background="#FFFFFF"/>
+         -->
     </LinearLayout>
 </LinearLayout>

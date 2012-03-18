@@ -1,19 +1,25 @@
 TODO List
 ---------
 o Implement the drawing area
-	- Create a class that will be a drawable guide and use it instead of drawing everywhere
 	- Add a button usable to clear the user strokes
+	- Add a button usable to verify the drawn strokes (hide it until version 2)
+	- Add a button usable to replay the animation
 	- Check the quality + performances
 	- Adapt this view to the handset format
+	- Interpolate curves
 o Show the animated SVG
 o Implement the kanji description view
 o Define the design of the application (splash screen, controls, colors, icons, ...)
 o Support the portait & landscape modes for tablets & handsets (tbd)
-o Define a way to switch between views on handsets
+o Define a way to switch between views on handsets (static manager for the current kanji?)
 
 Tests before production launch
 ------------------------------
 o Add some favorites and verify that they remain after an application update
+
+Ideas for later
+---------------
+o Drawing validation by checking the drawn strokes vs the kanjivg solution
 
 Bugs
 ----
