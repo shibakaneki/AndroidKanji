@@ -28,7 +28,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	public static final String KEY_STROKE_COUNT = "strokeCount";
 	public static final String KEY_FREQUENCY = "frequency";
 	public static final String KEY_JLPT = "jlpt";
-	public static final String KEY_PATH = "path";
+	public static final String KEY_PATH = "paths";
 	public static final String TABLE_ENTRIES = "entries";
 	public static final String TABLE_FAVORITES = "favorites";
 	public static final String KEY_STATE = "state";
@@ -317,5 +317,12 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 		ContentValues vals = new ContentValues();
 		vals.put(KEY_STATE, state);
 		mDb.update(TABLE_FAVORITES, vals, KEY_ID +"=" +codePoint, null);
+	}
+	
+	public Cursor getKanjiInfos(int codePoint){
+		String query = "SELECT " +KEY_JLPT +", " +KEY_PATH +" FROM " +TABLE_ENTRIES +" WHERE " +KEY_ID +"=" +codePoint;
+		Cursor c = mDb.rawQuery(query, null);
+		c.moveToFirst();
+		return c;
 	}
 }

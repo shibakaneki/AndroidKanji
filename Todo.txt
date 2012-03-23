@@ -8,7 +8,11 @@ o Implement the drawing area
 	- Adapt this view to the handset format
 	- Interpolate curves
 o Show the animated SVG
+	- Compress all path with ZLib instead of qCompress and store them into the DB
+	- Decompress the ZLib compressed datas from the DB
+	- Send the SVG content to KanjiManager
 o Implement the kanji description view
+	- Get the yomi from the XML file and store them in a specific location in the DB
 o Define the design of the application (splash screen, controls, colors, icons, ...)
 o Support the portait & landscape modes for tablets & handsets (tbd)
 o Define a way to switch between views on handsets (static manager for the current kanji?)
