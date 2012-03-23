@@ -47,37 +47,11 @@ public class KanjiListAdapter extends ArrayAdapter<KanjiInfo>{
 					
 					int jlpt = c.getInt(c.getColumnIndex(KanjiDBHelper.KEY_JLPT));
 					byte[] paths = c.getBlob(c.getColumnIndex(KanjiDBHelper.KEY_PATH));
-					// 	The datas read from the DB have been compressed with QByteArray::qCompress, from the Qt API.
-					//	This method appended 4 extra bytes at the beginning of the compressed data and thus make us
-					//	impossible to read back the compressed data. We have to remove this Qt header as well as
-					//	the ZLib header and footer in order to be able to read the GZip compressed data
-					//	The packet structure is:
-					//	| Qt | ZLib | Compressed data | ZLib |
-					// 	source: http://www.qtforum.org/article/27065/how-to-use-zlib-data-created-by-qcompress-in-gzip-file.html
 					
-					// NOTE : This part doesn't work! Datas compressed with qCompress can only be retrieved by qDecompress!
-					
-					/*if(paths.length > (QT_HEADER_SIZE)){
-						System.out.println("Removing unnecessary headers/footer from compressed data(" +paths.length +") .....");
-						ByteArrayInputStream bais = new ByteArrayInputStream(paths);
-						byte[] pathsGZip = new byte[paths.length];
-						int remainingLength = bais.read(pathsGZip, QT_HEADER_SIZE, paths.length - QT_HEADER_SIZE);
-						System.out.println("Packet ready for decompression (" +remainingLength +")");
-						bais.close();
-						
-						// TODO : read the compressed datas
-						// Decompress the bytes
-						 Inflater decompresser = new Inflater(true);
-						 decompresser.setInput(pathsGZip, 0, remainingLength);
-						 byte[] result = new byte[remainingLength];
-						 int resultLength = decompresser.inflate(result);
-						 decompresser.end();
-
-						 // Decode the bytes into a String
-						 String outputString = new String(result, 0, resultLength, "UTF-8");
-						 System.out.println(outputString);
-					}
-					*/
+					// TODO: Uncomment the next lines to start the decompression of datas
+					// Decompress the data
+					//String decompressedSVG = ZipTools.decompress(paths);
+					//System.out.println(decompressedSVG);
 					
 					mDbHelper.close();
 				} catch (SQLException e) {
