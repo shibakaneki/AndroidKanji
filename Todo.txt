@@ -1,5 +1,9 @@
 TODO List
 ---------
+o Create a script that generate my own sqlite db, based on kanjiVG & kanjiDic2
+	- Create the db with all the required fields
+	- use the created db in this Android application
+	
 o Implement the drawing area
 	- Add a button usable to clear the user strokes
 	- Add a button usable to verify the drawn strokes (hide it until version 2)
@@ -7,12 +11,15 @@ o Implement the drawing area
 	- Check the quality + performances
 	- Adapt this view to the handset format
 	- Interpolate curves
+
 o Show the animated SVG
 	- Compress all path with ZLib instead of qCompress and store them into the DB
 	- Decompress the ZLib compressed datas from the DB
 	- Send the SVG content to KanjiManager
+
 o Implement the kanji description view
 	- Get the yomi from the XML file and store them in a specific location in the DB
+
 o Define the design of the application (splash screen, controls, colors, icons, ...)
 o Support the portait & landscape modes for tablets & handsets (tbd)
 o Define a way to switch between views on handsets (static manager for the current kanji?)

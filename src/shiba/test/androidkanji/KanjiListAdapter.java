@@ -1,18 +1,8 @@
 package shiba.test.androidkanji;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.zip.DataFormatException;
-import java.util.zip.Deflater;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.Inflater;
-import java.util.zip.InflaterInputStream;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -31,9 +21,6 @@ public class KanjiListAdapter extends ArrayAdapter<KanjiInfo>{
 	private LayoutInflater mInflater;
 	private KanjiDBHelper mDbHelper;
 	private Context mCtx;
-	private final int QT_HEADER_SIZE = 4;
-	private final int ZLIB_HEADER_SIZE = 2;
-	private final int ZLIB_FOOTER_SIZE = 4;
 	
 	private OnClickListener onCharacterClicked = new OnClickListener() {
 
@@ -48,13 +35,17 @@ public class KanjiListAdapter extends ArrayAdapter<KanjiInfo>{
 					int jlpt = c.getInt(c.getColumnIndex(KanjiDBHelper.KEY_JLPT));
 					byte[] paths = c.getBlob(c.getColumnIndex(KanjiDBHelper.KEY_PATH));
 					
-					// TODO: Uncomment the next lines to start the decompression of datas
-					// Decompress the data
-					//String decompressedSVG = ZipTools.decompress(paths);
-					//System.out.println(decompressedSVG);
+					if(null != paths){
+						// TODO: Uncomment the next lines to start the decompression of datas
+						// Decompress the data
+						String decompressedSVG = ZipTools.decompress(paths);
+						System.out.println(decompressedSVG);
+					}
 					
 					mDbHelper.close();
 				} catch (SQLException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
