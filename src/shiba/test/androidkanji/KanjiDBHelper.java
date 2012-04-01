@@ -320,7 +320,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	}
 	
 	public Cursor getKanjiInfos(int codePoint){
-		String query = "SELECT " +KEY_JLPT +", " +KEY_PATH +" FROM " +TABLE_ENTRIES +" WHERE " +KEY_ID +"=" +codePoint;
+		String query = "SELECT " +KEY_JLPT +", " +KEY_PATH +", " +KEY_FREQUENCY +", " +KEY_GRADE +", " +KEY_STROKE_COUNT +" FROM " +TABLE_ENTRIES +" WHERE " +KEY_ID +"=" +codePoint;
 		Cursor c = mDb.rawQuery(query, null);
 		c.moveToFirst();
 		return c;

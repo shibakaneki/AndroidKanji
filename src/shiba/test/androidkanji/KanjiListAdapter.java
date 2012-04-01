@@ -27,21 +27,35 @@ public class KanjiListAdapter extends ArrayAdapter<KanjiInfo>{
 		@Override
 		public void onClick(View v) {
 			if(null != v){
-				// TODO : Get the kanji infos and update the other fragments
 				try {
 					mDbHelper.openDatabase();
-					System.out.println(TextTools.kanjiToCode(((TextView)v).getText().toString()));
 					Cursor c = mDbHelper.getKanjiInfos(TextTools.kanjiToCode(((TextView)v).getText().toString()));
 					
+					// Get the JLPT level
 					int jlpt = c.getInt(c.getColumnIndex(KanjiDBHelper.KEY_JLPT));
+					// Get the kanjiVG data
+					String kvg = "";
 					byte[] paths = c.getBlob(c.getColumnIndex(KanjiDBHelper.KEY_PATH));
-					
 					if(null != paths){
-						// TODO: Uncomment the next lines to start the decompression of datas
-						// Decompress the data
-						String decompressedSVG = ZipTools.decompress(paths);
-						System.out.println(decompressedSVG);
+						kvg = ZipTools.decompress(paths);
 					}
+					// Get the stroke count
+					int strokeCount = c.getInt(c.getColumnIndex(KanjiDBHelper.KEY_STROKE_COUNT));
+					// Get the frequency
+					int frequency = c.getInt(c.getColumnIndex(KanjiDBHelper.KEY_FREQUENCY));				
+					// Get the grade
+					int grade = c.getInt(c.getColumnIndex(KanjiDBHelper.KEY_GRADE));
+					
+					// TODO: Get the readings too!
+					
+					// Finally, update the current kanji
+					KanjiInfo currentKanji = new KanjiInfo(((TextView)v).getText().toString(), false);
+					currentKanji.setFrequency(frequency);
+					currentKanji.setGrade(grade);
+					currentKanji.setKVG(kvg);
+					currentKanji.setStrokeCount(strokeCount);
+					currentKanji.setJlpt(jlpt);
+					KanjiManager.setCurrentKanji(currentKanji);
 					
 					mDbHelper.close();
 				} catch (SQLException e) {
