@@ -30,11 +30,12 @@ public class KanjiListAdapter extends ArrayAdapter<KanjiInfo>{
 				// TODO : Get the kanji infos and update the other fragments
 				try {
 					mDbHelper.openDatabase();
+					System.out.println(TextTools.kanjiToCode(((TextView)v).getText().toString()));
 					Cursor c = mDbHelper.getKanjiInfos(TextTools.kanjiToCode(((TextView)v).getText().toString()));
 					
 					int jlpt = c.getInt(c.getColumnIndex(KanjiDBHelper.KEY_JLPT));
 					byte[] paths = c.getBlob(c.getColumnIndex(KanjiDBHelper.KEY_PATH));
-					System.out.println(paths);
+					
 					if(null != paths){
 						// TODO: Uncomment the next lines to start the decompression of datas
 						// Decompress the data

@@ -17,6 +17,8 @@ o Define the design of the application (splash screen, controls, colors, icons, 
 o Support the portait & landscape modes for tablets & handsets (tbd)
 o Define a way to switch between views on handsets (static manager for the current kanji?)
 
+o Clean the repository (remove deleted files)
+
 Tests before production launch
 ------------------------------
 o Add some favorites and verify that they remain after an application update
