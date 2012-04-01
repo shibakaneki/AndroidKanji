@@ -40,7 +40,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	public static final int KANJI_FILTER_N5 = 5;
 	public static final int KANJI_FILTER_FAVORITES = 6;
 	
-	private static String DB_NAME = "kanjidic2-en.db";
+	private static String DB_NAME = "kanjidb.db";
 	private final String DBVERSION_FILE = "dbversion.txt";
 	private static String FAVORITES_BACKUP_FILE = "favbkp.txt";
 	private final int FIRST_KANJI_CODE = 19968;

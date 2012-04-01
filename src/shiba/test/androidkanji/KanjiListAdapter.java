@@ -34,7 +34,7 @@ public class KanjiListAdapter extends ArrayAdapter<KanjiInfo>{
 					
 					int jlpt = c.getInt(c.getColumnIndex(KanjiDBHelper.KEY_JLPT));
 					byte[] paths = c.getBlob(c.getColumnIndex(KanjiDBHelper.KEY_PATH));
-					
+					System.out.println(paths);
 					if(null != paths){
 						// TODO: Uncomment the next lines to start the decompression of datas
 						// Decompress the data
