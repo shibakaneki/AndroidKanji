@@ -4,16 +4,23 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 
-public class KanjiInfoView extends View{
-	private Context mCtx;
+public class KanjiInfoView extends View implements IKanjiListener{
 	
 	public KanjiInfoView(Context c){
 		super(c);
-		mCtx = c;
+		init();
 	}
 
 	public KanjiInfoView(Context c, AttributeSet attrs){
 		super(c, attrs);
-		mCtx = c;
+		init();
+	}
+	
+	public void kanjiChanged(int codepoint){
+		
+	}
+	
+	private void init(){
+		KanjiManager.addKanjiListener(this);
 	}
 }

@@ -5,7 +5,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
-public class KanjiAnimation extends LinearLayout{
+public class KanjiAnimation extends LinearLayout implements IKanjiListener{
 	private Context mCtx;
 	
 	public KanjiAnimation(Context c){
@@ -23,5 +23,10 @@ public class KanjiAnimation extends LinearLayout{
 	private void init(){
 		LayoutInflater inflater = LayoutInflater.from(mCtx);
 		inflater.inflate(R.layout.kanji_anim, this);
+		KanjiManager.addKanjiListener(this);
+	}
+	
+	public void kanjiChanged(int codepoint){
+		
 	}
 }
