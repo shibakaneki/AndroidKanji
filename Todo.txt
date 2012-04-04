@@ -1,9 +1,8 @@
 TODO List
 ---------
-o Get the SVG information from the database
+
 o Show the animated SVG
-	- Decompress the ZLib compressed datas from the DB
-	- Send the SVG content to KanjiManager
+	- Show the animation
 o Implement the drawing area
 	- Add a button usable to clear the user strokes
 	- Add a button usable to verify the drawn strokes (hide it until version 2)
@@ -13,8 +12,10 @@ o Implement the drawing area
 	- Interpolate curves
 o Implement the kanji description view
 	- Get the yomi from the XML file and store them in a specific location in the DB
+	- Retrieve the yomi at the same time as the kvg info
 o Define the design of the application (splash screen, controls, colors, icons, ...)
 o Support the portait & landscape modes for tablets & handsets (tbd)
+
 o Define a way to switch between views on handsets (static manager for the current kanji?)
 
 o Clean the repository (remove deleted files)

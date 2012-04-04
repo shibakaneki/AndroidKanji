@@ -237,7 +237,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	}
 	
 	public String fetchAllKanji(){
-		String query = "SELECT e." + KEY_ID +", f." +KEY_STATE +" FROM " + TABLE_ENTRIES +" e, " +TABLE_FAVORITES +" f WHERE e." +KEY_ID +"=f." +KEY_ID +" ORDER BY e." +KEY_STROKE_COUNT;
+		String query = "SELECT e." + KEY_ID +", f." +KEY_STATE +" FROM " + TABLE_ENTRIES +" e, " +TABLE_FAVORITES +" f WHERE (e." +KEY_ID +"=f." +KEY_ID +") AND (e." +KEY_ID +">" +FIRST_KANJI_CODE +") AND (e." +KEY_ID +"<" +LAST_KANJI_CODE  +") ORDER BY e." +KEY_STROKE_COUNT;
 		return query;
 	}
 	
