@@ -18,93 +18,95 @@ public class KanjiCanvas extends View{
 		DRAWING, ANIMATION
 	}
 	
-	private Context mCtx;
-	private Paint mPainter;
-	private int mPenColor;
-	private float mPenWidth;
-	private boolean mDrawing = false;
-	private float mOldX;
-	private float mOldY;
-	private float mCrntX;
-	private float mCrntY;
-	private ArrayList<Line> mLines = new ArrayList<Line>();
+	private Context _ctx;
+	private Paint _painter;
+	private int _penColor;
+	private float _penWidth;
+	private boolean _drawing = false;
+	private float _oldX;
+	private float _oldY;
+	private float _crntX;
+	private float _crntY;
+	private ArrayList<Line> _lines = new ArrayList<Line>();
 	private final int GUIDE_BORDER = 10;
-	private int mWidthBorder;
-	private int mHeightBorder;
-	private KCMode mMode = KCMode.DRAWING;
-	private boolean mShowGrid = true;
+	private int _widthBorder;
+	private int _heightBorder;
+	private KCMode _mode = KCMode.DRAWING;
+	private boolean _showGrid = true;
+	private ArrayList<KanjiVGPathInfo> _currentKVGPaths;
 	
 	public KanjiCanvas(Context c){
 		super(c);
-		mCtx = c;
+		_ctx = c;
 		init();
 	}
 	
 	public KanjiCanvas(Context c, AttributeSet attrs){
 		super(c, attrs);
-		mCtx = c;
+		_ctx = c;
 		init();
 	}
 	
 	private void init(){
-		mPenColor = Color.BLUE;
-		mPenWidth = 7f;
-		mPainter = new Paint();
-		mPainter.setDither(true);
-		mPainter.setColor(mPenColor);
-		mPainter.setStyle(Paint.Style.STROKE);
-		mPainter.setStrokeJoin(Paint.Join.ROUND);
-		mPainter.setStrokeCap(Paint.Cap.ROUND);
-		mPainter.setStrokeWidth(mPenWidth);
+		_currentKVGPaths = new ArrayList<KanjiVGPathInfo>();
+		_penColor = Color.BLUE;
+		_penWidth = 7f;
+		_painter = new Paint();
+		_painter.setDither(true);
+		_painter.setColor(_penColor);
+		_painter.setStyle(Paint.Style.STROKE);
+		_painter.setStrokeJoin(Paint.Join.ROUND);
+		_painter.setStrokeCap(Paint.Cap.ROUND);
+		_painter.setStrokeWidth(_penWidth);
 	}
 	
 	public void setMode(KCMode mode){
-		mMode = mode;
+		_mode = mode;
 	}
 	
 	public void setGridVisible(boolean visible){
-		mShowGrid = visible;
+		_showGrid = visible;
 	}
 	
 	@Override
 	protected void onDraw(Canvas c){
 		// Draw the persistent parts
-		mPainter.setColor(Color.BLACK);
-		mPainter.setAntiAlias(false);
+		_painter.setColor(Color.BLACK);
+		_painter.setAntiAlias(false);
 		
 		// Guides
-		mPainter.setStrokeWidth(3f);
-		mPainter.setPathEffect(null);
+		_painter.setStrokeWidth(3f);
+		_painter.setPathEffect(null);
 		int guideWidth = guideWidth();
 		int guideHeight = guideWidth;
-		Rect guide = new Rect(mWidthBorder, mHeightBorder, mWidthBorder + guideWidth, mHeightBorder + guideHeight);
-		c.drawRect(guide, mPainter);
+		Rect guide = new Rect(_widthBorder, _heightBorder, _widthBorder + guideWidth, _heightBorder + guideHeight);
+		c.drawRect(guide, _painter);
 		
-		if(mShowGrid){
-			c.drawLine(mWidthBorder +guideWidth/2, mHeightBorder, mWidthBorder +guideWidth/2, mHeightBorder + guideHeight, mPainter);
-			c.drawLine(mWidthBorder, mHeightBorder + guideHeight/2, mWidthBorder + guideWidth, mHeightBorder + guideHeight/2, mPainter);
-			mPainter.setStrokeWidth(1f);
-			mPainter.setPathEffect(new DashPathEffect(new float[]{3, 3}, 0));
-			c.drawLine(mWidthBorder, mHeightBorder + guideHeight/4, mWidthBorder + guideWidth, mHeightBorder + guideHeight/4, mPainter);
-			c.drawLine(mWidthBorder, mHeightBorder + 3*guideHeight/4, mWidthBorder + guideWidth, mHeightBorder + 3*guideHeight/4, mPainter);
-			c.drawLine(mWidthBorder + guideWidth/4, mHeightBorder, mWidthBorder + guideWidth/4, mHeightBorder + guideHeight, mPainter);
-			c.drawLine(mWidthBorder + 3*guideWidth/4, mHeightBorder, mWidthBorder + 3*guideWidth/4, mHeightBorder + guideHeight, mPainter);
+		if(_showGrid){
+			c.drawLine(_widthBorder +guideWidth/2, _heightBorder, _widthBorder +guideWidth/2, _heightBorder + guideHeight, _painter);
+			c.drawLine(_widthBorder, _heightBorder + guideHeight/2, _widthBorder + guideWidth, _heightBorder + guideHeight/2, _painter);
+			_painter.setStrokeWidth(1f);
+			_painter.setPathEffect(new DashPathEffect(new float[]{3, 3}, 0));
+			c.drawLine(_widthBorder, _heightBorder + guideHeight/4, _widthBorder + guideWidth, _heightBorder + guideHeight/4, _painter);
+			c.drawLine(_widthBorder, _heightBorder + 3*guideHeight/4, _widthBorder + guideWidth, _heightBorder + 3*guideHeight/4, _painter);
+			c.drawLine(_widthBorder + guideWidth/4, _heightBorder, _widthBorder + guideWidth/4, _heightBorder + guideHeight, _painter);
+			c.drawLine(_widthBorder + 3*guideWidth/4, _heightBorder, _widthBorder + 3*guideWidth/4, _heightBorder + guideHeight, _painter);
 		}	
 		
-		mPainter.setColor(mPenColor);
-		mPainter.setPathEffect(null);
-		mPainter.setStrokeWidth(mPenWidth);
-		mPainter.setAntiAlias(true);
+		_painter.setColor(_penColor);
+		_painter.setPathEffect(null);
+		_painter.setStrokeWidth(_penWidth);
+		_painter.setAntiAlias(true);
 		
 		// If needed, add new user lines
-		if(mDrawing){
-			mLines.add(new Line(mOldX, mOldY, mCrntX, mCrntY));
+		if(_drawing){
+			_lines.add(new Line(_oldX, _oldY, _crntX, _crntY));
 		}
 		
 		// Draw the lines done by the user
-		for(int i=0; i<mLines.size(); i++){
-			Line l = mLines.get(i);
-			c.drawLine(l.xOrigin, l.yOrigin, l.xDest, l.yDest, mPainter);
+		for(int i=0; i<_lines.size(); i++){
+			Line l = _lines.get(i);
+			c.drawLine(l.xOrigin, l.yOrigin, l.xDest, l.yDest, _painter);
 		}
 	}
 	
@@ -114,34 +116,34 @@ public class KanjiCanvas extends View{
 		float y = event.getY();
 		switch(event.getAction()){
 		case MotionEvent.ACTION_DOWN:
-			if(KCMode.DRAWING == mMode && isInGuide(x, y)){
-				mDrawing = true;
-				mCrntX = event.getX();
-				mCrntY = event.getY();
-				mOldX = mCrntX;
-				mOldY = mCrntY;
+			if(KCMode.DRAWING == _mode && isInGuide(x, y)){
+				_drawing = true;
+				_crntX = event.getX();
+				_crntY = event.getY();
+				_oldX = _crntX;
+				_oldY = _crntY;
 			}
 			break;
 			
 		case MotionEvent.ACTION_MOVE:
-			if(KCMode.DRAWING == mMode && isInGuide(x, y)){
-				mDrawing = true;
-				mOldX = mCrntX;
-				mOldY = mCrntY;
-				mCrntX = event.getX();
-				mCrntY = event.getY();
+			if(KCMode.DRAWING == _mode && isInGuide(x, y)){
+				_drawing = true;
+				_oldX = _crntX;
+				_oldY = _crntY;
+				_crntX = event.getX();
+				_crntY = event.getY();
 			}
 			break;
 			
 		case MotionEvent.ACTION_UP:
-			if(KCMode.DRAWING == mMode && isInGuide(x, y)){
-				mDrawing = false;
+			if(KCMode.DRAWING == _mode && isInGuide(x, y)){
+				_drawing = false;
 			}
 			break;
 			
 		default:
-			if(KCMode.DRAWING == mMode && isInGuide(x, y)){
-				mDrawing = false;
+			if(KCMode.DRAWING == _mode && isInGuide(x, y)){
+				_drawing = false;
 			}
 			break;	
 		}
@@ -152,7 +154,7 @@ public class KanjiCanvas extends View{
 	
 	private boolean isInGuide(float x, float y){
 		int guideHeight = guideWidth();
-		if(x >= mWidthBorder && x <= mWidthBorder + guideWidth() && y >= mHeightBorder && y <= mHeightBorder + guideHeight){
+		if(x >= _widthBorder && x <= _widthBorder + guideWidth() && y >= _heightBorder && y <= _heightBorder + guideHeight){
 			return true;
 		}
 		return false;
@@ -163,13 +165,18 @@ public class KanjiCanvas extends View{
 		int h = getHeight();
 		
 		if(w < h){
-			mWidthBorder = GUIDE_BORDER;
-			mHeightBorder = (h-w)/2;
-			return w - 2*mWidthBorder;
+			_widthBorder = GUIDE_BORDER;
+			_heightBorder = (h-w)/2;
+			return w - 2*_widthBorder;
 		}else{
-			mHeightBorder = GUIDE_BORDER;
-			mWidthBorder = (w-h)/2;
-			return h - 2*mHeightBorder;
+			_heightBorder = GUIDE_BORDER;
+			_widthBorder = (w-h)/2;
+			return h - 2*_heightBorder;
 		}
+	}
+	
+	public void setCurrentPaths(ArrayList<KanjiVGPathInfo> paths){
+		_currentKVGPaths.clear();
+		_currentKVGPaths = paths;
 	}
 }
