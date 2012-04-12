@@ -7,6 +7,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -18,7 +20,12 @@ public class KanjiCanvas extends View{
 		DRAWING, ANIMATION
 	}
 	
-	private Context _ctx;
+	private final String MOVETO = "M";
+	private final String CURVETO = "C";
+	private final String RCURVETO = "c";
+	private final String POINTS_SEPARATOR = "-";
+	private final int KANJIVG_ORIGIN_WIDTH = 109;
+	
 	private Paint _painter;
 	private int _penColor;
 	private float _penWidth;
@@ -33,22 +40,26 @@ public class KanjiCanvas extends View{
 	private int _heightBorder;
 	private KCMode _mode = KCMode.DRAWING;
 	private boolean _showGrid = true;
+	private boolean _showKanjiShadow = false;
 	private ArrayList<KanjiVGPathInfo> _currentKVGPaths;
+	private ArrayList<Path> _kanjiPaths;
+	private Point _origin;
+	private float _scaleFactor;
 	
 	public KanjiCanvas(Context c){
 		super(c);
-		_ctx = c;
 		init();
 	}
 	
 	public KanjiCanvas(Context c, AttributeSet attrs){
 		super(c, attrs);
-		_ctx = c;
 		init();
 	}
 	
 	private void init(){
 		_currentKVGPaths = new ArrayList<KanjiVGPathInfo>();
+		_kanjiPaths = new ArrayList<Path>();
+		
 		_penColor = Color.BLUE;
 		_penWidth = 7f;
 		_painter = new Paint();
@@ -62,10 +73,22 @@ public class KanjiCanvas extends View{
 	
 	public void setMode(KCMode mode){
 		_mode = mode;
+		switch(mode){
+		case ANIMATION:
+			_showKanjiShadow = true;
+			break;
+		case DRAWING:
+			_showKanjiShadow = false;
+			break;
+		}
 	}
 	
 	public void setGridVisible(boolean visible){
 		_showGrid = visible;
+	}
+	
+	public void setKanjiShadowVisible(boolean visible){
+		_showKanjiShadow = visible;
 	}
 	
 	@Override
@@ -74,11 +97,23 @@ public class KanjiCanvas extends View{
 		_painter.setColor(Color.BLACK);
 		_painter.setAntiAlias(false);
 		
+		int guideWidth = guideWidth();
+		int guideHeight = guideWidth;
+		_origin = new Point(_widthBorder, _heightBorder);
+		_scaleFactor = (float)guideWidth/(float)KANJIVG_ORIGIN_WIDTH;
+		
+		if(_showKanjiShadow){
+			_painter.setColor(Color.LTGRAY);
+			_painter.setStrokeWidth(20f);
+			_painter.setPathEffect(null);
+			_painter.setAntiAlias(true);
+			drawKanjiShadow(c);
+			_painter.setColor(Color.BLACK);
+		}
+		 
 		// Guides
 		_painter.setStrokeWidth(3f);
 		_painter.setPathEffect(null);
-		int guideWidth = guideWidth();
-		int guideHeight = guideWidth;
 		Rect guide = new Rect(_widthBorder, _heightBorder, _widthBorder + guideWidth, _heightBorder + guideHeight);
 		c.drawRect(guide, _painter);
 		
@@ -91,7 +126,7 @@ public class KanjiCanvas extends View{
 			c.drawLine(_widthBorder, _heightBorder + 3*guideHeight/4, _widthBorder + guideWidth, _heightBorder + 3*guideHeight/4, _painter);
 			c.drawLine(_widthBorder + guideWidth/4, _heightBorder, _widthBorder + guideWidth/4, _heightBorder + guideHeight, _painter);
 			c.drawLine(_widthBorder + 3*guideWidth/4, _heightBorder, _widthBorder + 3*guideWidth/4, _heightBorder + guideHeight, _painter);
-		}	
+		}
 		
 		_painter.setColor(_penColor);
 		_painter.setPathEffect(null);
@@ -175,8 +210,126 @@ public class KanjiCanvas extends View{
 		}
 	}
 	
-	public void setCurrentPaths(ArrayList<KanjiVGPathInfo> paths){
+	public void flushKanjiPath(){
 		_currentKVGPaths.clear();
+	}
+	
+	public void setCurrentPaths(ArrayList<KanjiVGPathInfo> paths){
 		_currentKVGPaths = paths;
+		generatePaths();
+		invalidate();
+	}
+	
+	private void generatePaths(){
+		_kanjiPaths.clear();
+		for(int i=0; i<_currentKVGPaths.size(); i++){
+			Path path = new Path();
+			float x = 0f;	// Destination x coordinate
+			float y = 0f;	// Destination y coordinate
+			float x1 = 0f;	// Start control point x coordinate
+			float y1 = 0f;	// Start control point y coordinate
+			float x2 = 0f;	// End control point x coordinate
+			float y2 = 0f;	// End control point y coordinate
+			String desc = _currentKVGPaths.get(i).path;
+			
+			while(!desc.isEmpty()){
+				// Initialize indexes
+				int nextBlockIndex = desc.length() - 1;
+				int nextCurveIndex = desc.indexOf(CURVETO, 1);
+				int nextRCurveIndex = desc.indexOf(RCURVETO, 1);
+				
+				// Get the index of the next block
+				if(nextCurveIndex >= 0 && nextRCurveIndex >= 0){
+					nextBlockIndex = Math.min(nextCurveIndex, nextRCurveIndex);
+				}else if(nextCurveIndex >= 0){
+					nextBlockIndex = nextCurveIndex;
+				}else if(nextRCurveIndex >= 0){
+					nextBlockIndex = nextRCurveIndex;
+				}
+				
+				// Get the coordinates
+				String block = desc.substring(0, nextBlockIndex);
+				String cmd = "" +desc.charAt(0);
+				ArrayList<String> coord = new ArrayList<String>();
+				generateCoordinates(block, coord);
+				
+				// Build the path
+				if(cmd.equals(MOVETO)){
+					if(2 <= coord.size()){
+						x = _origin.x + Float.parseFloat(coord.get(0)) * _scaleFactor;
+						y = _origin.y + Float.parseFloat(coord.get(1)) * _scaleFactor;
+						path.moveTo(x, y);
+					}
+				}else if(cmd.equals(CURVETO)){
+					if(6 <= coord.size()){
+						x1 = _origin.x + Float.parseFloat(coord.get(0)) * _scaleFactor;
+						y1 = _origin.y + Float.parseFloat(coord.get(1)) * _scaleFactor;
+						x2 = _origin.x + Float.parseFloat(coord.get(2)) * _scaleFactor;
+						y2 = _origin.y + Float.parseFloat(coord.get(3)) * _scaleFactor;
+						x = _origin.x + Float.parseFloat(coord.get(4)) * _scaleFactor;
+						y = _origin.y + Float.parseFloat(coord.get(5)) * _scaleFactor;
+						path.cubicTo(x1, y1, x2, y2, x, y);
+					}
+				}else if(cmd.equals(RCURVETO)){
+					if(6 <= coord.size()){
+						x1 = Float.parseFloat(coord.get(0)) * _scaleFactor;
+						y1 = Float.parseFloat(coord.get(1)) * _scaleFactor;
+						x2 = Float.parseFloat(coord.get(2)) * _scaleFactor;
+						y2 = Float.parseFloat(coord.get(3)) * _scaleFactor;
+						x = Float.parseFloat(coord.get(4)) * _scaleFactor;
+						y = Float.parseFloat(coord.get(5)) * _scaleFactor;
+						path.rCubicTo(x1, y1, x2, y2, x, y);
+					}
+				}
+				
+				if(nextBlockIndex == desc.length() -1){
+					desc = "";
+				}else{
+					desc = desc.substring(nextBlockIndex);
+				}
+			}
+			
+			// Store the generated path
+			_kanjiPaths.add(path);
+		}
+	}
+	
+	private void generateCoordinates(String block, ArrayList<String> coords){
+		// First, remove the command
+		String remaining = block.substring(1);
+		
+		// Then get the coordinates
+		while(!remaining.isEmpty()){
+			int nextCoordIndex = remaining.length();
+			int nextSeparator = remaining.indexOf(",", 1);
+			int nextMinus = remaining.indexOf("-", 1);
+			
+			if(nextSeparator >= 0 && nextMinus >= 0){
+				nextCoordIndex = Math.min(nextSeparator, nextMinus);
+			}else if(nextSeparator >= 0){
+				nextCoordIndex = nextSeparator;
+			}else if(nextMinus >= 0){
+				nextCoordIndex = nextMinus;
+			}
+			coords.add(remaining.substring(0, nextCoordIndex));
+			
+			if(nextCoordIndex == remaining.length()){
+				remaining = "";
+			}else{
+				if(nextCoordIndex == nextMinus){
+					remaining = remaining.substring(nextCoordIndex);
+				}else{
+					remaining = remaining.substring(nextCoordIndex + 1);
+				}
+				
+			}
+		}
+	}
+	
+	private void drawKanjiShadow(Canvas c){
+		for(int i=0; i<_kanjiPaths.size(); i++){
+			c.drawPath(_kanjiPaths.get(i), _painter);
+		}
 	}
 }
+

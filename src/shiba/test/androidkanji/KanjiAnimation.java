@@ -34,12 +34,11 @@ public class KanjiAnimation extends LinearLayout implements IKanjiListener{
 	}
 	
 	public void kanjiChanged(int codepoint){
+		_canvas.flushKanjiPath();
 		String kvg = KanjiManager.kanji().kvg();
 		_parser.setCurrentKVG(kvg);
 		_parser.parse();
-		
-		System.out.println("The current kanji has " +_parser.paths().size() +" path(s)");
-		
+		System.out.println("Number of paths found: " +_parser.paths().size());
 		_canvas.setCurrentPaths(_parser.paths());
 	}
 }
