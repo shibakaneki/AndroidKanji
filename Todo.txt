@@ -2,6 +2,7 @@ TODO List
 ---------
 
 o Show the animated SVG
+	- Optimize the code for drawing the path generation
 	- Show the animation
 o Implement the drawing area
 	- Add a button usable to clear the user strokes
@@ -30,4 +31,3 @@ o Drawing validation by checking the drawn strokes vs the kanjivg solution
 
 Bugs
 ----
-o Check why some kanji are not drawn correctly and why other create a crash of the application (maybe all SVG path types are not handled?)

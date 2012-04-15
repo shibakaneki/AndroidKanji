@@ -23,7 +23,9 @@ public class KanjiCanvas extends View{
 	private final String MOVETO = "M";
 	private final String CURVETO = "C";
 	private final String RCURVETO = "c";
-	private final String POINTS_SEPARATOR = "-";
+	private final String SMOOTHCURVETO = "S";
+	private final String RSMOOTHCURVETO = "s";
+	
 	private final int KANJIVG_ORIGIN_WIDTH = 109;
 	
 	private Paint _painter;
@@ -103,10 +105,13 @@ public class KanjiCanvas extends View{
 		_scaleFactor = (float)guideWidth/(float)KANJIVG_ORIGIN_WIDTH;
 		
 		if(_showKanjiShadow){
-			_painter.setColor(Color.LTGRAY);
-			_painter.setStrokeWidth(20f);
+			_painter.setColor(Color.BLACK);
+			_painter.setStrokeWidth(16f);
 			_painter.setPathEffect(null);
 			_painter.setAntiAlias(true);
+			drawKanjiShadow(c);
+			_painter.setColor(Color.WHITE);
+			_painter.setStrokeWidth(14f);
 			drawKanjiShadow(c);
 			_painter.setColor(Color.BLACK);
 		}
@@ -231,24 +236,33 @@ public class KanjiCanvas extends View{
 			float x2 = 0f;	// End control point x coordinate
 			float y2 = 0f;	// End control point y coordinate
 			String desc = _currentKVGPaths.get(i).path;
+			String prevCmd = "";
 			
 			while(!desc.isEmpty()){
 				// Initialize indexes
 				int nextBlockIndex = desc.length() - 1;
-				int nextCurveIndex = desc.indexOf(CURVETO, 1);
-				int nextRCurveIndex = desc.indexOf(RCURVETO, 1);
 				
-				// Get the index of the next block
-				if(nextCurveIndex >= 0 && nextRCurveIndex >= 0){
-					nextBlockIndex = Math.min(nextCurveIndex, nextRCurveIndex);
-				}else if(nextCurveIndex >= 0){
-					nextBlockIndex = nextCurveIndex;
-				}else if(nextRCurveIndex >= 0){
-					nextBlockIndex = nextRCurveIndex;
+				int[] indexes = new int[4];
+				
+				indexes[0] = desc.indexOf(CURVETO, 1);
+				indexes[1] = desc.indexOf(RCURVETO, 1);
+				indexes[2] = desc.indexOf(SMOOTHCURVETO, 1);
+				indexes[3] = desc.indexOf(RSMOOTHCURVETO, 1);
+				
+				for(int j=0; j<indexes.length; j++){
+					if(0 <= indexes[j] && indexes[j] < nextBlockIndex){
+						nextBlockIndex = indexes[j];
+					}
 				}
 				
 				// Get the coordinates
-				String block = desc.substring(0, nextBlockIndex);
+				String block = "";
+				if(nextBlockIndex == desc.length() - 1){
+					block = desc.substring(0, nextBlockIndex + 1);
+				}else{
+					block = desc.substring(0, nextBlockIndex);
+				}
+				
 				String cmd = "" +desc.charAt(0);
 				ArrayList<String> coord = new ArrayList<String>();
 				generateCoordinates(block, coord);
@@ -260,29 +274,68 @@ public class KanjiCanvas extends View{
 						y = _origin.y + Float.parseFloat(coord.get(1)) * _scaleFactor;
 						path.moveTo(x, y);
 					}
-				}else if(cmd.equals(CURVETO)){
+				}else if(cmd.equals(CURVETO) || cmd.equals(RCURVETO)){
 					if(6 <= coord.size()){
-						x1 = _origin.x + Float.parseFloat(coord.get(0)) * _scaleFactor;
-						y1 = _origin.y + Float.parseFloat(coord.get(1)) * _scaleFactor;
-						x2 = _origin.x + Float.parseFloat(coord.get(2)) * _scaleFactor;
-						y2 = _origin.y + Float.parseFloat(coord.get(3)) * _scaleFactor;
-						x = _origin.x + Float.parseFloat(coord.get(4)) * _scaleFactor;
-						y = _origin.y + Float.parseFloat(coord.get(5)) * _scaleFactor;
+						float xOffset = (cmd.equals(RCURVETO)) ? 0.0f : _origin.x;
+						float yOffset = (cmd.equals(RCURVETO)) ? 0.0f : _origin.y;
+						float xPrev = x;
+						float yPrev = y;
+						x1 = xOffset + Float.parseFloat(coord.get(0)) * _scaleFactor;
+						y1 = yOffset + Float.parseFloat(coord.get(1)) * _scaleFactor;
+						x2 = xOffset + Float.parseFloat(coord.get(2)) * _scaleFactor;
+						y2 = yOffset + Float.parseFloat(coord.get(3)) * _scaleFactor;
+						x = xOffset + Float.parseFloat(coord.get(4)) * _scaleFactor;
+						y = yOffset + Float.parseFloat(coord.get(5)) * _scaleFactor;
+						if(cmd.equals(RCURVETO)){
+							path.rCubicTo(x1, y1, x2, y2, x, y);
+							x1 += xPrev;
+							y1 += yPrev;
+							x2 += xPrev;
+							y2 += yPrev;
+							x += xPrev;
+							y += yPrev;
+						}else{
+							path.cubicTo(x1, y1, x2, y2, x, y);
+						}
+					}
+				}else if(cmd.equals(SMOOTHCURVETO)){
+					if(4 <= coord.size()){
+						if(prevCmd.equals(CURVETO) || prevCmd.equals(RCURVETO) || prevCmd.equals(RSMOOTHCURVETO) || prevCmd.equals(SMOOTHCURVETO)){
+							x1 = generateSmoothX1(x, x2);
+							y1 = generateSmoothY1(y, y2);
+						}else{
+							x1 = x;
+							y1 = x;
+						}
+						x2 = _origin.x + Float.parseFloat(coord.get(0)) * _scaleFactor;
+						y2 = _origin.y + Float.parseFloat(coord.get(1)) * _scaleFactor;
+						x = _origin.x + Float.parseFloat(coord.get(2)) * _scaleFactor;
+						y = _origin.y + Float.parseFloat(coord.get(3)) * _scaleFactor;
+						
 						path.cubicTo(x1, y1, x2, y2, x, y);
 					}
-				}else if(cmd.equals(RCURVETO)){
-					if(6 <= coord.size()){
-						x1 = Float.parseFloat(coord.get(0)) * _scaleFactor;
-						y1 = Float.parseFloat(coord.get(1)) * _scaleFactor;
-						x2 = Float.parseFloat(coord.get(2)) * _scaleFactor;
-						y2 = Float.parseFloat(coord.get(3)) * _scaleFactor;
-						x = Float.parseFloat(coord.get(4)) * _scaleFactor;
-						y = Float.parseFloat(coord.get(5)) * _scaleFactor;
-						path.rCubicTo(x1, y1, x2, y2, x, y);
+				}else if(cmd.equals(RSMOOTHCURVETO)){
+					if(4 <= coord.size()){
+						if(prevCmd.equals(CURVETO) || prevCmd.equals(RCURVETO) || prevCmd.equals(RSMOOTHCURVETO) || prevCmd.equals(SMOOTHCURVETO)){
+							x1 = generateSmoothX1(x, x2);
+							y1 = generateSmoothY1(y, y2);
+						}else{
+							x1 = x;
+							y1 = x;
+						}
+						
+						x2 = x + Float.parseFloat(coord.get(0)) * _scaleFactor;
+						y2 = y + Float.parseFloat(coord.get(1)) * _scaleFactor;
+						x = x + Float.parseFloat(coord.get(2)) * _scaleFactor;
+						y = y + Float.parseFloat(coord.get(3)) * _scaleFactor;
+						
+						path.cubicTo(x1, y1, x2, y2, x, y);
 					}
 				}
 				
-				if(nextBlockIndex == desc.length() -1){
+				prevCmd = cmd;
+				
+				if(nextBlockIndex == desc.length()-1){
 					desc = "";
 				}else{
 					desc = desc.substring(nextBlockIndex);
@@ -292,6 +345,22 @@ public class KanjiCanvas extends View{
 			// Store the generated path
 			_kanjiPaths.add(path);
 		}
+	}
+	
+	private float generateSmoothX1(float xPrev, float xPrevCtrl){
+		float x = 0.0f;
+		
+		x = (2 * xPrev) - xPrevCtrl;
+
+		return x;
+	}
+	
+	private float generateSmoothY1(float yPrev, float yPrevCtrl){
+		float y = 0.0f;
+		
+		y = (2 * yPrev) - yPrevCtrl;
+		
+		return y;
 	}
 	
 	private void generateCoordinates(String block, ArrayList<String> coords){
@@ -311,17 +380,15 @@ public class KanjiCanvas extends View{
 			}else if(nextMinus >= 0){
 				nextCoordIndex = nextMinus;
 			}
+			
 			coords.add(remaining.substring(0, nextCoordIndex));
 			
-			if(nextCoordIndex == remaining.length()){
-				remaining = "";
+			if(nextCoordIndex == nextMinus){
+				remaining = remaining.substring(nextCoordIndex);
+			}else if(nextCoordIndex == remaining.length()){
+				remaining = remaining.substring(nextCoordIndex);
 			}else{
-				if(nextCoordIndex == nextMinus){
-					remaining = remaining.substring(nextCoordIndex);
-				}else{
-					remaining = remaining.substring(nextCoordIndex + 1);
-				}
-				
+				remaining = remaining.substring(nextCoordIndex + 1);
 			}
 		}
 	}
