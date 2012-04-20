@@ -22,7 +22,6 @@ import android.os.Environment;
 public class KanjiDBHelper extends SQLiteOpenHelper {
 	// TODO : rework the APP_NAME stuff in order to have the application name in only one location
 	public static final String APP_NAME =  "Kanji Notepad";
-	
 	public static final String KEY_ID = "_id";
 	public static final String KEY_GRADE = "grade";
 	public static final String KEY_STROKE_COUNT = "strokeCount";
@@ -40,9 +39,9 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	public static final int KANJI_FILTER_N5 = 5;
 	public static final int KANJI_FILTER_FAVORITES = 6;
 	
-	private static String DB_NAME = "kanjidb.db";
+	private static final String DB_NAME = "kanjidb.db";
 	private final String DBVERSION_FILE = "dbversion.txt";
-	private static String FAVORITES_BACKUP_FILE = "favbkp.txt";
+	private static final String FAVORITES_BACKUP_FILE = "favbkp.txt";
 	private final int FIRST_KANJI_CODE = 19968;
 	private final int LAST_KANJI_CODE = 40907;
 	private static final String DB_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator +APP_NAME +File.separator;
@@ -52,7 +51,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	
 	private final Context mCtx;
 	private SQLiteDatabase mDb;
-	private int currentGroup;
+	private int mCurrentGroup;
 	
 	public KanjiDBHelper(Context ctx){
 		super(ctx, DB_NAME, null, DB_VERSION);
@@ -248,7 +247,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	
 	public Cursor fetchKanji(int group){
 		String query;
-		currentGroup = group;
+		mCurrentGroup = group;
 		switch(group){
 			case KANJI_FILTER_ALL:
 				query = fetchAllKanji();
@@ -294,7 +293,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	}
 	
 	public Cursor refresh(){
-		return fetchKanji(currentGroup);
+		return fetchKanji(mCurrentGroup);
 	}
 	
 	private boolean isInFavorites(int codePoint){

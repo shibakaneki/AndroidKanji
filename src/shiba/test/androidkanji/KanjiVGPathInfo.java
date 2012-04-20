@@ -6,7 +6,7 @@ public class KanjiVGPathInfo {
 	public String path;
 	
 	public KanjiVGPathInfo(){
-		group = -1;
+		group = 0;
 		index = -1;
 		path = "";
 	}

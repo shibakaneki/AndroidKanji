@@ -1,6 +1,8 @@
 package shiba.test.androidkanji;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -8,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PathMeasure;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.AttributeSet;
@@ -25,28 +28,36 @@ public class KanjiCanvas extends View{
 	private final String RCURVETO = "c";
 	private final String SMOOTHCURVETO = "S";
 	private final String RSMOOTHCURVETO = "s";
-	
 	private final int KANJIVG_ORIGIN_WIDTH = 109;
-	
-	private Paint _painter;
-	private int _penColor;
-	private float _penWidth;
-	private boolean _drawing = false;
-	private float _oldX;
-	private float _oldY;
-	private float _crntX;
-	private float _crntY;
-	private ArrayList<Line> _lines = new ArrayList<Line>();
+	private final int SEGMENT_STEP = 200;
+	private final int ANIMATION_TIME = 100; // ms
 	private final int GUIDE_BORDER = 10;
-	private int _widthBorder;
-	private int _heightBorder;
-	private KCMode _mode = KCMode.DRAWING;
-	private boolean _showGrid = true;
-	private boolean _showKanjiShadow = false;
-	private ArrayList<KanjiVGPathInfo> _currentKVGPaths;
-	private ArrayList<Path> _kanjiPaths;
-	private Point _origin;
-	private float _scaleFactor;
+	
+	private Paint mPainter;
+	private int mPenColor;
+	private float mPenWidth;
+	private boolean mDrawing = false;
+	private float mOldX;
+	private float mOldY;
+	private float mCrntX;
+	private float mCrntY;
+	private ArrayList<Line> mLines = new ArrayList<Line>();
+	private int mWidthBorder;
+	private int mHeightBorder;
+	private KCMode mMode = KCMode.DRAWING;
+	private boolean mShowGrid = true;
+	private boolean mShowKanjiShadow = false;
+	private boolean mShowBorder = true;
+	private ArrayList<KanjiVGPathInfo> mCurrentKVGPaths;
+	private ArrayList<KanjiStroke> mKanjiPaths;
+	private Point mOrigin;
+	private float mScaleFactor;
+	private int[] mColors = new int[]{Color.BLACK, Color.rgb(0x0d, 0x5b, 0xa6), Color.rgb(0xce, 0x34, 0x34), Color.rgb(0x04, 0x9a, 0x40), Color.rgb(0xe6, 0xa6, 0x00), Color.rgb(0xd2, 0x7d, 0x8e), Color.BLUE, Color.RED, Color.GREEN, Color.CYAN, Color.MAGENTA, Color.YELLOW};
+	private Canvas mCanvas = null;
+	private int mGuideWidth;
+	private int mGuideHeight;
+	private boolean mAnimationInProgress = false;
+	private ArrayList<KanjiStroke> mAnimationPaths;
 	
 	public KanjiCanvas(Context c){
 		super(c);
@@ -59,131 +70,157 @@ public class KanjiCanvas extends View{
 	}
 	
 	private void init(){
-		_currentKVGPaths = new ArrayList<KanjiVGPathInfo>();
-		_kanjiPaths = new ArrayList<Path>();
-		
-		_penColor = Color.BLUE;
-		_penWidth = 7f;
-		_painter = new Paint();
-		_painter.setDither(true);
-		_painter.setColor(_penColor);
-		_painter.setStyle(Paint.Style.STROKE);
-		_painter.setStrokeJoin(Paint.Join.ROUND);
-		_painter.setStrokeCap(Paint.Cap.ROUND);
-		_painter.setStrokeWidth(_penWidth);
+		mColors[0] = Color.BLACK;
+		mCurrentKVGPaths = new ArrayList<KanjiVGPathInfo>();
+		mKanjiPaths = new ArrayList<KanjiStroke>();
+		mAnimationPaths = new ArrayList<KanjiStroke>();
+		mPenColor = Color.BLUE;
+		mPenWidth = 7f;
+		mPainter = new Paint();
+		mPainter.setDither(true);
+		mPainter.setColor(mPenColor);
+		mPainter.setStyle(Paint.Style.STROKE);
+		mPainter.setStrokeJoin(Paint.Join.ROUND);
+		mPainter.setStrokeCap(Paint.Cap.ROUND);
+		mPainter.setStrokeWidth(mPenWidth);
 	}
 	
 	public void setMode(KCMode mode){
-		_mode = mode;
+		mMode = mode;
 		switch(mode){
 		case ANIMATION:
-			_showKanjiShadow = true;
+			mShowKanjiShadow = true;
 			break;
 		case DRAWING:
-			_showKanjiShadow = false;
+			mShowKanjiShadow = false;
 			break;
 		}
 	}
 	
 	public void setGridVisible(boolean visible){
-		_showGrid = visible;
+		mShowGrid = visible;
 	}
 	
 	public void setKanjiShadowVisible(boolean visible){
-		_showKanjiShadow = visible;
+		mShowKanjiShadow = visible;
 	}
 	
 	@Override
 	protected void onDraw(Canvas c){
-		// Draw the persistent parts
-		_painter.setColor(Color.BLACK);
-		_painter.setAntiAlias(false);
+		mCanvas = c;
 		
-		int guideWidth = guideWidth();
-		int guideHeight = guideWidth;
-		_origin = new Point(_widthBorder, _heightBorder);
-		_scaleFactor = (float)guideWidth/(float)KANJIVG_ORIGIN_WIDTH;
+		initPainting();
 		
-		if(_showKanjiShadow){
-			_painter.setColor(Color.BLACK);
-			_painter.setStrokeWidth(16f);
-			_painter.setPathEffect(null);
-			_painter.setAntiAlias(true);
-			drawKanjiShadow(c);
-			_painter.setColor(Color.WHITE);
-			_painter.setStrokeWidth(14f);
-			drawKanjiShadow(c);
-			_painter.setColor(Color.BLACK);
-		}
-		 
-		// Guides
-		_painter.setStrokeWidth(3f);
-		_painter.setPathEffect(null);
-		Rect guide = new Rect(_widthBorder, _heightBorder, _widthBorder + guideWidth, _heightBorder + guideHeight);
-		c.drawRect(guide, _painter);
-		
-		if(_showGrid){
-			c.drawLine(_widthBorder +guideWidth/2, _heightBorder, _widthBorder +guideWidth/2, _heightBorder + guideHeight, _painter);
-			c.drawLine(_widthBorder, _heightBorder + guideHeight/2, _widthBorder + guideWidth, _heightBorder + guideHeight/2, _painter);
-			_painter.setStrokeWidth(1f);
-			_painter.setPathEffect(new DashPathEffect(new float[]{3, 3}, 0));
-			c.drawLine(_widthBorder, _heightBorder + guideHeight/4, _widthBorder + guideWidth, _heightBorder + guideHeight/4, _painter);
-			c.drawLine(_widthBorder, _heightBorder + 3*guideHeight/4, _widthBorder + guideWidth, _heightBorder + 3*guideHeight/4, _painter);
-			c.drawLine(_widthBorder + guideWidth/4, _heightBorder, _widthBorder + guideWidth/4, _heightBorder + guideHeight, _painter);
-			c.drawLine(_widthBorder + 3*guideWidth/4, _heightBorder, _widthBorder + 3*guideWidth/4, _heightBorder + guideHeight, _painter);
+		if(mShowBorder){
+			drawBorder();
 		}
 		
-		_painter.setColor(_penColor);
-		_painter.setPathEffect(null);
-		_painter.setStrokeWidth(_penWidth);
-		_painter.setAntiAlias(true);
-		
-		// If needed, add new user lines
-		if(_drawing){
-			_lines.add(new Line(_oldX, _oldY, _crntX, _crntY));
+		if(mShowGrid){
+			drawGrid();
 		}
 		
-		// Draw the lines done by the user
-		for(int i=0; i<_lines.size(); i++){
-			Line l = _lines.get(i);
-			c.drawLine(l.xOrigin, l.yOrigin, l.xDest, l.yDest, _painter);
+		if(mShowKanjiShadow){
+			drawPrettyShadow();
 		}
+		
+		if(KCMode.DRAWING == mMode){
+			mPainter.setColor(mPenColor);
+			mPainter.setPathEffect(null);
+			mPainter.setStrokeWidth(mPenWidth);
+			mPainter.setAntiAlias(true);
+			
+			// If needed, add new user lines
+			if(mDrawing){
+				mLines.add(new Line(mOldX, mOldY, mCrntX, mCrntY));
+			}
+			
+			// Draw the lines done by the user
+			for(int i=0; i<mLines.size(); i++){
+				Line l = mLines.get(i);
+				mCanvas.drawLine(l.xOrigin, l.yOrigin, l.xDest, l.yDest, mPainter);
+			}
+		}else if(KCMode.ANIMATION == mMode){
+			drawAnimatedSegments();
+		}
+
 	}
 	
+	private void drawPrettyShadow(){
+		mPainter.setColor(Color.BLACK);
+		mPainter.setStrokeWidth(16f);
+		mPainter.setPathEffect(null);
+		mPainter.setAntiAlias(true);
+		drawKanjiShadow();
+		mPainter.setColor(Color.WHITE);
+		mPainter.setStrokeWidth(14f);
+		drawKanjiShadow();
+		mPainter.setColor(Color.BLACK);
+	}
+	
+	private void drawGrid(){
+		mPainter.setStrokeWidth(3f);
+		mPainter.setPathEffect(null);
+		mCanvas.drawLine(mWidthBorder +mGuideWidth/2, mHeightBorder, mWidthBorder +mGuideWidth/2, mHeightBorder + mGuideHeight, mPainter);
+		mCanvas.drawLine(mWidthBorder, mHeightBorder + mGuideHeight/2, mWidthBorder + mGuideWidth, mHeightBorder + mGuideHeight/2, mPainter);
+		mPainter.setStrokeWidth(1f);
+		mPainter.setPathEffect(new DashPathEffect(new float[]{3, 3}, 0));
+		mCanvas.drawLine(mWidthBorder, mHeightBorder + mGuideHeight/4, mWidthBorder + mGuideWidth, mHeightBorder + mGuideHeight/4, mPainter);
+		mCanvas.drawLine(mWidthBorder, mHeightBorder + 3*mGuideHeight/4, mWidthBorder + mGuideWidth, mHeightBorder + 3*mGuideHeight/4, mPainter);
+		mCanvas.drawLine(mWidthBorder + mGuideWidth/4, mHeightBorder, mWidthBorder + mGuideWidth/4, mHeightBorder + mGuideHeight, mPainter);
+		mCanvas.drawLine(mWidthBorder + 3*mGuideWidth/4, mHeightBorder, mWidthBorder + 3*mGuideWidth/4, mHeightBorder + mGuideHeight, mPainter);
+	}
+	
+	private void drawBorder(){
+		mPainter.setStrokeWidth(3f);
+		mPainter.setPathEffect(null);
+		Rect guide = new Rect(mWidthBorder, mHeightBorder, mWidthBorder + mGuideWidth, mHeightBorder + mGuideHeight);
+		mCanvas.drawRect(guide, mPainter);
+	}
+	
+	private void initPainting(){
+		mPainter.setColor(Color.BLACK);
+		mPainter.setAntiAlias(false);
+		
+		mGuideWidth = guideWidth();
+		mGuideHeight = mGuideWidth;
+		mOrigin = new Point(mWidthBorder, mHeightBorder);
+		mScaleFactor = (float)mGuideWidth/(float)KANJIVG_ORIGIN_WIDTH;
+	}
+
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		float x = event.getX();
 		float y = event.getY();
 		switch(event.getAction()){
 		case MotionEvent.ACTION_DOWN:
-			if(KCMode.DRAWING == _mode && isInGuide(x, y)){
-				_drawing = true;
-				_crntX = event.getX();
-				_crntY = event.getY();
-				_oldX = _crntX;
-				_oldY = _crntY;
+			if(KCMode.DRAWING == mMode && isInGuide(x, y)){
+				mDrawing = true;
+				mCrntX = event.getX();
+				mCrntY = event.getY();
+				mOldX = mCrntX;
+				mOldY = mCrntY;
 			}
 			break;
 			
 		case MotionEvent.ACTION_MOVE:
-			if(KCMode.DRAWING == _mode && isInGuide(x, y)){
-				_drawing = true;
-				_oldX = _crntX;
-				_oldY = _crntY;
-				_crntX = event.getX();
-				_crntY = event.getY();
+			if(KCMode.DRAWING == mMode && isInGuide(x, y)){
+				mDrawing = true;
+				mOldX = mCrntX;
+				mOldY = mCrntY;
+				mCrntX = event.getX();
+				mCrntY = event.getY();
 			}
 			break;
 			
 		case MotionEvent.ACTION_UP:
-			if(KCMode.DRAWING == _mode && isInGuide(x, y)){
-				_drawing = false;
+			if(KCMode.DRAWING == mMode && isInGuide(x, y)){
+				mDrawing = false;
 			}
 			break;
 			
 		default:
-			if(KCMode.DRAWING == _mode && isInGuide(x, y)){
-				_drawing = false;
+			if(KCMode.DRAWING == mMode && isInGuide(x, y)){
+				mDrawing = false;
 			}
 			break;	
 		}
@@ -192,42 +229,49 @@ public class KanjiCanvas extends View{
 		return true;
 	}
 	
+	
 	private boolean isInGuide(float x, float y){
 		int guideHeight = guideWidth();
-		if(x >= _widthBorder && x <= _widthBorder + guideWidth() && y >= _heightBorder && y <= _heightBorder + guideHeight){
+		if(x >= mWidthBorder && x <= mWidthBorder + guideWidth() && y >= mHeightBorder && y <= mHeightBorder + guideHeight){
 			return true;
 		}
 		return false;
 	}
+	
 	
 	private int guideWidth(){
 		int w = getWidth();
 		int h = getHeight();
 		
 		if(w < h){
-			_widthBorder = GUIDE_BORDER;
-			_heightBorder = (h-w)/2;
-			return w - 2*_widthBorder;
+			mWidthBorder = GUIDE_BORDER;
+			mHeightBorder = (h-w)/2;
+			return w - 2*mWidthBorder;
 		}else{
-			_heightBorder = GUIDE_BORDER;
-			_widthBorder = (w-h)/2;
-			return h - 2*_heightBorder;
+			mHeightBorder = GUIDE_BORDER;
+			mWidthBorder = (w-h)/2;
+			return h - 2*mHeightBorder;
 		}
 	}
 	
+	
 	public void flushKanjiPath(){
-		_currentKVGPaths.clear();
+		mCurrentKVGPaths.clear();
 	}
 	
+	
 	public void setCurrentPaths(ArrayList<KanjiVGPathInfo> paths){
-		_currentKVGPaths = paths;
+		mCurrentKVGPaths = paths;
 		generatePaths();
 		invalidate();
 	}
 	
+	
 	private void generatePaths(){
-		_kanjiPaths.clear();
-		for(int i=0; i<_currentKVGPaths.size(); i++){
+		mKanjiPaths.clear();
+		for(int i=0; i<mCurrentKVGPaths.size(); i++){
+			KanjiStroke stroke = new KanjiStroke();
+			stroke.group = mCurrentKVGPaths.get(i).group;
 			Path path = new Path();
 			float x = 0f;	// Destination x coordinate
 			float y = 0f;	// Destination y coordinate
@@ -235,7 +279,7 @@ public class KanjiCanvas extends View{
 			float y1 = 0f;	// Start control point y coordinate
 			float x2 = 0f;	// End control point x coordinate
 			float y2 = 0f;	// End control point y coordinate
-			String desc = _currentKVGPaths.get(i).path;
+			String desc = mCurrentKVGPaths.get(i).path;
 			String prevCmd = "";
 			
 			while(!desc.isEmpty()){
@@ -270,22 +314,22 @@ public class KanjiCanvas extends View{
 				// Build the path
 				if(cmd.equals(MOVETO)){
 					if(2 <= coord.size()){
-						x = _origin.x + Float.parseFloat(coord.get(0)) * _scaleFactor;
-						y = _origin.y + Float.parseFloat(coord.get(1)) * _scaleFactor;
+						x = mOrigin.x + Float.parseFloat(coord.get(0)) * mScaleFactor;
+						y = mOrigin.y + Float.parseFloat(coord.get(1)) * mScaleFactor;
 						path.moveTo(x, y);
 					}
 				}else if(cmd.equals(CURVETO) || cmd.equals(RCURVETO)){
 					if(6 <= coord.size()){
-						float xOffset = (cmd.equals(RCURVETO)) ? 0.0f : _origin.x;
-						float yOffset = (cmd.equals(RCURVETO)) ? 0.0f : _origin.y;
+						float xOffset = (cmd.equals(RCURVETO)) ? 0.0f : mOrigin.x;
+						float yOffset = (cmd.equals(RCURVETO)) ? 0.0f : mOrigin.y;
 						float xPrev = x;
 						float yPrev = y;
-						x1 = xOffset + Float.parseFloat(coord.get(0)) * _scaleFactor;
-						y1 = yOffset + Float.parseFloat(coord.get(1)) * _scaleFactor;
-						x2 = xOffset + Float.parseFloat(coord.get(2)) * _scaleFactor;
-						y2 = yOffset + Float.parseFloat(coord.get(3)) * _scaleFactor;
-						x = xOffset + Float.parseFloat(coord.get(4)) * _scaleFactor;
-						y = yOffset + Float.parseFloat(coord.get(5)) * _scaleFactor;
+						x1 = xOffset + Float.parseFloat(coord.get(0)) * mScaleFactor;
+						y1 = yOffset + Float.parseFloat(coord.get(1)) * mScaleFactor;
+						x2 = xOffset + Float.parseFloat(coord.get(2)) * mScaleFactor;
+						y2 = yOffset + Float.parseFloat(coord.get(3)) * mScaleFactor;
+						x = xOffset + Float.parseFloat(coord.get(4)) * mScaleFactor;
+						y = yOffset + Float.parseFloat(coord.get(5)) * mScaleFactor;
 						if(cmd.equals(RCURVETO)){
 							path.rCubicTo(x1, y1, x2, y2, x, y);
 							x1 += xPrev;
@@ -307,10 +351,10 @@ public class KanjiCanvas extends View{
 							x1 = x;
 							y1 = x;
 						}
-						x2 = _origin.x + Float.parseFloat(coord.get(0)) * _scaleFactor;
-						y2 = _origin.y + Float.parseFloat(coord.get(1)) * _scaleFactor;
-						x = _origin.x + Float.parseFloat(coord.get(2)) * _scaleFactor;
-						y = _origin.y + Float.parseFloat(coord.get(3)) * _scaleFactor;
+						x2 = mOrigin.x + Float.parseFloat(coord.get(0)) * mScaleFactor;
+						y2 = mOrigin.y + Float.parseFloat(coord.get(1)) * mScaleFactor;
+						x = mOrigin.x + Float.parseFloat(coord.get(2)) * mScaleFactor;
+						y = mOrigin.y + Float.parseFloat(coord.get(3)) * mScaleFactor;
 						
 						path.cubicTo(x1, y1, x2, y2, x, y);
 					}
@@ -324,10 +368,10 @@ public class KanjiCanvas extends View{
 							y1 = x;
 						}
 						
-						x2 = x + Float.parseFloat(coord.get(0)) * _scaleFactor;
-						y2 = y + Float.parseFloat(coord.get(1)) * _scaleFactor;
-						x = x + Float.parseFloat(coord.get(2)) * _scaleFactor;
-						y = y + Float.parseFloat(coord.get(3)) * _scaleFactor;
+						x2 = x + Float.parseFloat(coord.get(0)) * mScaleFactor;
+						y2 = y + Float.parseFloat(coord.get(1)) * mScaleFactor;
+						x = x + Float.parseFloat(coord.get(2)) * mScaleFactor;
+						y = y + Float.parseFloat(coord.get(3)) * mScaleFactor;
 						
 						path.cubicTo(x1, y1, x2, y2, x, y);
 					}
@@ -343,9 +387,11 @@ public class KanjiCanvas extends View{
 			}
 			
 			// Store the generated path
-			_kanjiPaths.add(path);
+			stroke.path = path;
+			mKanjiPaths.add(stroke);
 		}
 	}
+	
 	
 	private float generateSmoothX1(float xPrev, float xPrevCtrl){
 		float x = 0.0f;
@@ -355,6 +401,7 @@ public class KanjiCanvas extends View{
 		return x;
 	}
 	
+	
 	private float generateSmoothY1(float yPrev, float yPrevCtrl){
 		float y = 0.0f;
 		
@@ -362,6 +409,7 @@ public class KanjiCanvas extends View{
 		
 		return y;
 	}
+	
 	
 	private void generateCoordinates(String block, ArrayList<String> coords){
 		// First, remove the command
@@ -393,10 +441,90 @@ public class KanjiCanvas extends View{
 		}
 	}
 	
-	private void drawKanjiShadow(Canvas c){
-		for(int i=0; i<_kanjiPaths.size(); i++){
-			c.drawPath(_kanjiPaths.get(i), _painter);
+	
+	private void drawKanjiShadow(){
+		for(int i=0; i<mKanjiPaths.size(); i++){
+			mCanvas.drawPath(mKanjiPaths.get(i).path, mPainter);
+		}
+	}
+	
+	private void drawAnimatedSegments(){
+		for(int i=0; i<mAnimationPaths.size(); i++){
+			KanjiStroke stroke = mAnimationPaths.get(i);
+			mPainter.setColor(mColors[stroke.group]);
+			mPainter.setStrokeWidth(14f);
+			mCanvas.drawPath(stroke.path, mPainter);
+		}
+	}
+	
+	private void generateNextSegment(){
+		mAnimationPaths.clear();
+		for(int i=0; i<mKanjiPaths.size(); i++){
+			KanjiStroke stroke = mKanjiPaths.get(i);
+			System.out.println("current stroke group:" +stroke.group);
+			
+			if(stroke.group < 0){
+				stroke.group = 0;
+			}
+			
+			if(!stroke.done){
+				KanjiStroke incompleteStroke = new KanjiStroke();
+				incompleteStroke.group = stroke.group;
+				PathMeasure pm = new PathMeasure();
+				pm.setPath(stroke.path, false);				
+				float endOfSegment = (stroke.currentSegment + SEGMENT_STEP < pm.getLength()) ? stroke.currentSegment + SEGMENT_STEP : pm.getLength();
+				pm.getSegment(0f/*stroke.currentSegment*/, endOfSegment, incompleteStroke.path, true);
+
+				mAnimationPaths.add(incompleteStroke);
+				
+				if(endOfSegment == pm.getLength()){
+					stroke.done = true;
+				}else{
+					stroke.currentSegment = endOfSegment;
+				}
+				return;
+			}else{
+				KanjiStroke fullStroke = new KanjiStroke(stroke);
+				mAnimationPaths.add(fullStroke);
+			}
+		}
+		mAnimationInProgress = false;
+	}
+	
+	public void startAnimation(){
+		if(mAnimationInProgress){
+			pauseAnimation();
+			for(int i=0; i<mKanjiPaths.size(); i++){
+				KanjiStroke stroke = mKanjiPaths.get(i);
+				stroke.done = false;
+				stroke.currentSegment = 0f;
+			}
+		}
+		mAnimationInProgress = true;
+		
+		// Test
+		while(mAnimationInProgress){
+			generateNextSegment();
+		}
+		// Test
+		
+	}
+	
+	public void pauseAnimation(){
+		mAnimationInProgress = false;
+	}
+	
+	public void nextStroke(){
+		
+	}
+	
+	public void previousStroke(){
+		
+	}
+	
+	public void clearCanvas(){
+		if(KCMode.DRAWING == mMode){
+			mLines.clear();
 		}
 	}
 }
-

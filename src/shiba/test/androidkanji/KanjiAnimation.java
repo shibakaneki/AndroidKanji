@@ -7,38 +7,38 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
 public class KanjiAnimation extends LinearLayout implements IKanjiListener{
-	private Context _ctx;
-	private KanjiCanvas _canvas;
-	private KanjiVGParser _parser;
+	private Context mCtx;
+	private KanjiCanvas mCanvas;
+	private KanjiVGParser mParser;
 	
 	public KanjiAnimation(Context c){
 		super(c);
-		_ctx = c;
+		mCtx = c;
 		init();
 	}
 	
 	public KanjiAnimation(Context c, AttributeSet attrs){
 		super(c, attrs);
-		_ctx = c;
+		mCtx = c;
 		init();
 	}
 	
 	private void init(){
-		LayoutInflater inflater = LayoutInflater.from(_ctx);
+		LayoutInflater inflater = LayoutInflater.from(mCtx);
 		inflater.inflate(R.layout.kanji_anim, this);
 		KanjiManager.addKanjiListener(this);
-		_parser = new KanjiVGParser();
-		//_kanjiListView = (KanjiListView)findViewById(R.id.kanjiListView1);
-		_canvas = (KanjiCanvas)findViewById(R.id.kanjiAnimationCanvas);
-		_canvas.setMode(KCMode.ANIMATION);
+		mParser = new KanjiVGParser();
+		mCanvas = (KanjiCanvas)findViewById(R.id.kanjiAnimationCanvas);
+		mCanvas.setMode(KCMode.ANIMATION);
 	}
 	
 	public void kanjiChanged(int codepoint){
-		_canvas.flushKanjiPath();
-		String kvg = KanjiManager.kanji().kvg();
-		_parser.setCurrentKVG(kvg);
-		_parser.parse();
-		System.out.println("Number of paths found: " +_parser.paths().size());
-		_canvas.setCurrentPaths(_parser.paths());
+		mCanvas.flushKanjiPath();
+		mParser.kvg = KanjiManager.kanji().kvg;
+		mParser.parse();
+		mCanvas.setCurrentPaths(mParser.pathInfo);
+		
+		// By default, the animation is started automatically when the kanji changes
+		mCanvas.startAnimation();
 	}
 }

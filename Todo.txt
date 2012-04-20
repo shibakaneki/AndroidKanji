@@ -2,8 +2,10 @@ TODO List
 ---------
 
 o Show the animated SVG
-	- Optimize the code for drawing the path generation
 	- Show the animation
+		. Fix the group number issue
+		. Animate the drawing
+		
 o Implement the drawing area
 	- Add a button usable to clear the user strokes
 	- Add a button usable to verify the drawn strokes (hide it until version 2)

@@ -28,37 +28,25 @@ public class KanjiVGParser extends DefaultHandler{
 	private final String GROUP_TAG = "-g";
 	private final String STROKE_TAG = "-s";
 	
-	private String _kvg;
-	private ArrayList<KanjiVGPathInfo> _pathInfo;
-	private int _currentGroup;
-	private int _currentStrokeIndex;
-	private KanjiVGPathInfo _currentKVGInfo;
-	private boolean _firstLevelGroupSet;
-	private int _groupStackLevel;
+	public String kvg;
+	public ArrayList<KanjiVGPathInfo> pathInfo;
+	private int mCurrentGroup;
+	private int mCurrentStrokeIndex;
+	private KanjiVGPathInfo mCurrentKVGInfo;
+	private boolean mFirstLevelGroupSet;
+	private int mGroupStackLevel;
 	
 	public KanjiVGParser(){
-		_kvg = "";
-		_pathInfo = new ArrayList<KanjiVGPathInfo>();
-	}
-	
-	public void setCurrentKVG(String kvg){
-		_kvg = kvg;
-	}
-	
-	public String kvg(){
-		return _kvg;
-	}
-	
-	public ArrayList<KanjiVGPathInfo> paths(){
-		return _pathInfo;
+		kvg = "";
+		pathInfo = new ArrayList<KanjiVGPathInfo>();
 	}
 	
 	public void parse(){
 		try{
-			_firstLevelGroupSet = false;
-			_groupStackLevel = 0;
+			mFirstLevelGroupSet = false;
+			mGroupStackLevel = 0;
 			
-			InputStream input = new ByteArrayInputStream(_kvg.getBytes());
+			InputStream input = new ByteArrayInputStream(kvg.getBytes());
 	        Reader reader = new InputStreamReader(input,"UTF-8");
 			InputSource is = new InputSource(reader);
 			is.setEncoding("UTF-8");
@@ -130,34 +118,35 @@ public class KanjiVGParser extends DefaultHandler{
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException{
 		
 		if(qName.equals(GROUP)){
-			if(!_firstLevelGroupSet){
+			if(!mFirstLevelGroupSet){
 				int group = getGroup(attributes);
 				if(0 <= group){
-					_currentGroup = group;
-					_firstLevelGroupSet = true;
+					mCurrentGroup = group;
+					mFirstLevelGroupSet = true;
 				}
 			}
-			_groupStackLevel++;
+			mGroupStackLevel++;
 		}else if(qName.equals(PATH)){
-			_currentStrokeIndex = getStrokeIndex(attributes);
-			_currentKVGInfo = new KanjiVGPathInfo();
-			_currentKVGInfo.group = _currentGroup;
-			_currentKVGInfo.index = _currentStrokeIndex;
-			_currentKVGInfo.path = getPathData(attributes);
+			mCurrentStrokeIndex = getStrokeIndex(attributes);
+			mCurrentKVGInfo = new KanjiVGPathInfo();
+			mCurrentKVGInfo.group = mCurrentGroup;
+			mCurrentKVGInfo.index = mCurrentStrokeIndex;
+			mCurrentKVGInfo.path = getPathData(attributes);
 		}
 	}
 	
 	public void endElement(String uri, String localName, String qName) throws SAXException{
 		// If the element was a group, store it in the list
 		if(qName.equals(GROUP)){
-			_groupStackLevel--;
-			if(0 == _groupStackLevel){
-				_firstLevelGroupSet = false;
-				_currentGroup = -1;
-				_currentStrokeIndex = -1;
+			mGroupStackLevel--;
+			if(0 == mGroupStackLevel){
+				mFirstLevelGroupSet = false;
+				mCurrentGroup = -1;
+				mCurrentStrokeIndex = -1;
 			}
 		}else if(qName.equals(PATH)){
-			_pathInfo.add(_currentKVGInfo);
+			pathInfo.add(mCurrentKVGInfo);
+			mFirstLevelGroupSet = false;
 		}else if(qName.equals(KANJI)){
 			// NOTE: 	It seems that the strokes are already in the right order in the KVG description
 			//			If it is not the case, reorder the strokes here

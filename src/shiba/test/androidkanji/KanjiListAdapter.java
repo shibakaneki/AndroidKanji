@@ -17,7 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class KanjiListAdapter extends ArrayAdapter<KanjiInfo>{
-	private ArrayList<KanjiInfo> items;
+	private ArrayList<KanjiInfo> mItems;
 	private LayoutInflater mInflater;
 	private KanjiDBHelper mDbHelper;
 	private Context mCtx;
@@ -50,11 +50,11 @@ public class KanjiListAdapter extends ArrayAdapter<KanjiInfo>{
 					
 					// Finally, update the current kanji
 					KanjiInfo currentKanji = new KanjiInfo(((TextView)v).getText().toString(), false);
-					currentKanji.setFrequency(frequency);
-					currentKanji.setGrade(grade);
-					currentKanji.setKVG(kvg);
-					currentKanji.setStrokeCount(strokeCount);
-					currentKanji.setJlpt(jlpt);
+					currentKanji.frequency = frequency;
+					currentKanji.grade = grade;
+					currentKanji.kvg = kvg;
+					currentKanji.strokeCount = strokeCount;
+					currentKanji.jlpt = jlpt;
 					KanjiManager.setCurrentKanji(currentKanji);
 					
 					mDbHelper.close();
@@ -73,10 +73,10 @@ public class KanjiListAdapter extends ArrayAdapter<KanjiInfo>{
 		public void onClick(View v) {
 			if(null != v){
 				int position = Integer.parseInt(v.getTag().toString());
-				KanjiInfo ki = items.get(position);
+				KanjiInfo ki = mItems.get(position);
 				ki.toggleFavorite();
 				Drawable d;
-				if(ki.favorite()){
+				if(ki.favorite){
 					d = mCtx.getResources().getDrawable(R.drawable.favfull);
 				}else{
 					d = mCtx.getResources().getDrawable(R.drawable.favempty);
@@ -86,7 +86,7 @@ public class KanjiListAdapter extends ArrayAdapter<KanjiInfo>{
 				
 				try {
 					mDbHelper.openDatabase();
-					mDbHelper.toggleFavorite(TextTools.kanjiToCode(ki.kanji()));
+					mDbHelper.toggleFavorite(ki.codePoint);
 					mDbHelper.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
@@ -98,14 +98,14 @@ public class KanjiListAdapter extends ArrayAdapter<KanjiInfo>{
 	public KanjiListAdapter(Context context, int textViewResourceId, ArrayList<KanjiInfo> items) {
 		super(context, textViewResourceId, items);
 		mCtx = context;
-		this.items = items;
+		mItems = items;
 		mInflater = LayoutInflater.from(context);
 		mDbHelper = new KanjiDBHelper(context);
 	}
 
 	@Override
 	public int getCount() {
-		return items.size();
+		return mItems.size();
 	}
 
 	
@@ -118,17 +118,17 @@ public class KanjiListAdapter extends ArrayAdapter<KanjiInfo>{
 			row = (LinearLayout)convertView;
 		}
 			
-		KanjiInfo ki = items.get(position);
+		KanjiInfo ki = mItems.get(position);
 		
 		TextView character = (TextView)row.findViewById(R.id.text1);
 		ImageView star = (ImageView)row.findViewById(R.id.favoriteStar);
 		character.setOnClickListener(onCharacterClicked);
 		star.setOnClickListener(onFavoriteClicked);
 		
-		character.setText(ki.kanji());
+		character.setText(ki.kanji);
 		
 		Drawable d;
-		if(ki.favorite()){
+		if(ki.favorite){
 			d = mCtx.getResources().getDrawable(R.drawable.favfull);
 		}else{
 			d = mCtx.getResources().getDrawable(R.drawable.favempty);

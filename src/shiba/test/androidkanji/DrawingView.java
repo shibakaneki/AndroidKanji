@@ -13,8 +13,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 public class DrawingView extends View{
-
-	private Context mCtx;
 	private Paint mPainter;
 	private int mPenColor;
 	private float mPenWidth;
@@ -29,13 +27,11 @@ public class DrawingView extends View{
 	
 	public DrawingView(Context c){
 		super(c);
-		mCtx = c;
 		initPainter();
 	}
 	
 	public DrawingView(Context c, AttributeSet attrs){
 		super(c, attrs);
-		mCtx = c;
 		initPainter();
 	}
 	

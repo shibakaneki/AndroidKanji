@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class KanjiManager {
 
-	private static KanjiInfo mKanji;
+	public static KanjiInfo kanjiInfo;
 	private static ArrayList<IKanjiListener> mListeners = new ArrayList<IKanjiListener>();
 	
 	public KanjiManager(){
@@ -12,13 +12,12 @@ public class KanjiManager {
 	}
 
 	public static void setCurrentKanji(KanjiInfo kanji){
-		mKanji = kanji;
-		// TODO: Send an intent to notify everyone that the kanji has changed
+		kanjiInfo = kanji;
 		notifyKanjiChanged();
 	}
 	
 	public static KanjiInfo kanji(){
-		return mKanji;
+		return kanjiInfo;
 	}
 	
 	public static void addKanjiListener(IKanjiListener listener){
@@ -27,7 +26,7 @@ public class KanjiManager {
 	
 	private static void notifyKanjiChanged(){
 		for(int i=0; i<mListeners.size(); i++){
-			mListeners.get(i).kanjiChanged(mKanji.codepoint());
+			mListeners.get(i).kanjiChanged(kanjiInfo.codePoint);
 		}
 	}
 }
