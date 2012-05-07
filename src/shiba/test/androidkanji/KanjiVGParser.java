@@ -19,7 +19,7 @@ public class KanjiVGParser extends DefaultHandler{
 
 	private final String GROUP = "g";
 	private final String PATH = "path";
-	//private final String ELEMENT = "kvg:element";
+	private final String ELEMENT = "kvg:element";
 	private final String ID = "id";
 	//private final String TYPE = "kvg:type";
 	//private final String PART = "kvg:part";
@@ -27,6 +27,7 @@ public class KanjiVGParser extends DefaultHandler{
 	private final String KANJI = "kanji";
 	private final String GROUP_TAG = "-g";
 	private final String STROKE_TAG = "-s";
+	private final String NO_ELEMENT = "";
 	
 	public String kvg;
 	public ArrayList<KanjiVGPathInfo> pathInfo;
@@ -35,6 +36,8 @@ public class KanjiVGParser extends DefaultHandler{
 	private KanjiVGPathInfo mCurrentKVGInfo;
 	private boolean mFirstLevelGroupSet;
 	private int mGroupStackLevel;
+	private int mSubGroupNumber;
+	private String mElement;
 	
 	public KanjiVGParser(){
 		kvg = "";
@@ -45,6 +48,8 @@ public class KanjiVGParser extends DefaultHandler{
 		try{
 			mFirstLevelGroupSet = false;
 			mGroupStackLevel = 0;
+			mSubGroupNumber = 0;
+			mElement = NO_ELEMENT;
 			
 			InputStream input = new ByteArrayInputStream(kvg.getBytes());
 	        Reader reader = new InputStreamReader(input,"UTF-8");
@@ -65,7 +70,7 @@ public class KanjiVGParser extends DefaultHandler{
 	}
 	
 	private int getGroup(Attributes attributes){
-		int group = -1;
+		int group = 0;
 		
 		for(int i=0; i<attributes.getLength(); i++){
 			String name = attributes.getQName(i);
@@ -78,8 +83,23 @@ public class KanjiVGParser extends DefaultHandler{
 				}
 			}
 		}
-		
+
 		return group;
+	}
+	
+	private String getElement(Attributes attributes){
+		String element = NO_ELEMENT;
+		
+		for(int i=0; i<attributes.getLength(); i++){
+			String name = attributes.getQName(i);
+			String value = attributes.getValue(i);
+			if(name.equals(ELEMENT)){
+				element = value;
+				break;
+			}
+		}
+		
+		return element;
 	}
 	
 	private int getStrokeIndex(Attributes attributes){
@@ -118,14 +138,29 @@ public class KanjiVGParser extends DefaultHandler{
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException{
 		
 		if(qName.equals(GROUP)){
-			if(!mFirstLevelGroupSet){
-				int group = getGroup(attributes);
-				if(0 <= group){
-					mCurrentGroup = group;
+			if(0 < getGroup(attributes)){ // Here I remove the top level group
+				if(NO_ELEMENT != getElement(attributes)){
+					mCurrentGroup = 0;
+				}else{
+					mCurrentGroup = ++ mSubGroupNumber;
+				}
+				
+				if(!mFirstLevelGroupSet){
 					mFirstLevelGroupSet = true;
+				}else{
+					mGroupStackLevel++;
 				}
 			}
-			mGroupStackLevel++;
+/*			if(0 != getGroup(attributes)){
+				if(!mFirstLevelGroupSet){
+					mCurrentGroup = 0;
+					mFirstLevelGroupSet = true;
+				
+				}else{
+					mCurrentGroup = ++mSubGroupNumber;
+					mGroupStackLevel++;
+				}
+			}*/
 		}else if(qName.equals(PATH)){
 			mCurrentStrokeIndex = getStrokeIndex(attributes);
 			mCurrentKVGInfo = new KanjiVGPathInfo();
@@ -138,15 +173,17 @@ public class KanjiVGParser extends DefaultHandler{
 	public void endElement(String uri, String localName, String qName) throws SAXException{
 		// If the element was a group, store it in the list
 		if(qName.equals(GROUP)){
-			mGroupStackLevel--;
+			if(mGroupStackLevel > 0){
+				mGroupStackLevel--;
+			}
+			
 			if(0 == mGroupStackLevel){
 				mFirstLevelGroupSet = false;
-				mCurrentGroup = -1;
+				mCurrentGroup = 0;
 				mCurrentStrokeIndex = -1;
 			}
 		}else if(qName.equals(PATH)){
 			pathInfo.add(mCurrentKVGInfo);
-			mFirstLevelGroupSet = false;
 		}else if(qName.equals(KANJI)){
 			// NOTE: 	It seems that the strokes are already in the right order in the KVG description
 			//			If it is not the case, reorder the strokes here

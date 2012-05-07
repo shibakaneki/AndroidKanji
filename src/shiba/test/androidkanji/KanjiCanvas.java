@@ -111,12 +111,12 @@ public class KanjiCanvas extends View{
 		
 		initPainting();
 		
-		if(mShowBorder){
-			drawBorder();
-		}
-		
 		if(mShowGrid){
 			drawGrid();
+		}
+		
+		if(mShowBorder){
+			drawBorder();
 		}
 		
 		if(mShowKanjiShadow){
@@ -152,12 +152,13 @@ public class KanjiCanvas extends View{
 		mPainter.setAntiAlias(true);
 		drawKanjiShadow();
 		mPainter.setColor(Color.WHITE);
-		mPainter.setStrokeWidth(14f);
+		mPainter.setStrokeWidth(12f);
 		drawKanjiShadow();
 		mPainter.setColor(Color.BLACK);
 	}
 	
 	private void drawGrid(){
+		mPainter.setColor(Color.LTGRAY);
 		mPainter.setStrokeWidth(3f);
 		mPainter.setPathEffect(null);
 		mCanvas.drawLine(mWidthBorder +mGuideWidth/2, mHeightBorder, mWidthBorder +mGuideWidth/2, mHeightBorder + mGuideHeight, mPainter);
@@ -171,6 +172,7 @@ public class KanjiCanvas extends View{
 	}
 	
 	private void drawBorder(){
+		mPainter.setColor(Color.BLACK);
 		mPainter.setStrokeWidth(3f);
 		mPainter.setPathEffect(null);
 		Rect guide = new Rect(mWidthBorder, mHeightBorder, mWidthBorder + mGuideWidth, mHeightBorder + mGuideHeight);
@@ -282,7 +284,7 @@ public class KanjiCanvas extends View{
 			String desc = mCurrentKVGPaths.get(i).path;
 			String prevCmd = "";
 			
-			while(!desc.isEmpty()){
+			while(!(desc.length() == 0)){
 				// Initialize indexes
 				int nextBlockIndex = desc.length() - 1;
 				
@@ -416,7 +418,7 @@ public class KanjiCanvas extends View{
 		String remaining = block.substring(1);
 		
 		// Then get the coordinates
-		while(!remaining.isEmpty()){
+		while(!(remaining.length() == 0)){
 			int nextCoordIndex = remaining.length();
 			int nextSeparator = remaining.indexOf(",", 1);
 			int nextMinus = remaining.indexOf("-", 1);
@@ -452,7 +454,7 @@ public class KanjiCanvas extends View{
 		for(int i=0; i<mAnimationPaths.size(); i++){
 			KanjiStroke stroke = mAnimationPaths.get(i);
 			mPainter.setColor(mColors[stroke.group]);
-			mPainter.setStrokeWidth(14f);
+			mPainter.setStrokeWidth(13f);
 			mCanvas.drawPath(stroke.path, mPainter);
 		}
 	}
@@ -461,11 +463,6 @@ public class KanjiCanvas extends View{
 		mAnimationPaths.clear();
 		for(int i=0; i<mKanjiPaths.size(); i++){
 			KanjiStroke stroke = mKanjiPaths.get(i);
-			System.out.println("current stroke group:" +stroke.group);
-			
-			if(stroke.group < 0){
-				stroke.group = 0;
-			}
 			
 			if(!stroke.done){
 				KanjiStroke incompleteStroke = new KanjiStroke();
@@ -473,7 +470,7 @@ public class KanjiCanvas extends View{
 				PathMeasure pm = new PathMeasure();
 				pm.setPath(stroke.path, false);				
 				float endOfSegment = (stroke.currentSegment + SEGMENT_STEP < pm.getLength()) ? stroke.currentSegment + SEGMENT_STEP : pm.getLength();
-				pm.getSegment(0f/*stroke.currentSegment*/, endOfSegment, incompleteStroke.path, true);
+				pm.getSegment(0f, endOfSegment, incompleteStroke.path, true);
 
 				mAnimationPaths.add(incompleteStroke);
 				
