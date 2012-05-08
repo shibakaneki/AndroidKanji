@@ -40,6 +40,7 @@ public class KanjiVGParser extends DefaultHandler{
 	private int mCurrentStrokeIndex;
 	private KanjiVGPathInfo mCurrentKVGInfo;
 	private int mSubGroupNumber;
+	private int mGroupStackLevel;
 	
 	public KanjiVGParser(){
 		kvg = "";
@@ -52,6 +53,7 @@ public class KanjiVGParser extends DefaultHandler{
 			mCurrentElement = NO_VALUE;
 			mCurrentPart = 0;
 			mCurrentGroup = 0;
+			mGroupStackLevel = 0;
 			
 			InputStream input = new ByteArrayInputStream(kvg.getBytes());
 	        Reader reader = new InputStreamReader(input,"UTF-8");
@@ -156,6 +158,7 @@ public class KanjiVGParser extends DefaultHandler{
 		
 		if(qName.equals(GROUP)){
 			if(0 < getGroup(attributes)){
+				mGroupStackLevel++;
 				mCurrentElement = getElement(attributes);
 				if(NO_VALUE == mCurrentElement){
 					// This group contains no element, so we will not use a specific color for it
@@ -166,8 +169,10 @@ public class KanjiVGParser extends DefaultHandler{
 					case NOPART:
 					case NEWPART:
 						// This is a new group so we setup a new color for it
-						mSubGroupNumber++;
-						mCurrentGroup = mSubGroupNumber;
+						if(1 >= mGroupStackLevel){
+							mSubGroupNumber++;
+							mCurrentGroup = mSubGroupNumber;
+						}
 						break;
 					default:
 						// Here we have to get the group number of this element
@@ -198,7 +203,10 @@ public class KanjiVGParser extends DefaultHandler{
 	public void endElement(String uri, String localName, String qName) throws SAXException{
 		// If the element was a group, store it in the list
 		if(qName.equals(GROUP)){
-			// Nothing to do
+			mGroupStackLevel--;
+			if(0 == mGroupStackLevel){
+				mCurrentGroup = 0;
+			}
 		}else if(qName.equals(PATH)){
 			// Nothing to do
 		}else if(qName.equals(KANJI)){
