@@ -16,28 +16,30 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class KanjiVGParser extends DefaultHandler{
-
+	
 	private final String GROUP = "g";
 	private final String PATH = "path";
 	private final String ELEMENT = "kvg:element";
 	private final String ID = "id";
 	//private final String TYPE = "kvg:type";
-	//private final String PART = "kvg:part";
+	private final String PART = "kvg:part";
 	private final String DATA = "d";
 	private final String KANJI = "kanji";
 	private final String GROUP_TAG = "-g";
 	private final String STROKE_TAG = "-s";
-	private final String NO_ELEMENT = "";
+	private final String NO_VALUE = "";
+	
+	private final int NOPART = 0;
+	private final int NEWPART = 1;
 	
 	public String kvg;
 	public ArrayList<KanjiVGPathInfo> pathInfo;
 	private int mCurrentGroup;
+	private String mCurrentElement;
+	private int mCurrentPart;
 	private int mCurrentStrokeIndex;
 	private KanjiVGPathInfo mCurrentKVGInfo;
-	private boolean mFirstLevelGroupSet;
-	private int mGroupStackLevel;
 	private int mSubGroupNumber;
-	private String mElement;
 	
 	public KanjiVGParser(){
 		kvg = "";
@@ -46,10 +48,10 @@ public class KanjiVGParser extends DefaultHandler{
 	
 	public void parse(){
 		try{
-			mFirstLevelGroupSet = false;
-			mGroupStackLevel = 0;
 			mSubGroupNumber = 0;
-			mElement = NO_ELEMENT;
+			mCurrentElement = NO_VALUE;
+			mCurrentPart = 0;
+			mCurrentGroup = 0;
 			
 			InputStream input = new ByteArrayInputStream(kvg.getBytes());
 	        Reader reader = new InputStreamReader(input,"UTF-8");
@@ -88,12 +90,27 @@ public class KanjiVGParser extends DefaultHandler{
 	}
 	
 	private String getElement(Attributes attributes){
-		String element = NO_ELEMENT;
+		String element = NO_VALUE;
 		
 		for(int i=0; i<attributes.getLength(); i++){
 			String name = attributes.getQName(i);
 			String value = attributes.getValue(i);
 			if(name.equals(ELEMENT)){
+				element = value;
+				break;
+			}
+		}
+		
+		return element;
+	}
+	
+	private String getPart(Attributes attributes){
+		String element = "0";
+		
+		for(int i=0; i<attributes.getLength(); i++){
+			String name = attributes.getQName(i);
+			String value = attributes.getValue(i);
+			if(name.equals(PART)){
 				element = value;
 				break;
 			}
@@ -138,55 +155,54 @@ public class KanjiVGParser extends DefaultHandler{
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException{
 		
 		if(qName.equals(GROUP)){
-			if(0 < getGroup(attributes)){ // Here I remove the top level group
-				if(NO_ELEMENT != getElement(attributes)){
+			if(0 < getGroup(attributes)){
+				mCurrentElement = getElement(attributes);
+				if(NO_VALUE == mCurrentElement){
+					// This group contains no element, so we will not use a specific color for it
 					mCurrentGroup = 0;
 				}else{
-					mCurrentGroup = ++ mSubGroupNumber;
-				}
-				
-				if(!mFirstLevelGroupSet){
-					mFirstLevelGroupSet = true;
-				}else{
-					mGroupStackLevel++;
+					mCurrentPart = Integer.parseInt(getPart(attributes));
+					switch(mCurrentPart){
+					case NOPART:
+					case NEWPART:
+						// This is a new group so we setup a new color for it
+						mSubGroupNumber++;
+						mCurrentGroup = mSubGroupNumber;
+						break;
+					default:
+						// Here we have to get the group number of this element
+						for(int i=0; i<pathInfo.size(); i++){
+							KanjiVGPathInfo pi = pathInfo.get(i);
+							if(pi.element.equals(mCurrentKVGInfo.element)){
+								mCurrentGroup = pi.group;
+								break;
+							}
+						}
+						break;
+					}
+					
 				}
 			}
-/*			if(0 != getGroup(attributes)){
-				if(!mFirstLevelGroupSet){
-					mCurrentGroup = 0;
-					mFirstLevelGroupSet = true;
-				
-				}else{
-					mCurrentGroup = ++mSubGroupNumber;
-					mGroupStackLevel++;
-				}
-			}*/
 		}else if(qName.equals(PATH)){
 			mCurrentStrokeIndex = getStrokeIndex(attributes);
 			mCurrentKVGInfo = new KanjiVGPathInfo();
 			mCurrentKVGInfo.group = mCurrentGroup;
 			mCurrentKVGInfo.index = mCurrentStrokeIndex;
 			mCurrentKVGInfo.path = getPathData(attributes);
+			mCurrentKVGInfo.part = mCurrentPart;
+			mCurrentKVGInfo.element = mCurrentElement;
+			pathInfo.add(mCurrentKVGInfo);
 		}
 	}
 	
 	public void endElement(String uri, String localName, String qName) throws SAXException{
 		// If the element was a group, store it in the list
 		if(qName.equals(GROUP)){
-			if(mGroupStackLevel > 0){
-				mGroupStackLevel--;
-			}
-			
-			if(0 == mGroupStackLevel){
-				mFirstLevelGroupSet = false;
-				mCurrentGroup = 0;
-				mCurrentStrokeIndex = -1;
-			}
+			// Nothing to do
 		}else if(qName.equals(PATH)){
-			pathInfo.add(mCurrentKVGInfo);
+			// Nothing to do
 		}else if(qName.equals(KANJI)){
-			// NOTE: 	It seems that the strokes are already in the right order in the KVG description
-			//			If it is not the case, reorder the strokes here
+			mSubGroupNumber = 0;
 		}
 	}
 }
