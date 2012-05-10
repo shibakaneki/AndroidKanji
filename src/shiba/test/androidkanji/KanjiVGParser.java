@@ -28,6 +28,7 @@ public class KanjiVGParser extends DefaultHandler{
 	private final String GROUP_TAG = "-g";
 	private final String STROKE_TAG = "-s";
 	private final String NO_VALUE = "";
+	private final String POSITION = "kvg:position";
 	
 	private final int NOPART = 0;
 	private final int NEWPART = 1;
@@ -106,6 +107,21 @@ public class KanjiVGParser extends DefaultHandler{
 		return element;
 	}
 	
+	private String getPosition(Attributes attributes){
+		String element = NO_VALUE;
+		
+		for(int i=0; i<attributes.getLength(); i++){
+			String name = attributes.getQName(i);
+			String value = attributes.getValue(i);
+			if(name.equals(POSITION)){
+				element = value;
+				break;
+			}
+		}
+		
+		return element;
+	}
+	
 	private String getPart(Attributes attributes){
 		String element = "0";
 		
@@ -158,9 +174,39 @@ public class KanjiVGParser extends DefaultHandler{
 		
 		if(qName.equals(GROUP)){
 			if(0 < getGroup(attributes)){
-				mGroupStackLevel++;
 				mCurrentElement = getElement(attributes);
-				if(NO_VALUE == mCurrentElement){
+				if(NO_VALUE != mCurrentElement){
+					mCurrentPart = Integer.parseInt(getPart(attributes));
+					if(NEWPART < mCurrentPart){
+						for(int i=0; i<pathInfo.size(); i++){
+							KanjiVGPathInfo pi = pathInfo.get(i);
+							if(pi.element.equals(mCurrentKVGInfo.element)){
+								mCurrentGroup = pi.group;
+								break;
+							}
+						}
+					}else{
+						mGroupStackLevel++;
+						if(NO_VALUE == getPosition(attributes)){
+							if(1 >= mGroupStackLevel){
+								mSubGroupNumber++;
+								mCurrentGroup = mSubGroupNumber;
+							}
+						}else{
+							if(2 >= mGroupStackLevel){
+								mSubGroupNumber++;
+								mCurrentGroup = mSubGroupNumber;
+							}
+						}
+					}
+				}
+				
+				
+				
+				
+				/*//mGroupStackLevel++;
+				mCurrentElement = getElement(attributes);
+				if(NO_VALUE == mCurrentElement && NO_VALUE == getPosition(attributes)){
 					// This group contains no element, so we will not use a specific color for it
 					mCurrentGroup = 0;
 				}else{
@@ -169,7 +215,7 @@ public class KanjiVGParser extends DefaultHandler{
 					case NOPART:
 					case NEWPART:
 						// This is a new group so we setup a new color for it
-						if(1 >= mGroupStackLevel){
+						if(1 >= mGroupStackLevel || NO_VALUE != getPosition(attributes)){
 							mSubGroupNumber++;
 							mCurrentGroup = mSubGroupNumber;
 						}
@@ -186,7 +232,7 @@ public class KanjiVGParser extends DefaultHandler{
 						break;
 					}
 					
-				}
+				}*/
 			}
 		}else if(qName.equals(PATH)){
 			mCurrentStrokeIndex = getStrokeIndex(attributes);
