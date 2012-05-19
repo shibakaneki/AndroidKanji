@@ -48,7 +48,7 @@ public class KanjiCanvas extends View{
 	private boolean mShowGrid = true;
 	private boolean mShowKanjiShadow = false;
 	private boolean mShowBorder = true;
-	private ArrayList<KanjiVGPathInfo> mCurrentKVGPaths;
+	private ArrayList<KanjiVGElement> mCurrentKVGPaths;
 	private ArrayList<KanjiStroke> mKanjiPaths;
 	private Point mOrigin;
 	private float mScaleFactor;
@@ -71,7 +71,7 @@ public class KanjiCanvas extends View{
 	
 	private void init(){
 		mColors[0] = Color.BLACK;
-		mCurrentKVGPaths = new ArrayList<KanjiVGPathInfo>();
+		mCurrentKVGPaths = new ArrayList<KanjiVGElement>();
 		mKanjiPaths = new ArrayList<KanjiStroke>();
 		mAnimationPaths = new ArrayList<KanjiStroke>();
 		mPenColor = Color.BLUE;
@@ -262,7 +262,7 @@ public class KanjiCanvas extends View{
 	}
 	
 	
-	public void setCurrentPaths(ArrayList<KanjiVGPathInfo> paths){
+	public void setCurrentPaths(ArrayList<KanjiVGElement> paths){
 		mCurrentKVGPaths = paths;
 		generatePaths();
 		invalidate();
@@ -272,125 +272,130 @@ public class KanjiCanvas extends View{
 	private void generatePaths(){
 		mKanjiPaths.clear();
 		for(int i=0; i<mCurrentKVGPaths.size(); i++){
-			KanjiStroke stroke = new KanjiStroke();
-			stroke.group = mCurrentKVGPaths.get(i).group;
-			Path path = new Path();
-			float x = 0f;	// Destination x coordinate
-			float y = 0f;	// Destination y coordinate
-			float x1 = 0f;	// Start control point x coordinate
-			float y1 = 0f;	// Start control point y coordinate
-			float x2 = 0f;	// End control point x coordinate
-			float y2 = 0f;	// End control point y coordinate
-			String desc = mCurrentKVGPaths.get(i).path;
-			String prevCmd = "";
-			
-			while(!(desc.length() == 0)){
-				// Initialize indexes
-				int nextBlockIndex = desc.length() - 1;
-				
-				int[] indexes = new int[4];
-				
-				indexes[0] = desc.indexOf(CURVETO, 1);
-				indexes[1] = desc.indexOf(RCURVETO, 1);
-				indexes[2] = desc.indexOf(SMOOTHCURVETO, 1);
-				indexes[3] = desc.indexOf(RSMOOTHCURVETO, 1);
-				
-				for(int j=0; j<indexes.length; j++){
-					if(0 <= indexes[j] && indexes[j] < nextBlockIndex){
-						nextBlockIndex = indexes[j];
-					}
-				}
-				
-				// Get the coordinates
-				String block = "";
-				if(nextBlockIndex == desc.length() - 1){
-					block = desc.substring(0, nextBlockIndex + 1);
-				}else{
-					block = desc.substring(0, nextBlockIndex);
-				}
-				
-				String cmd = "" +desc.charAt(0);
-				ArrayList<String> coord = new ArrayList<String>();
-				generateCoordinates(block, coord);
-				
-				// Build the path
-				if(cmd.equals(MOVETO)){
-					if(2 <= coord.size()){
-						x = mOrigin.x + Float.parseFloat(coord.get(0)) * mScaleFactor;
-						y = mOrigin.y + Float.parseFloat(coord.get(1)) * mScaleFactor;
-						path.moveTo(x, y);
-					}
-				}else if(cmd.equals(CURVETO) || cmd.equals(RCURVETO)){
-					if(6 <= coord.size()){
-						float xOffset = (cmd.equals(RCURVETO)) ? 0.0f : mOrigin.x;
-						float yOffset = (cmd.equals(RCURVETO)) ? 0.0f : mOrigin.y;
-						float xPrev = x;
-						float yPrev = y;
-						x1 = xOffset + Float.parseFloat(coord.get(0)) * mScaleFactor;
-						y1 = yOffset + Float.parseFloat(coord.get(1)) * mScaleFactor;
-						x2 = xOffset + Float.parseFloat(coord.get(2)) * mScaleFactor;
-						y2 = yOffset + Float.parseFloat(coord.get(3)) * mScaleFactor;
-						x = xOffset + Float.parseFloat(coord.get(4)) * mScaleFactor;
-						y = yOffset + Float.parseFloat(coord.get(5)) * mScaleFactor;
-						if(cmd.equals(RCURVETO)){
-							path.rCubicTo(x1, y1, x2, y2, x, y);
-							x1 += xPrev;
-							y1 += yPrev;
-							x2 += xPrev;
-							y2 += yPrev;
-							x += xPrev;
-							y += yPrev;
-						}else{
-							path.cubicTo(x1, y1, x2, y2, x, y);
-						}
-					}
-				}else if(cmd.equals(SMOOTHCURVETO)){
-					if(4 <= coord.size()){
-						if(prevCmd.equals(CURVETO) || prevCmd.equals(RCURVETO) || prevCmd.equals(RSMOOTHCURVETO) || prevCmd.equals(SMOOTHCURVETO)){
-							x1 = generateSmoothX1(x, x2);
-							y1 = generateSmoothY1(y, y2);
-						}else{
-							x1 = x;
-							y1 = x;
-						}
-						x2 = mOrigin.x + Float.parseFloat(coord.get(0)) * mScaleFactor;
-						y2 = mOrigin.y + Float.parseFloat(coord.get(1)) * mScaleFactor;
-						x = mOrigin.x + Float.parseFloat(coord.get(2)) * mScaleFactor;
-						y = mOrigin.y + Float.parseFloat(coord.get(3)) * mScaleFactor;
+			if(mCurrentKVGPaths.get(i).getClass().getName().toLowerCase().contains("path")){
+				KanjiVGPathElement s = (KanjiVGPathElement)mCurrentKVGPaths.get(i);
+				if(null != s){
+					KanjiStroke stroke = new KanjiStroke();
+					stroke.group = s.color;
+					Path path = new Path();
+					float x = 0f;	// Destination x coordinate
+					float y = 0f;	// Destination y coordinate
+					float x1 = 0f;	// Start control point x coordinate
+					float y1 = 0f;	// Start control point y coordinate
+					float x2 = 0f;	// End control point x coordinate
+					float y2 = 0f;	// End control point y coordinate
+					String desc = s.path;
+					String prevCmd = "";
+					
+					while(!(desc.length() == 0)){
+						// Initialize indexes
+						int nextBlockIndex = desc.length() - 1;
 						
-						path.cubicTo(x1, y1, x2, y2, x, y);
-					}
-				}else if(cmd.equals(RSMOOTHCURVETO)){
-					if(4 <= coord.size()){
-						if(prevCmd.equals(CURVETO) || prevCmd.equals(RCURVETO) || prevCmd.equals(RSMOOTHCURVETO) || prevCmd.equals(SMOOTHCURVETO)){
-							x1 = generateSmoothX1(x, x2);
-							y1 = generateSmoothY1(y, y2);
-						}else{
-							x1 = x;
-							y1 = x;
+						int[] indexes = new int[4];
+						
+						indexes[0] = desc.indexOf(CURVETO, 1);
+						indexes[1] = desc.indexOf(RCURVETO, 1);
+						indexes[2] = desc.indexOf(SMOOTHCURVETO, 1);
+						indexes[3] = desc.indexOf(RSMOOTHCURVETO, 1);
+						
+						for(int j=0; j<indexes.length; j++){
+							if(0 <= indexes[j] && indexes[j] < nextBlockIndex){
+								nextBlockIndex = indexes[j];
+							}
 						}
 						
-						x2 = x + Float.parseFloat(coord.get(0)) * mScaleFactor;
-						y2 = y + Float.parseFloat(coord.get(1)) * mScaleFactor;
-						x = x + Float.parseFloat(coord.get(2)) * mScaleFactor;
-						y = y + Float.parseFloat(coord.get(3)) * mScaleFactor;
+						// Get the coordinates
+						String block = "";
+						if(nextBlockIndex == desc.length() - 1){
+							block = desc.substring(0, nextBlockIndex + 1);
+						}else{
+							block = desc.substring(0, nextBlockIndex);
+						}
 						
-						path.cubicTo(x1, y1, x2, y2, x, y);
+						String cmd = "" +desc.charAt(0);
+						ArrayList<String> coord = new ArrayList<String>();
+						generateCoordinates(block, coord);
+						
+						// Build the path
+						if(cmd.equals(MOVETO)){
+							if(2 <= coord.size()){
+								x = mOrigin.x + Float.parseFloat(coord.get(0)) * mScaleFactor;
+								y = mOrigin.y + Float.parseFloat(coord.get(1)) * mScaleFactor;
+								path.moveTo(x, y);
+							}
+						}else if(cmd.equals(CURVETO) || cmd.equals(RCURVETO)){
+							if(6 <= coord.size()){
+								float xOffset = (cmd.equals(RCURVETO)) ? 0.0f : mOrigin.x;
+								float yOffset = (cmd.equals(RCURVETO)) ? 0.0f : mOrigin.y;
+								float xPrev = x;
+								float yPrev = y;
+								x1 = xOffset + Float.parseFloat(coord.get(0)) * mScaleFactor;
+								y1 = yOffset + Float.parseFloat(coord.get(1)) * mScaleFactor;
+								x2 = xOffset + Float.parseFloat(coord.get(2)) * mScaleFactor;
+								y2 = yOffset + Float.parseFloat(coord.get(3)) * mScaleFactor;
+								x = xOffset + Float.parseFloat(coord.get(4)) * mScaleFactor;
+								y = yOffset + Float.parseFloat(coord.get(5)) * mScaleFactor;
+								if(cmd.equals(RCURVETO)){
+									path.rCubicTo(x1, y1, x2, y2, x, y);
+									x1 += xPrev;
+									y1 += yPrev;
+									x2 += xPrev;
+									y2 += yPrev;
+									x += xPrev;
+									y += yPrev;
+								}else{
+									path.cubicTo(x1, y1, x2, y2, x, y);
+								}
+							}
+						}else if(cmd.equals(SMOOTHCURVETO)){
+							if(4 <= coord.size()){
+								if(prevCmd.equals(CURVETO) || prevCmd.equals(RCURVETO) || prevCmd.equals(RSMOOTHCURVETO) || prevCmd.equals(SMOOTHCURVETO)){
+									x1 = generateSmoothX1(x, x2);
+									y1 = generateSmoothY1(y, y2);
+								}else{
+									x1 = x;
+									y1 = x;
+								}
+								x2 = mOrigin.x + Float.parseFloat(coord.get(0)) * mScaleFactor;
+								y2 = mOrigin.y + Float.parseFloat(coord.get(1)) * mScaleFactor;
+								x = mOrigin.x + Float.parseFloat(coord.get(2)) * mScaleFactor;
+								y = mOrigin.y + Float.parseFloat(coord.get(3)) * mScaleFactor;
+								
+								path.cubicTo(x1, y1, x2, y2, x, y);
+							}
+						}else if(cmd.equals(RSMOOTHCURVETO)){
+							if(4 <= coord.size()){
+								if(prevCmd.equals(CURVETO) || prevCmd.equals(RCURVETO) || prevCmd.equals(RSMOOTHCURVETO) || prevCmd.equals(SMOOTHCURVETO)){
+									x1 = generateSmoothX1(x, x2);
+									y1 = generateSmoothY1(y, y2);
+								}else{
+									x1 = x;
+									y1 = x;
+								}
+								
+								x2 = x + Float.parseFloat(coord.get(0)) * mScaleFactor;
+								y2 = y + Float.parseFloat(coord.get(1)) * mScaleFactor;
+								x = x + Float.parseFloat(coord.get(2)) * mScaleFactor;
+								y = y + Float.parseFloat(coord.get(3)) * mScaleFactor;
+								
+								path.cubicTo(x1, y1, x2, y2, x, y);
+							}
+						}
+						
+						prevCmd = cmd;
+						
+						if(nextBlockIndex == desc.length()-1){
+							desc = "";
+						}else{
+							desc = desc.substring(nextBlockIndex);
+						}
 					}
-				}
-				
-				prevCmd = cmd;
-				
-				if(nextBlockIndex == desc.length()-1){
-					desc = "";
-				}else{
-					desc = desc.substring(nextBlockIndex);
+					
+					// Store the generated path
+					stroke.path = path;
+					mKanjiPaths.add(stroke);
 				}
 			}
-			
-			// Store the generated path
-			stroke.path = path;
-			mKanjiPaths.add(stroke);
 		}
 	}
 	

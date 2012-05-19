@@ -36,7 +36,7 @@ public class KanjiAnimation extends LinearLayout implements IKanjiListener{
 		mCanvas.flushKanjiPath();
 		mParser.kvg = KanjiManager.kanji().kvg;
 		mParser.parse();
-		mCanvas.setCurrentPaths(mParser.pathInfo);
+		mCanvas.setCurrentPaths(mParser.kanjiInfo);
 		
 		// By default, the animation is started automatically when the kanji changes
 		mCanvas.startAnimation();

@@ -3,7 +3,6 @@ TODO List
 
 o Show the animated SVG
 	- Show the animation
-		. Fix the group number issue
 		. Animate the drawing
 		
 o Implement the drawing area
