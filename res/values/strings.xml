@@ -15,5 +15,9 @@
         <item >JLPT N5</item>
     </string-array>
     <string name="filter_select">Select your kanji set</string>
+    <string name="kanji_details">Kanji Informations</string>
+    <string name="on_yomi">ON Yomi</string>
+    <string name="kun_yomi">KUN Yomi</string>
+    <string name="kanji_words">Words using this kanji</string>
 
 </resources>
