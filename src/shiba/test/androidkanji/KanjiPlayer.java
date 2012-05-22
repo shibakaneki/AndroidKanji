@@ -58,9 +58,11 @@ public class KanjiPlayer extends SurfaceView implements SurfaceHolder.Callback{
 	}
 	
 	public void setCurrentPaths(ArrayList<KanjiVGElement> paths){
-		// Update the paths		
-		if(mDrawingThread.isAlive()){
-			stopAnimation();
+		// Update the paths
+		if(Thread.State.NEW != mDrawingThread.getState()){
+			mDrawingThread.setRunning(false);
+			mDrawingThread = new DrawingThread(mHolder);
+			// NOTE: Memory Leak? How is the previous thread released from the memory?!
 		}
 		
 		mDrawingThread.initPainting();
@@ -69,17 +71,5 @@ public class KanjiPlayer extends SurfaceView implements SurfaceHolder.Callback{
 		// Start the drawing thread
 		mDrawingThread.setRunning(true);
 		mDrawingThread.start();
-	}
-	
-	private void stopAnimation(){
-		boolean retry = true;
-		mDrawingThread.setRunning(false);
-	    while (retry) {
-	        try {
-	        	mDrawingThread.join();
-	            retry = false;
-	        } catch (InterruptedException e) {
-	        }
-	    }
 	}
 }

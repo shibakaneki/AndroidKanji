@@ -19,6 +19,7 @@ public class DrawingThread extends Thread{
 		SEGMENT, SPACE, END;
 	}
 	
+	private final String THREAD_NAME = "DrawingThread";
 	private final String MOVETO = "M";
 	private final String CURVETO = "C";
 	private final String RCURVETO = "c";
@@ -55,6 +56,7 @@ public class DrawingThread extends Thread{
 	}
 	
 	private void init(){
+		setName(THREAD_NAME);
 		mKanjiPaths = new ArrayList<KanjiStroke>();
 		mAnimationPaths = new ArrayList<KanjiStroke>();
 		mPenColor = Color.BLACK;

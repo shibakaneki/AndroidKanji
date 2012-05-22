@@ -1,10 +1,5 @@
 TODO List
----------
-
-o Show the animated SVG
-	- Show the animation
-		. Animate the drawing
-		
+---------		
 o Implement the drawing area
 	- Add a button usable to clear the user strokes
 	- Add a button usable to verify the drawn strokes (hide it until version 2)
@@ -19,7 +14,6 @@ o Define the design of the application (splash screen, controls, colors, icons, 
 o Support the portait & landscape modes for tablets & handsets (tbd)
 
 o Define a way to switch between views on handsets (static manager for the current kanji?)
-o Uniformize the coding convention
 o Clean the repository (remove deleted files)
 
 Tests before production launch
@@ -32,3 +26,6 @@ o Drawing validation by checking the drawn strokes vs the kanjivg solution
 
 Bugs
 ----
+
+To Add
+------
