@@ -400,7 +400,6 @@ public class DrawingThread extends Thread{
 	        		StrokeType mLastStrokeType = generateNextSegment();
 				}
 	        } catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}finally{
 	        	if(null != canvas){
