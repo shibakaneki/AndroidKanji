@@ -26,6 +26,7 @@ o Drawing validation by checking the drawn strokes vs the kanjivg solution
 
 Bugs
 ----
+o Crash on exit
 
 To Add
 ------
