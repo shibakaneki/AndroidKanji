@@ -28,8 +28,11 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	public static final String KEY_FREQUENCY = "frequency";
 	public static final String KEY_JLPT = "jlpt";
 	public static final String KEY_PATH = "paths";
+	public static final String KEY_YOMI = "yomi";
 	public static final String TABLE_ENTRIES = "entries";
 	public static final String TABLE_FAVORITES = "favorites";
+	public static final String TABLE_ONYOMI = "onYomi";
+	public static final String TABLE_KUNYOMI = "kunYomi";
 	public static final String KEY_STATE = "state";
 	public static final int KANJI_FILTER_ALL = 0;
 	public static final int KANJI_FILTER_N1 = 1;
@@ -321,6 +324,20 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	public Cursor getKanjiInfos(int codePoint){
 		System.out.println(">>>> Getting kanji infos for: " +codePoint);
 		String query = "SELECT " +KEY_JLPT +", " +KEY_PATH +", " +KEY_FREQUENCY +", " +KEY_GRADE +", " +KEY_STROKE_COUNT +" FROM " +TABLE_ENTRIES +" WHERE " +KEY_ID +"=" +codePoint;
+		Cursor c = mDb.rawQuery(query, null);
+		c.moveToFirst();
+		return c;
+	}
+	
+	public Cursor getKanjiOnYomi(int codePoint){
+		String query = "SELECT * FROM " + TABLE_ONYOMI +" WHERE " +KEY_ID +"=" +codePoint;
+		Cursor c = mDb.rawQuery(query, null);
+		c.moveToFirst();
+		return c;
+	}
+	
+	public Cursor getKanjiKunYomi(int codePoint){
+		String query = "SELECT * FROM " + TABLE_KUNYOMI +" WHERE " +KEY_ID +"=" +codePoint;
 		Cursor c = mDb.rawQuery(query, null);
 		c.moveToFirst();
 		return c;

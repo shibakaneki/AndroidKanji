@@ -8,11 +8,12 @@ o Implement the drawing area
 	- Adapt this view to the handset format
 	- Interpolate curves
 o Implement the kanji description view
-	- Get the yomi from the XML file and store them in a specific location in the DB
-	- Retrieve the yomi at the same time as the kvg info
+	- Show some words using the selected kanji
 o Define the design of the application (splash screen, controls, colors, icons, ...)
+	- A kanji row should changes its background color when clicked
 o Support the portait & landscape modes for tablets & handsets (tbd)
 o Define a way to switch between views on handsets (static manager for the current kanji?)
+o Improve the performances of the selection (it takes to much time)
 
 Tests before production launch
 ------------------------------
@@ -25,6 +26,7 @@ o Drawing validation by checking the drawn strokes vs the kanjivg solution
 Bugs
 ----
 o Crash on exit
+	- Seems related to the DrawingThread management.
 
 To Add
 ------

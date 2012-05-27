@@ -23,6 +23,8 @@ public class KanjiInfo {
 		this.grade = -1;
 		this.frequency = -1;
 		this.jlpt = -1;
+		this.oNYomi = new ArrayList<String>();
+		this.kUNYomi = new ArrayList<String>();
 	}
 	
 	public void toggleFavorite(){

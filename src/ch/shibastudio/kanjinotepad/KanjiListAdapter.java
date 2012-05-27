@@ -29,7 +29,9 @@ public class KanjiListAdapter extends ArrayAdapter<KanjiInfo>{
 			if(null != v){
 				try {
 					mDbHelper.openDatabase();
-					Cursor c = mDbHelper.getKanjiInfos(TextTools.kanjiToCode(((TextView)v).getText().toString()));
+					KanjiInfo currentKanji = new KanjiInfo(((TextView)v).getText().toString(), false);
+					int cp = TextTools.kanjiToCode(((TextView)v).getText().toString());
+					Cursor c = mDbHelper.getKanjiInfos(cp);
 					
 					// Get the JLPT level
 					int jlpt = c.getInt(c.getColumnIndex(KanjiDBHelper.KEY_JLPT));
@@ -46,10 +48,22 @@ public class KanjiListAdapter extends ArrayAdapter<KanjiInfo>{
 					// Get the grade
 					int grade = c.getInt(c.getColumnIndex(KanjiDBHelper.KEY_GRADE));
 					
-					// TODO: Get the readings too!
+					Cursor cOn = mDbHelper.getKanjiOnYomi(cp);
+					cOn.moveToFirst();
+					for(int i=0; i<cOn.getCount(); i++){
+						String yomi = cOn.getString(cOn.getColumnIndex(KanjiDBHelper.KEY_YOMI));
+						currentKanji.oNYomi.add(yomi);
+						cOn.moveToNext();
+					}
 					
-					// Finally, update the current kanji
-					KanjiInfo currentKanji = new KanjiInfo(((TextView)v).getText().toString(), false);
+					Cursor cKun = mDbHelper.getKanjiKunYomi(cp);
+					cKun.moveToFirst();
+					for(int i=0; i<cKun.getCount(); i++){
+						String yomi = cKun.getString(cKun.getColumnIndex(KanjiDBHelper.KEY_YOMI));
+						currentKanji.kUNYomi.add(yomi);
+						cKun.moveToNext();
+					}
+
 					currentKanji.frequency = frequency;
 					currentKanji.grade = grade;
 					currentKanji.kvg = kvg;

@@ -3,9 +3,6 @@ package ch.shibastudio.kanjinotepad;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Path;
-import android.graphics.Point;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
