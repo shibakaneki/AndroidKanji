@@ -3,8 +3,6 @@ package ch.shibastudio.kanjinotepad;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import shiba.test.androidkanji.R;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.util.AttributeSet;

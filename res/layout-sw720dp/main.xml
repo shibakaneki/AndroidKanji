@@ -5,12 +5,11 @@
     android:orientation="horizontal"
     android:weightSum="1.0" >
 
-    <shiba.test.androidkanji.KanjiListView
+    <ch.shibastudio.kanjinotepad.KanjiListView
         android:id="@+id/kanjiListView1"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="0.80" >
-    </shiba.test.androidkanji.KanjiListView>
+        android:layout_weight="0.80" />
 
     <LinearLayout android:orientation="vertical"
         android:layout_height="fill_parent"
@@ -32,14 +31,14 @@
             android:background="#FFFFFF"/> 
             -->
             
-            <shiba.test.androidkanji.KanjiPlayerContainer
+            <ch.shibastudio.kanjinotepad.KanjiPlayerContainer
             android:id="@+id/kanjiPlayerContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="0.50"/>
             
               
-            <shiba.test.androidkanji.KanjiInfoView
+            <ch.shibastudio.kanjinotepad.KanjiInfoView
             android:id="@+id/drawingView1"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -55,25 +54,25 @@
             android:layout_weight="0.5"
             android:weightSum="1.0">
             
-	        <shiba.test.androidkanji.KanjiCanvas android:id="@+id/drawingCanvas1"
+	        <ch.shibastudio.kanjinotepad.KanjiCanvas android:id="@+id/drawingCanvas1"
 	            android:layout_width="fill_parent"
 	            android:layout_height="fill_parent"
 	            android:background="#FFFFFF"
 	            android:layout_weight="0.25"/>
             
-	        <shiba.test.androidkanji.KanjiCanvas android:id="@+id/drawingCanvas2"
+	        <ch.shibastudio.kanjinotepad.KanjiCanvas android:id="@+id/drawingCanvas2"
 	            android:layout_width="fill_parent"
 	            android:layout_height="fill_parent"
 	            android:background="#FFFFFF"
 	            android:layout_weight="0.25"/>
 	        
-	        <shiba.test.androidkanji.KanjiCanvas android:id="@+id/drawingCanvas3"
+	        <ch.shibastudio.kanjinotepad.KanjiCanvas android:id="@+id/drawingCanvas3"
 	            android:layout_width="fill_parent"
 	            android:layout_height="fill_parent"
 	            android:background="#FFFFFF"
 	            android:layout_weight="0.25"/>
 	        
-	        <shiba.test.androidkanji.KanjiCanvas android:id="@+id/drawingCanvas4"
+	        <ch.shibastudio.kanjinotepad.KanjiCanvas android:id="@+id/drawingCanvas4"
 	            android:layout_width="fill_parent"
 	            android:layout_height="fill_parent"
 	            android:background="#FFFFFF"

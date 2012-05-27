@@ -1,6 +1,5 @@
 package ch.shibastudio.kanjinotepad;
 
-import shiba.test.androidkanji.R;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;

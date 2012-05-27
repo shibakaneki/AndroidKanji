@@ -1,6 +1,5 @@
 package ch.shibastudio.kanjinotepad;
 
-import shiba.test.androidkanji.R;
 import android.app.Activity;
 import android.os.Bundle;
 

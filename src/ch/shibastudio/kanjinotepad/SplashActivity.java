@@ -3,8 +3,6 @@ package ch.shibastudio.kanjinotepad;
 import java.io.File;
 import java.io.IOException;
 
-import shiba.test.androidkanji.R;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;

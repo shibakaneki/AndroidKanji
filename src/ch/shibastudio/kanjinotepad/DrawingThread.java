@@ -397,7 +397,7 @@ public class DrawingThread extends Thread{
 	        			break;
 	        		}
 	        		
-	        		StrokeType mLastStrokeType = generateNextSegment();
+	        		mLastStrokeType = generateNextSegment();
 				}
 	        } catch (InterruptedException e) {
 				e.printStackTrace();

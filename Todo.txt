@@ -12,9 +12,7 @@ o Implement the kanji description view
 	- Retrieve the yomi at the same time as the kvg info
 o Define the design of the application (splash screen, controls, colors, icons, ...)
 o Support the portait & landscape modes for tablets & handsets (tbd)
-
 o Define a way to switch between views on handsets (static manager for the current kanji?)
-o Clean the repository (remove deleted files)
 
 Tests before production launch
 ------------------------------
