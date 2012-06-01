@@ -10,7 +10,9 @@
         android:layout_height="wrap_content"
         android:text="@string/kanji_details"
         android:textAppearance="?android:attr/textAppearanceLarge" 
-        android:textColor="#000000"/>
+        android:textColor="#000000"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"/>
 
     <TextView
         android:id="@+id/textView2"
@@ -18,13 +20,16 @@
         android:layout_height="wrap_content"
         android:text="@string/on_yomi"
         android:textAppearance="?android:attr/textAppearanceMedium" 
-        android:textColor="#000000"/>
+        android:textColor="#000000"
+        android:paddingLeft="20dp"
+        android:paddingTop="10dp"/>
 
     <TextView
         android:id="@+id/kanjiON"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#000000"/>
+        android:textColor="#000000"
+        android:paddingLeft="20dp"/>
 
     <TextView
         android:id="@+id/textView4"
@@ -32,13 +37,16 @@
         android:layout_height="wrap_content"
         android:text="@string/kun_yomi"
         android:textAppearance="?android:attr/textAppearanceMedium" 
-        android:textColor="#000000"/>
+        android:textColor="#000000"
+        android:paddingLeft="20dp"
+        android:paddingTop="10dp"/>
 
     <TextView
         android:id="@+id/kanjiKUN"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#000000"/>
+        android:textColor="#000000"
+        android:paddingLeft="20dp"/>
 
     <TextView
         android:id="@+id/textView6"
@@ -46,12 +54,15 @@
         android:layout_height="wrap_content"
         android:text="@string/kanji_words"
         android:textAppearance="?android:attr/textAppearanceMedium" 
-        android:textColor="#000000"/>
+        android:textColor="#000000"
+        android:paddingLeft="20dp"
+        android:paddingTop="10dp"/>
 
     <TextView
         android:id="@+id/kanjiWords"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#000000"/>
+        android:textColor="#000000"
+        android:paddingLeft="20dp"/>
 
 </LinearLayout>
