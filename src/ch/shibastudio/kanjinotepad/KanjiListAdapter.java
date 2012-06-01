@@ -64,6 +64,14 @@ public class KanjiListAdapter extends ArrayAdapter<KanjiInfo>{
 						cKun.moveToNext();
 					}
 
+					Cursor cMeaning = mDbHelper.getKanjiMeaning(cp);
+					cMeaning.moveToFirst();
+					for(int i=0; i<cMeaning.getCount(); i++){
+						String meaning = cMeaning.getString(cMeaning.getColumnIndex(KanjiDBHelper.KEY_MEANING));
+						currentKanji.meaning.add(meaning);
+						cMeaning.moveToNext();
+					}
+					
 					currentKanji.frequency = frequency;
 					currentKanji.grade = grade;
 					currentKanji.kvg = kvg;

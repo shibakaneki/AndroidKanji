@@ -12,6 +12,7 @@ public class KanjiInfo {
 	public int frequency;
 	public ArrayList<String> oNYomi;
 	public ArrayList<String> kUNYomi;
+	public ArrayList<String> meaning;
 	public int jlpt;
 	
 	public KanjiInfo(String kanji, boolean fav){
@@ -25,6 +26,7 @@ public class KanjiInfo {
 		this.jlpt = -1;
 		this.oNYomi = new ArrayList<String>();
 		this.kUNYomi = new ArrayList<String>();
+		this.meaning = new ArrayList<String>();
 	}
 	
 	public void toggleFavorite(){

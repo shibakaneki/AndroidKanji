@@ -5,7 +5,7 @@
     android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/tvdetails"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/kanji_details"
@@ -15,14 +15,48 @@
         android:paddingTop="10dp"/>
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/tvJLPT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/jlpt"
+        android:textAppearance="?android:attr/textAppearanceMedium" 
+        android:textColor="#000000"
+        android:paddingLeft="20dp"
+        android:paddingTop="5dp"/>
+    
+    <TextView
+        android:id="@+id/kanjiJLPT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:paddingLeft="20dp"/>
+    
+    <TextView
+        android:id="@+id/tvStrokesCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/stroke_number"
+        android:textAppearance="?android:attr/textAppearanceMedium" 
+        android:textColor="#000000"
+        android:paddingLeft="20dp"
+        android:paddingTop="5dp"/>
+    
+    <TextView
+        android:id="@+id/kanjiStrokeNbr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:paddingLeft="20dp"/>
+    
+    <TextView
+        android:id="@+id/tvON"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/on_yomi"
         android:textAppearance="?android:attr/textAppearanceMedium" 
         android:textColor="#000000"
         android:paddingLeft="20dp"
-        android:paddingTop="10dp"/>
+        android:paddingTop="5dp"/>
 
     <TextView
         android:id="@+id/kanjiON"
@@ -32,14 +66,14 @@
         android:paddingLeft="20dp"/>
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/tvKUN"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/kun_yomi"
         android:textAppearance="?android:attr/textAppearanceMedium" 
         android:textColor="#000000"
         android:paddingLeft="20dp"
-        android:paddingTop="10dp"/>
+        android:paddingTop="5dp"/>
 
     <TextView
         android:id="@+id/kanjiKUN"
@@ -47,19 +81,36 @@
         android:layout_height="wrap_content"
         android:textColor="#000000"
         android:paddingLeft="20dp"/>
-
+    
     <TextView
-        android:id="@+id/textView6"
+        android:id="@+id/tvMeaning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/kanji_words"
+        android:text="@string/meaning"
         android:textAppearance="?android:attr/textAppearanceMedium" 
         android:textColor="#000000"
         android:paddingLeft="20dp"
-        android:paddingTop="10dp"/>
+        android:paddingTop="5dp"/>
+    
+    <TextView
+        android:id="@+id/kanjiMeaning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:paddingLeft="20dp"/>
 
     <TextView
-        android:id="@+id/kanjiWords"
+        android:id="@+id/tvBushu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/bushu"
+        android:textAppearance="?android:attr/textAppearanceMedium" 
+        android:textColor="#000000"
+        android:paddingLeft="20dp"
+        android:paddingTop="5dp"/>
+    
+    <TextView
+        android:id="@+id/kanjiBushu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#000000"

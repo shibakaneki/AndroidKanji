@@ -19,5 +19,9 @@
     <string name="on_yomi">ON Yomi</string>
     <string name="kun_yomi">KUN Yomi</string>
     <string name="kanji_words">Words using this kanji</string>
-
+	<string name="jlpt">JLPT</string>
+	<string name="stroke_number">Strokes number</string>
+	<string name="meaning">Meaning</string>
+	<string name="bushu">Bushu</string>
+	
 </resources>

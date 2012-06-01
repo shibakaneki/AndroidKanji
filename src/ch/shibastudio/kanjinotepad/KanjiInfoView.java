@@ -10,6 +10,10 @@ public class KanjiInfoView extends LinearLayout implements IKanjiListener{
 	private Context mCtx;
 	private TextView mOnView;
 	private TextView mKunView;
+	private TextView mJLPTView;
+	private TextView mStrokesCountView;
+	private TextView mMeaning;
+	private TextView mBushu;
 	
 	public KanjiInfoView(Context c){
 		super(c);
@@ -28,10 +32,25 @@ public class KanjiInfoView extends LinearLayout implements IKanjiListener{
 		inflater.inflate(R.layout.kanji_info, this);
 		mOnView = (TextView)findViewById(R.id.kanjiON);
 		mKunView = (TextView)findViewById(R.id.kanjiKUN);
+		mJLPTView = (TextView)findViewById(R.id.kanjiJLPT);
+		mStrokesCountView = (TextView)findViewById(R.id.kanjiStrokeNbr);
+		mMeaning = (TextView)findViewById(R.id.kanjiMeaning);
+		mBushu = (TextView)findViewById(R.id.kanjiBushu);
 		KanjiManager.addKanjiListener(this);
 	}
 	
 	public void kanjiChanged(int codepoint){
+		// JLPT
+		int jlpt = KanjiManager.kanji().jlpt;
+		if(0 < jlpt){
+			mJLPTView.setText("" +KanjiManager.kanji().jlpt);
+		}else{
+			mJLPTView.setText("");
+		}
+		
+		// Strokes number
+		mStrokesCountView.setText("" +KanjiManager.kanji().strokeCount);
+		
 		// ON Yomi
 		mOnView.setText("");
 		String strON = "";
@@ -53,5 +72,18 @@ public class KanjiInfoView extends LinearLayout implements IKanjiListener{
 			strKUN += KanjiManager.kanji().kUNYomi.get(j);
 		}
 		mKunView.setText(strKUN);
+		
+		// Meaning
+		mMeaning.setText("");
+		String strMeaning = "";
+		for(int k=0; k<KanjiManager.kanji().meaning.size(); k++){
+			if(0 < k){
+				strMeaning += ", ";
+			}
+			strMeaning += KanjiManager.kanji().meaning.get(k);
+		}
+		mMeaning.setText(strMeaning);
+		
+		// TODO: Handle the bushu infos here
 	}
 }
