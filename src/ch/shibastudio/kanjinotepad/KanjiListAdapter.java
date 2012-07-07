@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,7 @@ public class KanjiListAdapter extends ArrayAdapter<KanjiInfo>{
 		public void onClick(View v) {
 			if(null != v){
 				try {
+					v.setBackgroundColor(R.color.fancy);
 					mDbHelper.openDatabase();
 					KanjiInfo currentKanji = new KanjiInfo(((TextView)v).getText().toString(), false);
 					int cp = TextTools.kanjiToCode(((TextView)v).getText().toString());

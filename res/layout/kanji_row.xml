@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="38dp"
     android:orientation="horizontal"
-    android:weightSum="1.0">
+    android:weightSum="1.0"
+    android:background="@drawable/listselector">
 
 	<TextView android:id="@+id/text1"
     	android:layout_width="fill_parent"
     	android:layout_height="fill_parent"
-    	android:layout_weight="0.15"
-    	android:textSize="22dp"
+    	android:layout_weight="0.20"
+    	android:textSize="26dp"
     	android:paddingLeft="15dp"
-    	android:background="#FFFFFF"
     	android:textColor="#000000"/>
 
 	<ImageView
 	    android:id="@+id/favoriteStar"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
-	    android:layout_weight="0.85"
-	    android:background="#FFFFFF"/>
+	    android:paddingTop="3dp"
+	    android:paddingBottom="3dp"
+	    android:layout_weight="0.80"/>
 	
 </LinearLayout>

@@ -18,6 +18,7 @@
                         
             <!-- We add here an empty layout in order to prevent having the keyboard shown at startup -->
            	<LinearLayout
+           	    android:id="@+id/emptyLayout"
    				android:focusable="true" android:focusableInTouchMode="true"
    				android:layout_width="0dp" android:layout_height="0dp"/>
            	
@@ -26,10 +27,10 @@
            	    android:layout_width="fill_parent"
            	    android:layout_height="wrap_content"
            	    android:background="#555555"
-           	    android:layout_margin="5dp">
+           	    android:layout_margin="5dp">     		
            		<EditText
            		    android:id="@+id/searchField"
-           		    android:layout_width="wrap_content"
+           		    android:layout_width="0dp"
            		    android:layout_height="wrap_content"
            		    android:layout_weight="0.92"
            		    android:background="@drawable/roundededit"
@@ -50,7 +51,8 @@
         <!-- The kanji list -->
         <ListView android:id="@+id/kanjiList"
         	android:layout_width="fill_parent"
-        	android:layout_height="fill_parent" />
+        	android:layout_height="fill_parent"
+        	android:listSelector="@android:color/transparent" />
     
     	<TextView android:id="@+id/emptyKanjiView"
         	android:layout_width="fill_parent"
