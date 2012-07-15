@@ -2,5 +2,9 @@
 <resources>
     <color name="fancy">#FFE1E1</color>
     <color name="white">#FFFFFF</color>
+    <color name="paper">#FaF1F1</color>
+    <color name="Title">#B22C2C</color>
+    <color name="kanjiinfotitle">#781313</color>
+    <color name="drawingpaper">#FFFCEC</color>
     
 </resources>

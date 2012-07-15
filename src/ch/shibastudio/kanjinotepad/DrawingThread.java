@@ -3,10 +3,14 @@ package ch.shibastudio.kanjinotepad;
 import java.util.ArrayList;
 
 
+import android.R.color;
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.Point;
@@ -304,6 +308,17 @@ public class DrawingThread extends Thread{
 		canvas.drawLine(mWidthBorder + 3*mGuideWidth/4, mHeightBorder, mWidthBorder + 3*mGuideWidth/4, mHeightBorder + mGuideHeight, mPainter);
 	}
 	
+	private void drawBackground(Canvas canvas){
+		
+		mPainter.setColor(Color.parseColor("#FaF1F1"));
+		mPainter.setStrokeWidth(3f);
+		mPainter.setPathEffect(null);
+		mPainter.setStyle(Style.FILL);
+		Rect guide = new Rect(mWidthBorder, mHeightBorder, mWidthBorder + mGuideWidth, mHeightBorder + mGuideHeight);
+		canvas.drawRect(guide, mPainter);
+		mPainter.setStyle(Style.STROKE);
+	}
+	
 	private void drawBorder(Canvas canvas){
 		mPainter.setColor(Color.BLACK);
 		mPainter.setStrokeWidth(3f);
@@ -319,17 +334,20 @@ public class DrawingThread extends Thread{
 	}
 	
 	private void drawDecorations(Canvas canvas){
-		canvas.drawColor(Color.WHITE);
-		if(showGrid){
-			drawGrid(canvas);
-		}
-		
-		if(showBorder){
-			drawBorder(canvas);
-		}
-		
-		if(showKanjiShadow){
-			drawPrettyShadow(canvas);
+		if(null != canvas){
+			canvas.drawColor(Color.WHITE);
+			drawBackground(canvas);
+			if(showGrid){
+				drawGrid(canvas);
+			}
+			
+			if(showBorder){
+				drawBorder(canvas);
+			}
+			
+			if(showKanjiShadow){
+				drawPrettyShadow(canvas);
+			}
 		}
 	}
 	

@@ -243,12 +243,12 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 	}
 	
 	public String fetchAllKanji(){
-		String query = "SELECT e." + KEY_ID +", f." +KEY_STATE + ", e." +KEY_JLPT +" FROM " + TABLE_ENTRIES +" e, " +TABLE_FAVORITES +" f WHERE (e." +KEY_ID +"=f." +KEY_ID +") AND (e." +KEY_ID +">" +FIRST_KANJI_CODE +") AND (e." +KEY_ID +"<" +LAST_KANJI_CODE  +") ORDER BY e." +KEY_STROKE_COUNT;
+		String query = "SELECT e." + KEY_ID +", f." +KEY_STATE + ", e." +KEY_JLPT +", e." +KEY_ENTRY_ONYOMI +", e." +KEY_ENTRY_KUNYOMI +" FROM " + TABLE_ENTRIES +" e, " +TABLE_FAVORITES +" f WHERE (e." +KEY_ID +"=f." +KEY_ID +") AND (e." +KEY_ID +">" +FIRST_KANJI_CODE +") AND (e." +KEY_ID +"<" +LAST_KANJI_CODE  +") ORDER BY e." +KEY_STROKE_COUNT;
 		return query;
 	}
 	
 	public String fetchFavoritesKanji(){
-		String query = "SELECT e." + KEY_ID +", f." +KEY_STATE + ", e." +KEY_JLPT +" FROM " + TABLE_ENTRIES +" e, " +TABLE_FAVORITES +" f WHERE e." +KEY_ID +"=f." +KEY_ID +" AND f." +KEY_STATE +"=1 ORDER BY e." +KEY_STROKE_COUNT;
+		String query = "SELECT e." + KEY_ID +", f." +KEY_STATE + ", e." +KEY_JLPT +", e." +KEY_ENTRY_ONYOMI +", e." +KEY_ENTRY_KUNYOMI +" FROM " + TABLE_ENTRIES +" e, " +TABLE_FAVORITES +" f WHERE e." +KEY_ID +"=f." +KEY_ID +" AND f." +KEY_STATE +"=1 ORDER BY e." +KEY_STROKE_COUNT;
 		return query;
 	}
 	
@@ -263,7 +263,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 				query = fetchFavoritesKanji();
 				break;
 			default:
-				query = "SELECT e." + KEY_ID +", f." +KEY_STATE + ", e." +KEY_JLPT +" FROM " + TABLE_ENTRIES +" e, " +TABLE_FAVORITES +" f WHERE e." +KEY_ID +"=f." +KEY_ID +" AND e." +KEY_JLPT +"=" +group +" ORDER BY e." +KEY_STROKE_COUNT;
+				query = "SELECT e." + KEY_ID +", f." +KEY_STATE + ", e." +KEY_JLPT +", e." +KEY_ENTRY_ONYOMI +", e." +KEY_ENTRY_KUNYOMI +" FROM " + TABLE_ENTRIES +" e, " +TABLE_FAVORITES +" f WHERE e." +KEY_ID +"=f." +KEY_ID +" AND e." +KEY_JLPT +"=" +group +" ORDER BY e." +KEY_STROKE_COUNT;
 				break;
 		}
 		Cursor c = mDb.rawQuery(query, null);
@@ -287,7 +287,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 		String query = "";
 		for(int i=0; i<exp.length(); i++){
 			if(0 == i){
-				query = "SELECT e." + KEY_ID +", f." +KEY_STATE + ", e." +KEY_JLPT +" FROM " + TABLE_ENTRIES +" e, " +TABLE_FAVORITES +" f WHERE e." +KEY_ID +"=f." +KEY_ID +" AND ( e." +KEY_ID +"=" +TextTools.kanjiToCode("" +exp.charAt(i));
+				query = "SELECT e." + KEY_ID +", f." +KEY_STATE + ", e." +KEY_JLPT +", e." +KEY_ENTRY_ONYOMI +", e." +KEY_ENTRY_KUNYOMI +" FROM " + TABLE_ENTRIES +" e, " +TABLE_FAVORITES +" f WHERE e." +KEY_ID +"=f." +KEY_ID +" AND ( e." +KEY_ID +"=" +TextTools.kanjiToCode("" +exp.charAt(i));
 			}else{
 				query += " OR e." +KEY_ID +"=" +TextTools.kanjiToCode("" +exp.charAt(i));
 			}

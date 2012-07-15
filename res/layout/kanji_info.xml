@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:text="@string/kanji_details"
         android:textAppearance="?android:attr/textAppearanceLarge" 
-        android:textColor="#000000"
+        android:textColor="@color/kanjiinfotitle"
         android:paddingLeft="10dp"
         android:paddingTop="10dp"/>
 
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:text="@string/jlpt"
         android:textAppearance="?android:attr/textAppearanceMedium" 
-        android:textColor="#000000"
+        android:textColor="@color/Title"
         android:paddingLeft="20dp"
         android:paddingTop="5dp"/>
     
@@ -29,7 +29,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#000000"
-        android:paddingLeft="20dp"/>
+        android:paddingLeft="20dp"
+        android:text="-"/>
     
     <TextView
         android:id="@+id/tvStrokesCount"
@@ -37,7 +38,7 @@
         android:layout_height="wrap_content"
         android:text="@string/stroke_number"
         android:textAppearance="?android:attr/textAppearanceMedium" 
-        android:textColor="#000000"
+        android:textColor="@color/Title"
         android:paddingLeft="20dp"
         android:paddingTop="5dp"/>
     
@@ -46,7 +47,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#000000"
-        android:paddingLeft="20dp"/>
+        android:paddingLeft="20dp"
+        android:text="-"/>
     
     <TextView
         android:id="@+id/tvON"
@@ -54,7 +56,7 @@
         android:layout_height="wrap_content"
         android:text="@string/on_yomi"
         android:textAppearance="?android:attr/textAppearanceMedium" 
-        android:textColor="#000000"
+        android:textColor="@color/Title"
         android:paddingLeft="20dp"
         android:paddingTop="5dp"/>
 
@@ -63,7 +65,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#000000"
-        android:paddingLeft="20dp"/>
+        android:paddingLeft="20dp"
+        android:text="-"/>
 
     <TextView
         android:id="@+id/tvKUN"
@@ -71,7 +74,7 @@
         android:layout_height="wrap_content"
         android:text="@string/kun_yomi"
         android:textAppearance="?android:attr/textAppearanceMedium" 
-        android:textColor="#000000"
+        android:textColor="@color/Title"
         android:paddingLeft="20dp"
         android:paddingTop="5dp"/>
 
@@ -80,7 +83,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#000000"
-        android:paddingLeft="20dp"/>
+        android:paddingLeft="20dp"
+        android:text="-"/>
     
     <TextView
         android:id="@+id/tvMeaning"
@@ -88,7 +92,7 @@
         android:layout_height="wrap_content"
         android:text="@string/meaning"
         android:textAppearance="?android:attr/textAppearanceMedium" 
-        android:textColor="#000000"
+        android:textColor="@color/Title"
         android:paddingLeft="20dp"
         android:paddingTop="5dp"/>
     
@@ -97,7 +101,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#000000"
-        android:paddingLeft="20dp"/>
+        android:paddingLeft="20dp"
+        android:text="-"/>
 
     <TextView
         android:id="@+id/tvBushu"
@@ -105,7 +110,7 @@
         android:layout_height="wrap_content"
         android:text="@string/bushu"
         android:textAppearance="?android:attr/textAppearanceMedium" 
-        android:textColor="#000000"
+        android:textColor="@color/Title"
         android:paddingLeft="20dp"
         android:paddingTop="5dp"/>
     
@@ -114,6 +119,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#000000"
-        android:paddingLeft="20dp"/>
+        android:paddingLeft="20dp"
+        android:text="-"/>
 
 </LinearLayout>

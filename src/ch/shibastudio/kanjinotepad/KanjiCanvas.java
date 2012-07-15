@@ -11,6 +11,7 @@ import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.Paint.Style;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -72,7 +73,7 @@ public class KanjiCanvas extends View{
 		mCurrentKVGPaths = new ArrayList<KanjiVGElement>();
 		mKanjiPaths = new ArrayList<KanjiStroke>();
 		mAnimationPaths = new ArrayList<KanjiStroke>();
-		mPenColor = Color.BLUE;
+		mPenColor = Color.BLACK;
 		mPenWidth = 7f;
 		mPainter = new Paint();
 		mPainter.setDither(true);
@@ -109,6 +110,8 @@ public class KanjiCanvas extends View{
 		
 		initPainting();
 		
+		drawBackground(c);
+		
 		if(mShowGrid){
 			drawGrid();
 		}
@@ -143,6 +146,16 @@ public class KanjiCanvas extends View{
 
 	}
 	
+	private void drawBackground(Canvas canvas){
+		mPainter.setColor(Color.parseColor("#FFFCEC"));
+		mPainter.setStrokeWidth(3f);
+		mPainter.setPathEffect(null);
+		mPainter.setStyle(Style.FILL);
+		Rect guide = new Rect(mWidthBorder, mHeightBorder, mWidthBorder + mGuideWidth, mHeightBorder + mGuideHeight);
+		canvas.drawRect(guide, mPainter);
+		mPainter.setStyle(Style.STROKE);
+	}
+
 	private void drawPrettyShadow(){
 		mPainter.setColor(Color.BLACK);
 		mPainter.setStrokeWidth(16f);

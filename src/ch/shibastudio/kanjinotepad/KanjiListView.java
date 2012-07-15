@@ -131,13 +131,12 @@ public class KanjiListView extends LinearLayout {
 						currentKanji.strokeCount = strokeCount;
 						currentKanji.jlpt = jlpt;
 						KanjiManager.setCurrentKanji(currentKanji);
+						mKDBHelper.close();
 					}
 				}catch (SQLException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
-				}finally{
-					mKDBHelper.close();
 				}
 			}
 		}
@@ -199,6 +198,13 @@ public class KanjiListView extends LinearLayout {
 			kli.favorite = (0 < iFavVal);
 		
 			// NOTE: Add some extra infos to be displayed on the rows
+			int onIndex = c.getColumnIndex(KanjiDBHelper.KEY_ENTRY_ONYOMI);
+			String onValue = c.getString(onIndex);
+			kli.info1 = onValue;
+			
+			int kunIndex = c.getColumnIndex(KanjiDBHelper.KEY_ENTRY_KUNYOMI);
+			String kunValue = c.getString(kunIndex);
+			kli.info2 = kunValue;
 			
 			fAdapter.addItem(kli);
 			

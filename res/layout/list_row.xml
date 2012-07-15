@@ -25,15 +25,21 @@
 
         <TextView
             android:id="@+id/info1"
-            android:layout_width="fill_parent"
+            android:layout_width="200dp"
             android:layout_height="fill_parent"
             android:textColor="#CC0000"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
             android:layout_weight="0.50"/>
 
         <TextView
             android:id="@+id/info2"
-            android:layout_width="fill_parent"
+            android:layout_width="200dp"
             android:layout_height="fill_parent"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
             android:layout_weight="0.50"/>
 
     </LinearLayout>
@@ -42,7 +48,10 @@
         android:id="@+id/star"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:padding="2dp"
+		android:paddingTop="2dp"
+		android:paddingBottom="2dp"
+        android:paddingRight="4dp"
+        android:paddingLeft="4dp"
         android:src="@drawable/favempty" 
         android:layout_weight="0.10"/>
 
