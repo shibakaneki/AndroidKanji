@@ -2,6 +2,8 @@ package ch.shibastudio.kanjinotepad;
 
 import java.util.ArrayList;
 
+import ch.shibastudio.kanjinotepad.utils.TextTools;
+
 public class KanjiInfo {
 	public String kanji;
 	public int codePoint;

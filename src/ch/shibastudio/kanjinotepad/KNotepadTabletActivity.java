@@ -1,5 +1,6 @@
 package ch.shibastudio.kanjinotepad;
 
+import ch.shibastudio.kanjinotepad.lists.KanjiListView;
 import android.app.Activity;
 import android.os.Bundle;
 

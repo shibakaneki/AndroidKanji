@@ -4,10 +4,9 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
     
-    <ch.shibastudio.kanjinotepad.KanjiListView
+    <ch.shibastudio.kanjinotepad.lists.KanjiListView
         android:id="@+id/kanjiListView1"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
-    </ch.shibastudio.kanjinotepad.KanjiListView>
+        android:layout_height="fill_parent" />
 
 </LinearLayout>

@@ -11,6 +11,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.sql.SQLException;
 
+import ch.shibastudio.kanjinotepad.utils.TextTools;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
