@@ -8,12 +8,14 @@ o Implement the drawing area
 	- Adapt this view to the handset format
 	- Interpolate curves
 o Implement the kanji description view
-	- Show some words using the selected kanji
+	- Add Bushu infos related to the selected bushu
 o Define the design of the application (splash screen, controls, colors, icons, ...)
-	- A kanji row should changes its background color when clicked
+	- Create a splashscreen (japanese vector design maybe)
 o Support the portait & landscape modes for tablets & handsets (tbd)
-o Define a way to switch between views on handsets (static manager for the current kanji?)
-o Improve the performances of the selection (it takes to much time)
+o Create a 'studied' list
+	- Add this list in the filters
+	- Act like the favorites but that will be the studied kanjis
+	- For each jlpt list, display a stroke red to green related to the studied kanjis in order to show the progress
 
 Tests before production launch
 ------------------------------
@@ -27,6 +29,9 @@ Bugs
 ----
 o Crash on exit
 	- Seems related to the DrawingThread management.
+	
+o Loss of favorite states
+	- The Kanji state (in the ArrayList in the Adapter has not is favorite state updated. Only the star icon is updated. Due to that, when the device is shuts off its screen, the state is lost)
 
 To Add
 ------

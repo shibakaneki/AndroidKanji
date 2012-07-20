@@ -40,8 +40,14 @@ public class SplashActivity extends Activity {
 			//Intent intent = new Intent(SplashActivity.this, AndroidKanjiActivity.class);
 			Intent intent;
 			
-			// For the moment, only the tablet is supported
-			intent = new Intent(SplashActivity.this, KNotepadTabletActivity.class);
+
+			boolean isTablet = getResources().getBoolean(R.bool.isTablet);
+			if(isTablet){
+				intent = new Intent(SplashActivity.this, KNotepadTabletActivity.class);
+			}else{
+				intent = new Intent(SplashActivity.this, KNotepadPhoneActivity.class);
+			}
+			
 			finish();
 			startActivity(intent);
 		}
