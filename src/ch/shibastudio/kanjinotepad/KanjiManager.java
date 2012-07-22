@@ -6,12 +6,17 @@ public class KanjiManager {
 
 	public static KanjiInfo kanjiInfo;
 	private static ArrayList<IKanjiListener> mListeners = new ArrayList<IKanjiListener>();
+	public static boolean phoneMode = false;
 	
 	public KanjiManager(){
 		
 	}
 
 	public static void setCurrentKanji(KanjiInfo kanji){
+		if(phoneMode){
+			KNotepadPhoneActivity.tabHost.setCurrentTab(1);
+		}
+		
 		kanjiInfo = kanji;
 		notifyKanjiChanged();
 	}

@@ -52,7 +52,7 @@
 		android:paddingBottom="2dp"
         android:paddingRight="4dp"
         android:paddingLeft="4dp"
-        android:src="@drawable/favempty" 
+        android:src="@drawable/ic_favempty" 
         android:layout_weight="0.10"/>
 
 </LinearLayout>

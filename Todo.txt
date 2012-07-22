@@ -1,11 +1,10 @@
 TODO List
----------		
+---------
+o Create the animation with a simple View and not a SurfaceView
 o Implement the drawing area
 	- Add a button usable to clear the user strokes
 	- Add a button usable to verify the drawn strokes (hide it until version 2)
 	- Add a button usable to replay the animation
-	- Check the quality + performances
-	- Adapt this view to the handset format
 	- Interpolate curves
 o Implement the kanji description view
 	- Add Bushu infos related to the selected bushu

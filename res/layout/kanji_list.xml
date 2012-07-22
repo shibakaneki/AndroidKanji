@@ -44,7 +44,7 @@
            		    android:layout_width="wrap_content"
            		    android:layout_height="fill_parent"
            		    android:paddingLeft="4dp"
-           		    android:src="@drawable/favfull" />
+           		    android:src="@drawable/ic_search" />
            	</LinearLayout>            	
         </LinearLayout>
         

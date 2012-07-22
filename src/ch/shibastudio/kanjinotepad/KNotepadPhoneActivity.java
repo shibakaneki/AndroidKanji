@@ -5,9 +5,12 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TabHost;
+import android.widget.TabWidget;
 import android.widget.TabHost.TabSpec;
 
 public class KNotepadPhoneActivity extends Activity{
+	
+	public static TabHost tabHost;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -17,26 +20,26 @@ public class KNotepadPhoneActivity extends Activity{
     }
 	
 	private void init(){
-		TabHost th = (TabHost)findViewById(R.id.tabhost);
-		th.setup();
-		TabSpec ts = th.newTabSpec("list");
+		tabHost = (TabHost)findViewById(R.id.tabhost);
+		tabHost.setup();
+		TabSpec ts = tabHost.newTabSpec("list");
 		ts.setContent(R.id.tablist);
 		ts.setIndicator("List", getResources().getDrawable(R.drawable.ic_tab_list));
-		th.addTab(ts);
+		tabHost.addTab(ts);
 		
-		ts = th.newTabSpec("anime");
+		ts = tabHost.newTabSpec("anime");
 		ts.setContent(R.id.tabanime);
 		ts.setIndicator("Animation", getResources().getDrawable(R.drawable.ic_tab_anime));
-		th.addTab(ts);
+		tabHost.addTab(ts);
 		
-		ts = th.newTabSpec("info");
+		ts = tabHost.newTabSpec("info");
 		ts.setContent(R.id.tabdesc);
 		ts.setIndicator("Infos", getResources().getDrawable(R.drawable.ic_tab_info));
-		th.addTab(ts);
+		tabHost.addTab(ts);
 		
-		ts = th.newTabSpec("canvas");
+		ts = tabHost.newTabSpec("canvas");
 		ts.setContent(R.id.tabdrawing);
 		ts.setIndicator("Drawing", getResources().getDrawable(R.drawable.ic_tab_drawing));
-		th.addTab(ts);
+		tabHost.addTab(ts);
 	}
 }

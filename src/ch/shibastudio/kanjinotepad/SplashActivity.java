@@ -45,6 +45,7 @@ public class SplashActivity extends Activity {
 			if(isTablet){
 				intent = new Intent(SplashActivity.this, KNotepadTabletActivity.class);
 			}else{
+				KanjiManager.phoneMode = true;
 				intent = new Intent(SplashActivity.this, KNotepadPhoneActivity.class);
 			}
 			

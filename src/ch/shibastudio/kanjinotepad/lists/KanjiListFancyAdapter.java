@@ -45,9 +45,9 @@ public class KanjiListFancyAdapter extends BaseAdapter{
 				kli.favorite = !kli.favorite;
 				
 				if(kli.favorite){
-					((ImageView)v).setImageResource(R.drawable.favfull);
+					((ImageView)v).setImageResource(R.drawable.ic_favfull);
 				}else{
-					((ImageView)v).setImageResource(R.drawable.favempty);
+					((ImageView)v).setImageResource(R.drawable.ic_favempty);
 				}
 								
 				try {
@@ -106,9 +106,9 @@ public class KanjiListFancyAdapter extends BaseAdapter{
 		holder.tvInfo1.setText(mKanjis.get(position).info1);
 		holder.tvInfo2.setText(mKanjis.get(position).info2);
 		if(mKanjis.get(position).favorite){
-			holder.ivFavorite.setImageResource(R.drawable.favfull);
+			holder.ivFavorite.setImageResource(R.drawable.ic_favfull);
 		}else{
-			holder.ivFavorite.setImageResource(R.drawable.favempty);
+			holder.ivFavorite.setImageResource(R.drawable.ic_favempty);
 		}
 		
 		holder.ivFavorite.setOnClickListener(onFavoriteClicked);
