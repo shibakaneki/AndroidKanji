@@ -42,19 +42,19 @@
             android:layout_weight="0.5"
             android:weightSum="0.9">
             
-	        <ch.shibastudio.kanjinotepad.drawing.KanjiCanvas android:id="@+id/drawingCanvas1"
+	        <ch.shibastudio.kanjinotepad.drawing.DrawingPanel android:id="@+id/drawingCanvas1"
 	            android:layout_width="fill_parent"
 	            android:layout_height="fill_parent"
 	            android:background="#FFFFFF"
 	            android:layout_weight="0.3"/>
             
-	        <ch.shibastudio.kanjinotepad.drawing.KanjiCanvas android:id="@+id/drawingCanvas2"
+	        <ch.shibastudio.kanjinotepad.drawing.DrawingPanel android:id="@+id/drawingCanvas2"
 	            android:layout_width="fill_parent"
 	            android:layout_height="fill_parent"
 	            android:background="#FFFFFF"
 	            android:layout_weight="0.3"/>
 	        
-	        <ch.shibastudio.kanjinotepad.drawing.KanjiCanvas android:id="@+id/drawingCanvas3"
+	        <ch.shibastudio.kanjinotepad.drawing.DrawingPanel android:id="@+id/drawingCanvas3"
 	            android:layout_width="fill_parent"
 	            android:layout_height="fill_parent"
 	            android:background="#FFFFFF"

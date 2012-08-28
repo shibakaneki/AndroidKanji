@@ -77,7 +77,7 @@ public class KanjiCanvas extends View{
 		mKanjiPaths = new ArrayList<KanjiStroke>();
 		mAnimationPaths = new ArrayList<KanjiStroke>();
 		mPenColor = Color.BLACK;
-		mPenWidth = 7f;
+		mPenWidth = 12f;
 		mPainter = new Paint();
 		mPainter.setDither(true);
 		mPainter.setColor(mPenColor);
@@ -244,8 +244,7 @@ public class KanjiCanvas extends View{
 		invalidate();
 		return true;
 	}
-	
-	
+		
 	private boolean isInGuide(float x, float y){
 		int guideHeight = guideWidth();
 		if(x >= mWidthBorder && x <= mWidthBorder + guideWidth() && y >= mHeightBorder && y <= mHeightBorder + guideHeight){
@@ -253,7 +252,6 @@ public class KanjiCanvas extends View{
 		}
 		return false;
 	}
-	
 	
 	private int guideWidth(){
 		int w = getWidth();
@@ -269,7 +267,6 @@ public class KanjiCanvas extends View{
 			return h - 2*mHeightBorder;
 		}
 	}
-	
 	
 	public void flushKanjiPath(){
 		mCurrentKVGPaths.clear();
