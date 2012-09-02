@@ -152,7 +152,7 @@ public class KanjiView extends View{
 
 	private boolean isInGuide(float x, float y){
 		int guideHeight = guideWidth();
-		if(x >= mWidthBorder && x <= mWidthBorder + guideWidth() && y >= mHeightBorder && y <= mHeightBorder + guideHeight){
+		if(x >= mWidthBorder + STROKE_WIDTH/2 && x <= mWidthBorder + guideWidth() - STROKE_WIDTH/2 && y >= mHeightBorder + STROKE_WIDTH/2 && y <= mHeightBorder + guideHeight - STROKE_WIDTH/2){
 			return true;
 		}
 		return false;
@@ -219,6 +219,10 @@ public class KanjiView extends View{
 		switch(event.getAction()){
 		case MotionEvent.ACTION_DOWN:
 			if(isInGuide(p.x, p.y)){
+				if(mDrawing){
+					mPreviousPath.add(mCrntPath);
+					refreshCache();
+				}
 				mCrntLine = new Line();
 				mCrntLine.addPoint(p);
 				generateCurrentPath();
