@@ -6,8 +6,8 @@ o Animation
 	- Add the buttons
 o Drawing area
 	- Add a button usable to clear the user strokes
-	- Add a button usable to verify the drawn strokes (hide it until version 2)
-	- Use Zinnia + Tomoe with the NDK for the kanji recognition
+	- Add a button usable to verify the drawn strokes
+		- Use Zinnia + Tomoe with the NDK for the kanji recognition
 o Implement the kanji description view with a ListView
 	- Add Bushu infos related to the selected bushu
 	- Add a maximum of 5 example words using the kanji
@@ -30,12 +30,3 @@ o Crash on exit
 	
 o Loss of favorite states
 	- The Kanji state (in the ArrayList in the Adapter has not is favorite state updated. Only the star icon is updated. Due to that, when the device is shuts off its screen, the state is lost)
-	
-o Drawing is difficult
-	- Drawing on the SGS2 is difficult while it is easy to draw on the TF101
-	
-o Lines disappear
-	- If we draw straight lines and make them go out of the border, they will disappear later.
-
-To Add
-------
