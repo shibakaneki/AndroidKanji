@@ -6,13 +6,12 @@ import ch.shibastudio.kanjinotepad.kanjivg.KanjiVGElement;
 import ch.shibastudio.kanjinotepad.kanjivg.KanjiVGPathElement;
 
 
-import android.R.color;
-import android.content.Context;
-import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
+import android.graphics.Bitmap.Config;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
@@ -36,7 +35,7 @@ public class DrawingThread extends Thread{
 	private final int GUIDE_BORDER = 10;
 	private final int SEGMENT_STEP = 5;
 	private final int ANIMATION_TIME = 2; // ms
-	private final int ANIMATION_WAIT = 20* ANIMATION_TIME;
+	private final int ANIMATION_WAIT = 60* ANIMATION_TIME;
 	
 	private SurfaceHolder mHolder;
 	private boolean mRunning = true;
@@ -56,6 +55,9 @@ public class DrawingThread extends Thread{
 	public boolean showGrid = true;
 	public boolean showKanjiShadow = true;
 	public boolean showBorder = true;
+	private boolean waitStroke = false;
+	
+	private Bitmap mCache;
 	
 	public DrawingThread(SurfaceHolder holder){
 		mHolder = holder;
@@ -89,8 +91,17 @@ public class DrawingThread extends Thread{
 		mScaleFactor = (float)mGuideWidth/(float)KANJIVG_ORIGIN_WIDTH;
 		
 		Canvas c = mHolder.lockCanvas();
-		drawDecorations(c);
-		mHolder.unlockCanvasAndPost(c);
+		if(null != c){
+			refreshCache();
+			c.drawBitmap(mCache, 0, 0, mPainter);
+			mHolder.unlockCanvasAndPost(c);
+		}
+	}
+	
+	private void refreshCache(){
+		mCache = Bitmap.createBitmap(mHolder.getSurfaceFrame().width(), mHolder.getSurfaceFrame().height(), Config.ARGB_8888);
+		Canvas cacheCanvas = new Canvas(mCache);
+		drawDecorations(cacheCanvas);
 	}
 	
 	private int guideWidth(){
@@ -236,6 +247,7 @@ public class DrawingThread extends Thread{
 				}
 			}
 		}
+		refreshCache();
 	}
 	
 	private float generateSmoothX1(float xPrev, float xPrevCtrl){
@@ -245,7 +257,6 @@ public class DrawingThread extends Thread{
 
 		return x;
 	}
-	
 	
 	private float generateSmoothY1(float yPrev, float yPrevCtrl){
 		float y = 0.0f;
@@ -364,6 +375,11 @@ public class DrawingThread extends Thread{
 	}
 	
 	private StrokeType generateNextSegment(){
+		if(waitStroke){
+			waitStroke = false;
+			return StrokeType.SPACE;
+		}
+
 		StrokeType retCode = StrokeType.SEGMENT;
 		mAnimationPaths.clear();
 		for(int i=0; i<mKanjiPaths.size(); i++){
@@ -381,7 +397,7 @@ public class DrawingThread extends Thread{
 				
 				if(endOfSegment == pm.getLength()){
 					stroke.done = true;
-					retCode = StrokeType.SPACE;
+					waitStroke = true;
 				}else{
 					stroke.currentSegment = endOfSegment;
 					retCode = StrokeType.SEGMENT;
@@ -396,6 +412,11 @@ public class DrawingThread extends Thread{
 		return retCode;
 	}
 	
+	private void drawBushuHighlight(Canvas canvas){
+		// TODO: Draw the bushu highlight here
+		
+	}
+	
 	@Override
 	public void run(){
 		while(mRunning){
@@ -403,7 +424,8 @@ public class DrawingThread extends Thread{
 	        try{
 	        	canvas = mHolder.lockCanvas();
 	        	synchronized (mHolder){
-	        		drawDecorations(canvas);
+	        		canvas.drawBitmap(mCache, 0, 0, mPainter);
+	        		drawBushuHighlight(canvas);
 	        		drawAnimatedSegments(canvas);
 	        		
 	        		switch(mLastStrokeType){

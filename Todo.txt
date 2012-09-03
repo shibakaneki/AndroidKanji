@@ -1,7 +1,6 @@
 TODO List
 ---------
 o Animation
-	- Rework it in order to use a cache
 	- Make the bushu clickable
 	- Add the buttons
 o Drawing area
