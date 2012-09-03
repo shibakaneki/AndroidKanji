@@ -423,25 +423,26 @@ public class DrawingThread extends Thread{
 	        Canvas canvas = null;
 	        try{
 	        	canvas = mHolder.lockCanvas();
-	        	synchronized (mHolder){
-	        		canvas.drawBitmap(mCache, 0, 0, mPainter);
-	        		drawBushuHighlight(canvas);
-	        		drawAnimatedSegments(canvas);
-	        		
-	        		switch(mLastStrokeType){
-	        		case SEGMENT:
-	        			sleep(ANIMATION_TIME);
-	        			break;
-	        		case SPACE:
-	        			sleep(ANIMATION_WAIT);
-	        			break;
-	        		case END:
-	        			mRunning = false;
-	        			break;
-	        		}
-	        		
-	        		mLastStrokeType = generateNextSegment();
-				}
+	        	if(null != canvas){
+	        		synchronized (mHolder){
+		        		canvas.drawBitmap(mCache, 0, 0, mPainter);
+		        		drawBushuHighlight(canvas);
+		        		drawAnimatedSegments(canvas);
+		        		
+		        		switch(mLastStrokeType){
+		        		case SEGMENT:
+		        			sleep(ANIMATION_TIME);
+		        			break;
+		        		case SPACE:
+		        			sleep(ANIMATION_WAIT);
+		        			break;
+		        		case END:
+		        			mRunning = false;
+		        			break;
+		        		}
+		        		mLastStrokeType = generateNextSegment();
+					}
+	        	}
 	        } catch (InterruptedException e) {
 				e.printStackTrace();
 			}finally{
