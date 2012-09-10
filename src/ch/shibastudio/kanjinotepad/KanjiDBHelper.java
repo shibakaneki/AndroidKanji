@@ -305,7 +305,7 @@ public class KanjiDBHelper extends SQLiteOpenHelper {
 		return fetchKanji(mCurrentGroup);
 	}
 	
-	private boolean isInFavorites(int codePoint){
+	public boolean isInFavorites(int codePoint){
 		String query = "SELECT * FROM " +TABLE_FAVORITES +" WHERE " +KEY_ID +"=" +codePoint;
 		Cursor c = mDb.rawQuery(query, null);
 		c.moveToFirst();

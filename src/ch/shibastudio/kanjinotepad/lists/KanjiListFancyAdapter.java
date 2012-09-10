@@ -18,6 +18,7 @@ import android.view.View.OnClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class KanjiListFancyAdapter extends BaseAdapter{
 
@@ -62,6 +63,7 @@ public class KanjiListFancyAdapter extends BaseAdapter{
     };
 	
 	public KanjiListFancyAdapter(Context c) {
+		mCtx = c;
 		mDbHelper = new KanjiDBHelper(mCtx);
 		mInflater = LayoutInflater.from(c);
 	}
@@ -96,15 +98,14 @@ public class KanjiListFancyAdapter extends BaseAdapter{
 			holder.tvInfo1 = (TextView)convertView.findViewById(R.id.info1);
 			holder.tvInfo2 = (TextView)convertView.findViewById(R.id.info2);
 			holder.ivFavorite = (ImageView)convertView.findViewById(R.id.star);
-			holder.ivFavorite.setTag(position);
 			convertView.setTag(holder);
 		}else{
 			holder = (ViewHolder)convertView.getTag();
 		}
-		
 		holder.tvCharacter.setText(mKanjis.get(position).character);
 		holder.tvInfo1.setText(mKanjis.get(position).info1);
 		holder.tvInfo2.setText(mKanjis.get(position).info2);
+		holder.ivFavorite.setTag(position);
 		if(mKanjis.get(position).favorite){
 			holder.ivFavorite.setImageResource(R.drawable.ic_favfull);
 		}else{

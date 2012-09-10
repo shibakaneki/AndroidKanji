@@ -89,7 +89,10 @@ public class KanjiListView extends LinearLayout {
 					ViewHolder vh = (ViewHolder)view.getTag();
 					if(null != vh){
 						String character = vh.tvCharacter.getText().toString();
-						KanjiInfo currentKanji = new KanjiInfo(character, false);
+						
+						boolean bFav = mKDBHelper.isInFavorites(TextTools.kanjiToCode(character));
+						
+						KanjiInfo currentKanji = new KanjiInfo(character, bFav);
 						
 						int cp = TextTools.kanjiToCode(character);
 						Cursor c = mKDBHelper.getKanjiInfos(cp);
@@ -138,6 +141,7 @@ public class KanjiListView extends LinearLayout {
 						currentKanji.kvg = kvg;
 						currentKanji.strokeCount = strokeCount;
 						currentKanji.jlpt = jlpt;
+						currentKanji.favorite = bFav;
 						KanjiManager.setCurrentKanji(currentKanji);
 						mKDBHelper.close();
 					}
