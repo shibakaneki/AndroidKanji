@@ -59,11 +59,12 @@
                 <LinearLayout
                     android:id="@+id/tabdrawing"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
-                    <ch.shibastudio.kanjinotepad.drawing.KanjiView android:id="@+id/kcanvas"
+                    android:layout_height="match_parent" 
+                    android:orientation="vertical">
+                    <ch.shibastudio.kanjinotepad.drawing.DrawingPanel android:id="@+id/drawingCanvas3"
 			            android:layout_width="fill_parent"
 			            android:layout_height="fill_parent"
-			            android:background="#FFFFFF" />
+			            android:background="#FFFFFF"/>
                 </LinearLayout>
             </FrameLayout>
         </LinearLayout>
