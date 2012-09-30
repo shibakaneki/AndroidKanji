@@ -10,7 +10,7 @@
     <application
         android:icon="@drawable/knotepad"
         android:label="@string/app_name" android:debuggable="true"
-        android:theme="@android:style/Theme.NoTitleBar">
+        android:theme="@style/KanjiNotepad">
         <activity android:name="ch.shibastudio.kanjinotepad.SplashActivity">
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />

@@ -6,5 +6,6 @@
     <color name="Title">#B22C2C</color>
     <color name="kanjiinfotitle">#781313</color>
     <color name="drawingpaper">#FFFCEC</color>
+    <color name="inactivetab">#999999</color>
     
 </resources>

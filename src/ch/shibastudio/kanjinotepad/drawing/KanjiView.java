@@ -2,6 +2,7 @@ package ch.shibastudio.kanjinotepad.drawing;
 
 import java.util.ArrayList;
 
+import ch.shibastudio.kanjinotepad.KanjiManager;
 import ch.shibastudio.kanjinotepad.R;
 import ch.shibastudio.kanjinotepad.drawing.Point;
 import android.content.Context;
@@ -21,6 +22,12 @@ import android.view.MotionEvent;
 import android.view.View;
 
 public class KanjiView extends View{
+
+	private enum eCheckResult{
+		NONE,
+		GOOD,
+		WRONG
+	};
 	
 	private class Line{
 		public ArrayList<Point> points;
@@ -45,6 +52,7 @@ public class KanjiView extends View{
 	public boolean showShadow = true;
 	public boolean showBorder = true;
 	private boolean mDrawing = false;
+	private boolean showResult = false;
 	
 	// Paint
 	private Paint mPainter = new Paint();
@@ -65,6 +73,7 @@ public class KanjiView extends View{
 	private Line mCrntLine;
 	private Path mCrntPath;
 	private Point mPreviousPoint;
+	private eCheckResult mResult = eCheckResult.NONE;
 	
 	// -- Methods --------------------------------------------------------
 	public KanjiView(Context c){
@@ -162,11 +171,28 @@ public class KanjiView extends View{
 		mLines.clear();
 		mPreviousPath.clear();
 		refreshCache();
+		showResult = false;
 		invalidate();
 	}
 	
 	public void verifyDrawing(){
+		boolean verifStrokes = false;
+		boolean verifShape = false;
+		
+		if(null != KanjiManager.kanji() && mPreviousPath.size() == KanjiManager.kanji().strokeCount){
+			verifStrokes = true;
+		}
+		
 		// TODO: Implement me! Use the NDK with Zinnia + Tomoe
+		
+		if(verifStrokes /*&& verifShape*/){
+			mResult = eCheckResult.GOOD;
+		}else{
+			mResult = eCheckResult.WRONG;
+		}
+		
+		showResult = true;
+		invalidate();
 	}
 	
 	private void generateCurrentPath(){
@@ -216,6 +242,7 @@ public class KanjiView extends View{
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		Point p = new Point(event.getX(), event.getY());
+		showResult = false;
 		switch(event.getAction()){
 		case MotionEvent.ACTION_DOWN:
 			if(isInGuide(p.x, p.y)){
@@ -277,6 +304,22 @@ public class KanjiView extends View{
 		}
 	}
 	
+	private void drawResult(){
+		switch(mResult){
+		case GOOD:
+			mPainter.setColor(Color.GREEN);
+			mCanvas.drawCircle(getWidth()/2, getHeight()/2, getWidth()/3, mPainter);
+			break;
+		case WRONG:
+			mPainter.setColor(Color.RED);
+			mCanvas.drawLine(getWidth()/4, getHeight()/4, getWidth()*3/4, getHeight()*3/4, mPainter);
+			mCanvas.drawLine(getWidth()/4, getHeight()*3/4, getWidth()*3/4, getHeight()/4, mPainter);
+			break;
+		default:
+			break;
+		}
+	}
+	
 	@Override
 	protected void onDraw(Canvas c){
 		
@@ -293,6 +336,10 @@ public class KanjiView extends View{
 		
 		if(null != mCrntPath){
 			c.drawPath(mCrntPath, mPainter);
+		}
+		
+		if(showResult){
+			drawResult();
 		}
 	}
 }

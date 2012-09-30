@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TabHost;
+import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabWidget;
 import android.widget.TabHost.TabSpec;
 
@@ -41,5 +43,11 @@ public class KNotepadPhoneActivity extends Activity{
 		ts.setContent(R.id.tabdrawing);
 		ts.setIndicator("Drawing", getResources().getDrawable(R.drawable.ic_tab_drawing));
 		tabHost.addTab(ts);
+		
+		TabWidget tw = tabHost.getTabWidget();
+		for(int i=0; i<tw.getChildCount(); i++){
+			View v = tw.getChildAt(i);
+			v.setBackgroundDrawable(getResources().getDrawable(R.drawable.tab_selector));
+		}
 	}
 }
